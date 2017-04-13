@@ -50,6 +50,10 @@ int main(int argc, char** argv)
     return -1;
   }
   
+  cout << "Exposure value: " << cap.get(CV_CAP_PROP_EXPOSURE) << endl;
+  cap.set(CV_CAP_PROP_EXPOSURE,-8.0);
+  cout << "Exposure value: " << cap.get(CV_CAP_PROP_EXPOSURE) << endl;
+  
   // Set capture camera properties to maximum (8 MP)
   //cap.set(CV_CAP_PROP_FRAME_WIDTH,3280);
   //cap.set(CV_CAP_PROP_FRAME_HEIGHT,2464);
