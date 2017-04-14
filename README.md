@@ -18,7 +18,8 @@ Create file (no extension):
   ssh
 
 
-### Parameters
+Parameters
+------
 
 #### [Camera Specifications](http://elinux.org/Rpi_Camera_Module)
 Max Resolution of Camera:
