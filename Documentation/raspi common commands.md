@@ -1,6 +1,6 @@
 Changing wifi connection
 ------
-In /etc/wpa_supplicant/wpa_supplicant.conf:
+In /etc/wpa_supplicant/wpa_supplicant.conf, 
   uncomment the lines below the label for the network to you wish to connect.
 
 
@@ -22,10 +22,7 @@ interface usb0
 
   Notes:
   
-    the "/24" at the end of the "ip_address" is required for USB connections
-    "routers" should be the address of the computer that you are connecting from
-    "domain_name_servers" can either be the computer you are connecting from, or
-      an actual domain name server like "8.8.8.8"
+the "/24" at the end of the "ip_address" is required for USB connections "routers" should be the address of the computer that you are connecting from "domain_name_servers" can either be the computer you are connecting from, or an actual domain name server like "8.8.8.8"
 
 
 Switch Between Access Point and Connecting to WiFi
