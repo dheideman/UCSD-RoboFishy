@@ -1,4 +1,4 @@
-Changing wifi connection
+Changing WiFi Connection
 ------
 In /etc/wpa_supplicant/wpa_supplicant.conf, 
   uncomment the lines below the label for the network to you wish to connect.
@@ -20,14 +20,12 @@ interface usb0
   static domain_name_servers=192.168.7.1
 ```
 
-  Notes:
-  
-the "/24" at the end of the "ip_address" is required for USB connections "routers" should be the address of the computer that you are connecting from "domain_name_servers" can either be the computer you are connecting from, or an actual domain name server like "8.8.8.8"
+  Note: the "/24" at the end of the "ip_address" is required for USB connections "routers" should be the address of the computer that you are connecting from "domain_name_servers" can either be the computer you are connecting from, or an actual domain name server like "8.8.8.8"
 
 
 Switch Between Access Point and Connecting to WiFi
 ------
-###### AP to Existing WiFi
+#### AP to Existing WiFi
 In /etc/network/interfaces:
   uncomment line:
 ```
@@ -40,7 +38,7 @@ sudo systemctl disable hostapd
 sudo systemctl disable dnsmasq
 ```
   
-###### Existing WiFi to AP
+#### Existing WiFi to AP
 In /etc/network/interfaces:
   comment out line:
 ```

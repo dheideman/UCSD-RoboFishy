@@ -26,7 +26,7 @@ network={
 }
 ```
 
-###### Generate Password Hash
+Generate Password Hash
 ```
 echo -n password_here | iconv -t utf16le | openssl md4
 ```
@@ -81,7 +81,7 @@ Using V4L2 driver for raspberry camera "sudo modprobe bcm2835-v4l2", you could a
 
 http://raspberrypi.stackexchange.com/questions/28458/rpi-camera-module-with-opencv
 
-Added `"bcm2835-v4l2` to a new line in /etc/modules-load.d/modules.conf
+Added `bcm2835-v4l2` to a new line in /etc/modules-load.d/modules.conf
 
 Settings:
 
