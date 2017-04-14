@@ -20,3 +20,24 @@ In /etc/dhcpcd.conf:
     "routers" should be the address of the computer that you are connecting from
     "domain_name_servers" can either be the computer you are connecting from, or
       an actual domain name server like "8.8.8.8"
+
+
+/** Switch Between Access Point and Connecting to WiFi **/
+
+// AP to Existing WiFi
+In /etc/network/interfaces:
+  uncomment line:
+#   wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+  
+Run commands:
+  sudo systemctl disable hostapd
+  sudo systemctl disable dnsmasq
+  
+// Existing WiFi to AP
+In /etc/network/interfaces:
+  comment out line:
+    wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+  
+Run commands:
+  sudo systemctl enable hostapd
+  sudo systemctl enable dnsmasq
