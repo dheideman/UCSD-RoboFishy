@@ -1,9 +1,11 @@
-/** Changing wifi connection **/
+Changing wifi connection
+------
 In /etc/wpa_supplicant/wpa_supplicant.conf:
   uncomment the lines below the label for the network to you wish to connect.
 
 
-/** Changing static IP address **/
+Changing Static IP Address
+------
 In /etc/dhcpcd.conf:
   change the addresses for the interface you want to use
     usb0  = USB connection (connecting to most computers)
@@ -22,9 +24,9 @@ In /etc/dhcpcd.conf:
       an actual domain name server like "8.8.8.8"
 
 
-/** Switch Between Access Point and Connecting to WiFi **/
-
-// AP to Existing WiFi
+Switch Between Access Point and Connecting to WiFi
+------
+###### AP to Existing WiFi
 In /etc/network/interfaces:
   uncomment line:
 #   wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
@@ -33,7 +35,7 @@ Run commands:
   sudo systemctl disable hostapd
   sudo systemctl disable dnsmasq
   
-// Existing WiFi to AP
+###### Existing WiFi to AP
 In /etc/network/interfaces:
   comment out line:
     wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf

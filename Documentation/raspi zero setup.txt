@@ -1,4 +1,5 @@
-/** Connecting to eduroam **/
+Connecting to eduroam
+------
 https://servicedesk.rose-hulman.edu/link/portal/710/4769/Article/372/How-do-I-connect-a-Raspberry-Pi-to-the-Eduroam-Wireless-Network
 
 /etc/network/interfaces:
@@ -25,7 +26,8 @@ generate password hash:
 echo -n password_here | iconv -t utf16le | openssl md4
 
 
-/** Get all the opencv dependencies **/
+Get all the opencv dependencies
+------
 sudo apt-get update
 sudo apt-get install libopencv-dev
 
@@ -33,7 +35,8 @@ Or skip over TBB (in cmake) because Zero is single core:
 -DWITH_TBB:BOOL=FALSE
 
 
-/** Compile OpenCV **/
+Compile OpenCV
+------
 http://docs.opencv.org/2.4/doc/tutorials/introduction/linux_install/linux_install.html
 
 cd ~/opencv
@@ -45,20 +48,19 @@ make
 sudo make install
 
 
-/** Expand Filesystem **/
+Expand Filesystem
+------
 sudo raspi-config
 under advanced options, expand filesystem
 
 
-/** Install Python 3 **/
-(maybe not necessary?)
+Install Python 3 (optional)
+------
 sudo apt-get install python3
 
-// Tried using RaspiCam, but ended up being too much work
-https://www.uco.es/investiga/grupos/ava/node/40
 
-
-/** V4L2 Driver for Raspberry Pi **/
+V4L2 Driver for Raspberry Pi
+------
 Someone said on the internet:
 Using V4L2 driver for raspberry camera "sudo modprobe bcm2835-v4l2", you could access it like USB camera.
 http://raspberrypi.stackexchange.com/questions/28458/rpi-camera-module-with-opencv
@@ -90,12 +92,17 @@ v4l2-ctl --set-ctrl video_bitrate=10000000
 v4l2-ctl --list-formats
 
 
-/** Create USB Flash Drive Mount Point **/
+Create USB Flash Drive Mount Point
+------
 sudo mkdir /mnt/usb
 
 // Mount drive (need to run every time)
 sudo mount /dev/sdb1 /mnt/usb
 
+// May be able to mount on boot (needs to be the same flash drive every time)
+http://www.techjawab.com/2013/06/how-to-setup-mount-auto-mount-usb-hard.html
 
-/** Create Wireless Access Point **/
+
+Create Wireless Access Point
+------
 http://www.raspberryconnect.com/network/item/315-rpi3-auto-wifi-hotspot-if-no-internet
