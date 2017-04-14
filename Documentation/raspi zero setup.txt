@@ -89,3 +89,9 @@ v4l2-ctl --set-ctrl video_bitrate=10000000
 # list supported formats
 v4l2-ctl --list-formats
 
+
+/** Create USB Flash Drive Mount Point **/
+sudo mkdir /mnt/usb
+
+// Mount drive (need to run every time)
+sudo mount /dev/sdb1 /mnt/usb
