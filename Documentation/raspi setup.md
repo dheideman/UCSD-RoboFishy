@@ -3,11 +3,14 @@ Connecting to eduroam
 https://servicedesk.rose-hulman.edu/link/portal/710/4769/Article/372/How-do-I-connect-a-Raspberry-Pi-to-the-Eduroam-Wireless-Network
 
 /etc/network/interfaces:
+```
 allow-hotplug wlan0
 iface wlan0 inet dhcp
     wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+```
     
 /etc/wpa_supplicant/wpa_supplicant.conf:
+```
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 ctrl_interface_group=0
 update_config=1
@@ -21,24 +24,31 @@ network={
    identity="dheidema@ucsd.edu"
    password=hash:d70f9d091b6a1ee069c05f483528a880
 }
+```
 
-generate password hash:
+###### Generate Password Hash
+```
 echo -n password_here | iconv -t utf16le | openssl md4
+```
 
 
 Get all the opencv dependencies
 ------
+```
 sudo apt-get update
 sudo apt-get install libopencv-dev
+```
 
 Or skip over TBB (in cmake) because Zero is single core:
+```
 -DWITH_TBB:BOOL=FALSE
-
+```
 
 Compile OpenCV
 ------
 http://docs.opencv.org/2.4/doc/tutorials/introduction/linux_install/linux_install.html
 
+```bash
 cd ~/opencv
 mkdir release
 cd release
@@ -46,17 +56,21 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local ..
 
 make
 sudo make install
-
+```
 
 Expand Filesystem
 ------
+```
 sudo raspi-config
+```
 under advanced options, expand filesystem
 
 
 Install Python 3 (optional)
 ------
+```
 sudo apt-get install python3
+```
 
 
 V4L2 Driver for Raspberry Pi
@@ -70,6 +84,7 @@ Added "bcm2835-v4l2" to a new line in /etc/modules-load.d/modules.conf
 Settings:
 https://www.raspberrypi.org/forums/viewtopic.php?f=43&t=62364
 
+```
 # load the module (or add module name to /etc/modules-load.d/modules.conf (\n)
 sudo modprobe bcm2835-v4l2
 
@@ -90,16 +105,21 @@ v4l2-ctl --set-ctrl video_bitrate=10000000
 
 # list supported formats
 v4l2-ctl --list-formats
+```
 
 
 Create USB Flash Drive Mount Point
 ------
+```
 sudo mkdir /mnt/usb
+```
 
-// Mount drive (need to run every time)
+Mount drive (need to run every time)
+```
 sudo mount /dev/sdb1 /mnt/usb
+```
 
-// May be able to mount on boot (needs to be the same flash drive every time)
+May be able to mount on boot (needs to be the same flash drive every time):
 http://www.techjawab.com/2013/06/how-to-setup-mount-auto-mount-usb-hard.html
 
 
