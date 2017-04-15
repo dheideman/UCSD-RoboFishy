@@ -8,6 +8,8 @@ Raspbian Jessie Lite
 ### Enabling SSH over USB
 From https://www.youtube.com/watch?v=O4oVIsZJDs4&t=248s:
 
+In the boot folder:
+
 Add to the end of config.txt:
   dtoverlay=dwc2
   
