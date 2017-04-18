@@ -119,7 +119,7 @@ sudo mkdir /mnt/usb
 
 Mount drive (need to run every time)
 ```
-sudo mount /dev/sdb1 /mnt/usb
+sudo mount /dev/sda1 /mnt/usb
 ```
 
 May be able to mount on boot (needs to be the same flash drive every time):
