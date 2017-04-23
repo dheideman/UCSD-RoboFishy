@@ -22,7 +22,7 @@ network={
    eap=PEAP
    phase2="auth=MSCHAPV2"
    identity="dheidema@ucsd.edu"
-   password=hash:d70f9d091b6a1ee069c05f483528a880
+   password=hash:<your hash here>
 }
 ```
 
