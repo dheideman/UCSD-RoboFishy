@@ -39,10 +39,6 @@ sudo apt-get update
 sudo apt-get install libopencv-dev
 ```
 
-Or skip over TBB (in cmake) because Zero is single core:
-```
--DWITH_TBB:BOOL=FALSE
-```
 
 Compile OpenCV
 ------
