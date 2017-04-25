@@ -66,13 +66,6 @@ sudo raspi-config
 under advanced options, expand filesystem
 
 
-Install Python 3 (optional)
-------
-```
-sudo apt-get install python3
-```
-
-
 V4L2 Driver for Raspberry Pi
 ------
 Someone said on the internet:
