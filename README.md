@@ -1,6 +1,6 @@
 # UCSD-RoboFishy
 
-Raspberry Pi Zero Preparation
+Raspberry Pi Preparation (Zero, Zero W, or 3)
 ------
 ### Operating System
 Raspbian Jessie Lite
@@ -19,6 +19,30 @@ Add after "rootwait" in cmdline.txt:
 Create file (no extension):
   ssh
 
+
+### Connecting to WiFi
+/etc/network/interfaces:
+```
+allow-hotplug wlan0
+iface wlan0 inet dhcp
+    wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+```
+    
+/etc/wpa_supplicant/wpa_supplicant.conf:
+```
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+ctrl_interface_group=0
+update_config=1
+network={
+  ssid="<your WiFi network name>"
+  psk="<your WiFi network password>"
+}
+```
+
+Note:
+  * Information on connecting to "eduroam" networks can be found in "raspi setup.md" in the "Documentation" folder
+  
+  
 ### Setting Static IP Address
 In /etc/dhcpcd.conf:
   change the addresses for the interface you want to use
@@ -34,7 +58,9 @@ interface usb0
   static domain_name_servers=192.168.7.1
 ```
 
-  Note: the "/24" at the end of the "ip_address" is required for USB connections "routers" should be the address of the computer that you are connecting from "domain_name_servers" can either be the computer you are connecting from, or an actual domain name server like "8.8.8.8"
+  Notes:
+  * The "/24" at the end of the "ip_address" is required for USB connections "routers" should be the address of the computer that you are connecting from "domain_name_servers" can either be the computer you are connecting from, or an actual domain name server like "8.8.8.8"
+  * When connecting to your Pi over WiFi using a static IP address, it may be necessary to change in /etc/network/interfaces `iface wlan0 inet dhcp` to `iface wlan0 inet manual`.
 
 Parameters
 ------

@@ -21,7 +21,7 @@ network={
    ca_cert="/etc/ssl/certs/AddTrust_External_Root.pem"
    eap=PEAP
    phase2="auth=MSCHAPV2"
-   identity="dheidema@ucsd.edu"
+   identity="<your login name here>"
    password=hash:<your hash here>
 }
 ```
