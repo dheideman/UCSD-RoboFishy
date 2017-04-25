@@ -44,6 +44,33 @@ Compile OpenCV
 ------
 http://docs.opencv.org/2.4/doc/tutorials/introduction/linux_install/linux_install.html
 
+Expand Filesystem
+------
+Before compiling OpenCV, expand the file system to take advantage of all the space on your SD card
+```
+sudo raspi-config
+```
+under advanced options, expand filesystem
+
+If `git` and `cmake` are not installed on your system (a brand-new Raspbian distro does not include them), install them with:
+```bash
+sudo apt-get install git
+sudo apt-get install cmake
+```
+
+Download OpenCV from GitHub
+```bash
+cd ~/<my_working _directory>
+git clone https://github.com/opencv/opencv.git
+```
+
+If you do not have internet access on your Pi, the OpenCV source code can be downloaded on a different computer and transferred with `scp`:
+```bash
+scp -r opencv pi@<ip address>:~/
+```
+Which will copy opencv to the home directory on the pi.
+
+Once OpenCV is installed on your computer, compile it with:
 ```bash
 cd ~/opencv
 mkdir release
@@ -53,13 +80,6 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local ..
 make
 sudo make install
 ```
-
-Expand Filesystem
-------
-```
-sudo raspi-config
-```
-under advanced options, expand filesystem
 
 
 V4L2 Driver for Raspberry Pi
