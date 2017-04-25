@@ -82,6 +82,7 @@ Using V4L2 driver for raspberry camera "sudo modprobe bcm2835-v4l2", you could a
 http://raspberrypi.stackexchange.com/questions/28458/rpi-camera-module-with-opencv
 
 Added `bcm2835-v4l2` to a new line in /etc/modules-load.d/modules.conf
+(commented out 2017/4/20)
 
 Settings:
 
