@@ -20,7 +20,26 @@ interface usb0
   static domain_name_servers=192.168.7.1
 ```
 
-  Note: the "/24" at the end of the "ip_address" is required for USB connections "routers" should be the address of the computer that you are connecting from "domain_name_servers" can either be the computer you are connecting from, or an actual domain name server like "8.8.8.8"
+  Notes:
+  * The "/24" at the end of the "ip_address" is required for USB connections
+  * "routers" should be the address of the computer that you are connecting from
+  * "domain_name_servers" can either be the computer you are connecting from, or an actual domain name server like "8.8.8.8"
+  * When connecting to your Pi over WiFi using a static IP address, it may be necessary to change in /etc/network/interfaces `iface wlan0 inet dhcp` to `iface wlan0 inet manual`.
+
+
+Image Backups
+------
+https://www.raspberrypi.org/documentation/linux/filesystem/backup.md
+
+To create a compressed image on Linux or Mac:
+```
+sudo dd bs=4M if=/dev/sdb | gzip > rasbian.img.gz
+```
+
+To load compressed image to card:
+```
+gunzip --stdout rasbian.img.gz | sudo dd bs=4M of=/dev/sdb
+```
 
 
 Switch Between Access Point and Connecting to WiFi
