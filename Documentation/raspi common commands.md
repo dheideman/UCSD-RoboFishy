@@ -30,8 +30,10 @@ interface usb0
 Image Backups
 ------
 https://www.raspberrypi.org/documentation/linux/filesystem/backup.md
+https://www.raspberrypi.org/documentation/installation/installing-images/mac.md
 
-To create a compressed image on Linux or Mac:
+### Linux
+To create a compressed image:
 ```
 sudo dd bs=4M if=/dev/sdb | gzip > rasbian.img.gz
 ```
@@ -39,6 +41,28 @@ sudo dd bs=4M if=/dev/sdb | gzip > rasbian.img.gz
 To load compressed image to card:
 ```
 gunzip --stdout rasbian.img.gz | sudo dd bs=4M of=/dev/sdb
+```
+
+### Mac
+Find the disk number of the SD card:
+```
+diskutil list
+```
+
+Then unmount the SD card
+```
+diskutil unmountDisk /dev/disk#
+```
+Where `disk#` is the SD card disk, e.g. `/dev/disk3`.
+
+To create a compressed image:
+```
+sudo dd bs=4m if=/dev/disk# | gzip > rasbian.img.gz
+```
+
+To load compressed image to card:
+```
+gunzip --stdout rasbian.img.gz | sudo dd bs=4m of=/dev/disk#
 ```
 
 
