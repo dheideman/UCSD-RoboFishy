@@ -64,9 +64,11 @@ under advanced options, expand filesystem
 
 V4L2 Driver for Raspberry Pi
 ------
+Currently not using V4L2 driver: see RaspiCam
+
 Someone said on the internet:
 
-Using V4L2 driver for raspberry camera "sudo modprobe bcm2835-v4l2", you could access it like USB camera.
+Using V4L2 driver for raspberry camera `sudo modprobe bcm2835-v4l2`, you could access it like USB camera.
 
 http://raspberrypi.stackexchange.com/questions/28458/rpi-camera-module-with-opencv
 
@@ -78,7 +80,7 @@ Settings:
 https://www.raspberrypi.org/forums/viewtopic.php?f=43&t=62364
 
 ```
-# load the module (or add module name to /etc/modules-load.d/modules.conf (\n)
+# load the module (or add module name to /etc/modules-load.d/modules.conf (\n))
 sudo modprobe bcm2835-v4l2
 
 # viewfinder
@@ -98,6 +100,35 @@ v4l2-ctl --set-ctrl video_bitrate=10000000
 
 # list supported formats
 v4l2-ctl --list-formats
+```
+
+
+RaspiCam
+------
+Using raspicam because it allows for the adjustment of more raspberry pi camera properties.
+https://www.uco.es/investiga/grupos/ava/node/40
+
+```
+cd raspicamxx
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+sudo ldconfig
+```
+
+https://sourceforge.net/p/raspicam/tickets/2/
+CMakeLists.txt:
+```
+cmake_minimum_required(VERSION 2.8)
+project( ExposureTests )
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} /usr/local/lib/cmake/)
+find_package( OpenCV )
+find_package( raspicam REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+add_executable( ExposureTests ExposureTests.cpp )
+target_link_libraries( ExposureTests ${OpenCV_LIBS} ${raspicam_CV_LIBS} )
 ```
 
 
