@@ -6,18 +6,32 @@ Raspberry Pi Preparation (Zero, Zero W, or 3)
 Raspbian Jessie Lite
 
 ### Enabling SSH over USB
-From https://www.youtube.com/watch?v=O4oVIsZJDs4&t=248s:
+From https://www.youtube.com/watch?v=O4oVIsZJDs4&t=248s
 
-In the boot folder:
+or https://www.thepolyglotdeveloper.com/2016/06/connect-raspberry-pi-zero-usb-cable-ssh/
 
-Add to the end of config.txt:
-  `dtoverlay=dwc2`
-  
-Add after "rootwait" in cmdline.txt:
-  `modules-load=dwc2,g_ether`
+1. Download OS image
+2. Write it on your SD card
+3. In a terminal, navigate into the boot folder
+4. Add to the end of config.txt:
+   `dtoverlay=dwc2`
+5. Add after "rootwait" in cmdline.txt:
+   `modules-load=dwc2,g_ether`
+6. Create ssh file (no extension) by typing:
+   `touch ssh`
+7. In /etc/dhcpcd.conf add:
+   (More information on dhcpcd.conf below)
+```
+interface usb0
+  static ip_address=192.168.7.2/24
+  static routers=192.168.7.1
+  static domain_name_servers=192.168.7.1
+```
+8. Exit, type `sync`, wait for it to finish, then take SD card out and put into pi zero
+9. Plug a USB cable into the computer and then into the USB port on the pi zero (not the power port)
+10. Open a terminal and type `sudo ip a add 192.168.7.1/24 dev usb0`
+11. You're ready to ssh into that puppy! Type `ssh pi@192.168.7.2`, then type default pw: `raspberry`
 
-Create file (no extension):
-  ssh
 
 
 ### Connecting to WiFi

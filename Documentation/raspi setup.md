@@ -170,3 +170,8 @@ http://www.techjawab.com/2013/06/how-to-setup-mount-auto-mount-usb-hard.html
 Create Wireless Access Point
 ------
 http://www.raspberryconnect.com/network/item/315-rpi3-auto-wifi-hotspot-if-no-internet
+
+
+Configure RasPi for I2C
+------
+https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c
