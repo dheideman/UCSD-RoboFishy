@@ -94,6 +94,7 @@ http://raspberrypi.stackexchange.com/questions/28458/rpi-camera-module-with-open
 
 Added `bcm2835-v4l2` to a new line in /etc/modules-load.d/modules.conf
 (commented out 2017/4/20)
+(uncommented 2017/4/29)
 
 Settings:
 
