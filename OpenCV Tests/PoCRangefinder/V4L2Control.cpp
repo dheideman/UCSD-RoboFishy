@@ -141,9 +141,9 @@ int  V4L2Control::set(unsigned int id, int value)
   memset(&control, 0, sizeof (control));
   control.id = id;
   control.value = value;
-  if (-1 == ioctl(fd, VIDIOC_S_CTRL, &control))
+  if (-1 == ioctl(this->fd, VIDIOC_S_CTRL, &control))
   {
-    writeV4L2Error(fd, id, value);
+    this->writeError(fd, id, value);
     return -1;
   }
   else return 0;
@@ -160,7 +160,7 @@ int  V4L2Control::get(unsigned int id)
   
   memset(&control, 0, sizeof (control));
   control.id = id;
-  if (-1 == ioctl(fd, VIDIOC_G_CTRL, &control)) return -1;
+  if (-1 == ioctl(this->fd, VIDIOC_G_CTRL, &control)) return -1;
   else return control.value;
 }
 
@@ -188,7 +188,7 @@ void V4L2Control::writeError(unsigned int id, int value)
   
   // Find the control that matches the requested id
   qctrl.id = V4L2_CTRL_FLAG_NEXT_CTRL;
-  while ((ctrlname.size()==0) && (0==ioctl (fd, VIDIOC_QUERYCTRL, &qctrl)))
+  while ((ctrlname.size()==0) && (0==ioctl(this->fd, VIDIOC_QUERYCTRL, &qctrl)))
   { 
     if( qctrl.id == id)
     {
@@ -207,7 +207,7 @@ void V4L2Control::writeError(unsigned int id, int value)
              qmenu.index <= qctrl.maximum;
              qmenu.index++)
         {
-          if (0 == ioctl(fd, VIDIOC_QUERYMENU, &qmenu))
+          if (0 == ioctl(this->fd, VIDIOC_QUERYMENU, &qmenu))
           {
             if(qmenu.id == value)
             {
