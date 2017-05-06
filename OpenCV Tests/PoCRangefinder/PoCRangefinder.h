@@ -16,6 +16,9 @@
 #include <pthread.h>
 #include <unistd.h>
 
+#include <linux/videodev2.h>
+#include "V4L2Control.h"
+
 using namespace cv;
 using namespace std;
 
