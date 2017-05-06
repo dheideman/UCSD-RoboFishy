@@ -18,7 +18,7 @@ using namespace std;
 #define IMAGE_PREFIX    "images/image"
 #define IMAGE_EXTENSION ".jpg"
 
-#define BRIGHT_EXPOSURE 100
+#define BRIGHT_EXPOSURE exposure //100
 #define DARK_EXPOSURE   exposure //1
 
 // Image Size
