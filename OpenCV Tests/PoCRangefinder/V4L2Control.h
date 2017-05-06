@@ -10,6 +10,8 @@
 #define V4L2Control_h
 
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <string>
 
 // V4L2 Includes
@@ -30,6 +32,8 @@
 #include <sys/ioctl.h>
 
 #include <linux/videodev2.h>
+
+using namespace std;
 
 class V4L2Control
 {
