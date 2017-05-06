@@ -36,7 +36,7 @@ interface usb0
 9. You're ready to ssh into that puppy! Type `ssh pi@192.168.7.2`, then type default pw: `raspberry`
 
 Note:
-  * Even if you do not plan to ssh into the Pi over USB, it is advisable to perform this step, as it also enables SSH over Ethernet.
+  * Even if you do not plan to ssh into the Pi over USB, it is advisable to perform this step, as it also enables SSH over Ethernet.  Change `interface usb0` to `interface eth0`.
 
 
 Connecting to WiFi
