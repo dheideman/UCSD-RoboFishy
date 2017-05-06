@@ -43,8 +43,8 @@ int redbalance = 20;
 int bluebalance = 20;
 int exposure = 10;
 int brightness = 50;
-int contrast;
-int saturation;
+int contrast = 50;
+int saturation = 50;
 Mat hsv_frame;
 
 // V4L2 Global Device Object
@@ -196,12 +196,12 @@ int main(int argc, char** argv)
 //   createTrackbar( " Blue:", source_window, &bluebalance, 100, whiteBalanceCallback );
   
   // Create trackbar for exposure setting
-  createTrackbar( " Exposure:", source_window, &exposure, 100, NULL);
+//   createTrackbar( " Exposure:", source_window, &exposure, 100, NULL);
   
   // Create brightness, saturation and contrast trackbars
-//   createTrackbar( " Brightness:", source_window, &brightness, 100, NULL);
-//   createTrackbar( " Contrast:", source_window, &contrast, 100, NULL);
-//   createTrackbar( " Saturation:", source_window, &saturation, 100, NULL);
+  createTrackbar( " Brightness:", source_window, &brightness, 100, bcsCallback);
+  createTrackbar( " Contrast:", source_window, &contrast, 100, bcsCallback);
+  createTrackbar( " Saturation:", source_window, &saturation, 100, bcsCallback);
   
   //set the callback function for any mouse event
   setMouseCallback(source_window, mouseCallback, NULL);
