@@ -16,7 +16,7 @@
 #define IMAGE_EXTENSION ".jpg"
 
 #define BRIGHT_EXPOSURE 100
-#define DARK_EXPOSURE   exposure //1
+#define DARK_EXPOSURE   1 //exposure
 
 // Image Size
 //#define FRAME_WIDTH     3280  // 8 megapixels
@@ -39,6 +39,9 @@ VideoCapture cap;
 int redbalance = 20;
 int bluebalance = 20;
 int exposure = 10;
+int brightness = 50;
+int contrast;
+int saturation;
 Mat hsv_frame;
 
 // V4L2 Global Variables
@@ -204,6 +207,21 @@ void mouseCallback(int event, int x, int y, int flags, void* userdata)
   }
 }
 
+/*******************************************************************************
+ * void bcsCallback(int, void*)
+ * 
+ * Sets brightness, contrast an saturation values
+ ******************************************************************************/
+void bcsCallback(int, void*)
+{
+  setV4L2Control(fd, V4L2_CID_BRIGHTNESS,brightness*80);
+  setV4L2Control(fd, V4L2_CID_CONTRAST,contrast*80);
+  setV4L2Control(fd, V4L2_CID_SATURATION,saturation*80);
+  cout << "B: " << getV4L2Control(fd, V4L2_CID_BRIGHTNESS) << "\t";
+  cout << "C: " << getV4L2Control(fd, V4L2_CID_CONTRAST) << "\t";
+  cout << "S: " << getV4L2Control(fd, V4L2_CID_SATURATION) << endl;
+}
+
 //////////////
 // Threads! //
 //////////////
@@ -297,7 +315,12 @@ int main(int argc, char** argv)
 //   createTrackbar( " Blue:", source_window, &bluebalance, 100, whiteBalanceCallback );
   
   // Create trackbar for exposure setting
-  createTrackbar( " Exposure:", source_window, &exposure, 100, NULL);
+//   createTrackbar( " Exposure:", source_window, &exposure, 100, NULL);
+  
+  // Create brightness, saturation and contrast trackbars
+  createTrackbar( " Brightness:", source_window, &brightness, 100, NULL);
+  createTrackbar( " Contrast:", source_window, &contrast, 100, NULL);
+  createTrackbar( " Saturation:", source_window, &saturation, 100, NULL);
   
   //set the callback function for any mouse event
   setMouseCallback(source_window, mouseCallback, NULL);
