@@ -8,6 +8,8 @@
 
 #include "V4L2Control.h"
 
+using namespace std;
+
 //////////////////
 // Constructors //
 //////////////////

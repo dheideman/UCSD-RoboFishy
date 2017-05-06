@@ -33,8 +33,6 @@
 
 #include <linux/videodev2.h>
 
-using namespace std;
-
 class V4L2Control
 {
   public:

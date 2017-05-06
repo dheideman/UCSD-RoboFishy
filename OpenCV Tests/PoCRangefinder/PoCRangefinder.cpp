@@ -7,6 +7,9 @@
 
 #include "PoCRangefinder.h"
 
+using namespace cv;
+using namespace std;
+
 ////////////////
 // Parameters //
 ////////////////
