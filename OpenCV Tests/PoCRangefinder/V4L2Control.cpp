@@ -138,15 +138,20 @@ int  V4L2Control::set(unsigned int id, int value)
 {
   struct v4l2_control control;
   
-  memset(&control, 0, sizeof (control));
-  control.id = id;
-  control.value = value;
-  if (-1 == ioctl(this->fd, VIDIOC_S_CTRL, &control))
+  // Make sure we're initialized first
+  if(this->initialized)
   {
-    this->writeError(fd, id, value);
-    return -1;
+    memset(&control, 0, sizeof (control));
+    control.id = id;
+    control.value = value;
+    if (-1 == ioctl(this->fd, VIDIOC_S_CTRL, &control))
+    {
+      this->writeError(id, value);
+      return -1;
+    }
+    else return 0;
   }
-  else return 0;
+  else return -1;
 }
 
 /*******************************************************************************
@@ -158,10 +163,15 @@ int  V4L2Control::get(unsigned int id)
 {
   struct v4l2_control control;
   
-  memset(&control, 0, sizeof (control));
-  control.id = id;
-  if (-1 == ioctl(this->fd, VIDIOC_G_CTRL, &control)) return -1;
-  else return control.value;
+  // Make sure we're initialized first
+  if(this->initialized)
+  {
+    memset(&control, 0, sizeof (control));
+    control.id = id;
+    if (-1 == ioctl(this->fd, VIDIOC_G_CTRL, &control)) return -1;
+    else return control.value;
+  }
+  else return -1;
 }
 
 ///////////////////////
