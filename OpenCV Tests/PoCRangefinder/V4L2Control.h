@@ -36,10 +36,8 @@ class V4L2Control
   public:
     V4L2Control();
     V4L2Control(char* device);
-    V4L2Control(string device);
     ~V4L2Control();
     int open(char* device);
-    int open(string device);
     int isOpened();
     int close();
     int set(unsigned int id, int value);
