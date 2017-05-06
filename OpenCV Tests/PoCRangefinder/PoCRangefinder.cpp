@@ -44,129 +44,8 @@ int contrast;
 int saturation;
 Mat hsv_frame;
 
-// V4L2 Global Variables
-int fd;
-
-
-///////////////////
-// V4L2 Controls //
-///////////////////
-
-/*******************************************************************************
- * void writeV4L2Error(int fd, unsigned int id, int value)
- * 
- * Write to terminal the details of an error given the id trying to be changed
- * and the value it was to be set to.
- ******************************************************************************/
-void writeV4L2Error(int fd, unsigned int id, int value)
-{
-  struct v4l2_querymenu qmenu;
-  struct v4l2_queryctrl qctrl;
-  
-  string ctrlname;
-  string menuvalue;
-  int namelength;
-  
-  // make sure qctrl is cleared
-  memset(&qctrl, 0, sizeof(qctrl));
-  
-  // Find the control that matches the requested id
-  qctrl.id = V4L2_CTRL_FLAG_NEXT_CTRL;
-  while ((ctrlname.size()==0) && (0==ioctl (fd, VIDIOC_QUERYCTRL, &qctrl)))
-  { 
-    if( qctrl.id == id)
-    {
-      // Save the name of the control (as a string)
-      namelength = sizeof qctrl.name / sizeof qctrl.name[0];
-      ctrlname = string(qctrl.name, qctrl.name + namelength);
-      
-      // Check if this control is a menu type
-      if (qctrl.type == V4L2_CTRL_TYPE_MENU)
-      {
-        memset(&qmenu, 0, sizeof(qmenu));
-        qmenu.id = qctrl.id;
-        
-        // Loop through the menu items
-        for (qmenu.index = qctrl.minimum;
-             qmenu.index <= qctrl.maximum;
-             qmenu.index++)
-        {
-          if (0 == ioctl(fd, VIDIOC_QUERYMENU, &qmenu))
-          {
-            if(qmenu.id == value)
-            {
-              namelength = sizeof qmenu.name / sizeof qmenu.name[0];
-              menuvalue = string(qmenu.name, qmenu.name + namelength);
-            }
-          }
-        } // end for (qmenu.index...)
-      } // end if(qctrl.type...)        
-    } // end if( qctrl.id...)
-    
-    // Move to next id.
-    qctrl.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
-  } // end while
-  
-  // Write out the error message
-  // if a name was found for the value setting:
-  if (menuvalue.size() != 0)
-    cout << "Could not set \"" << ctrlname << "\" to " << menuvalue << endl;
-  // otherwise just use the value given to us
-  else
-    cout << "Could not set \"" << ctrlname << "\" to " << value << endl;
-    
-  // Print out error code:
-  switch (errno)
-  {
-    case EINVAL:
-      cout << "Error Code: EINVAL" << endl;
-      break;
-    case ERANGE:
-      cout << "Error Code: ERANGE" << endl;
-      break;
-    case EBUSY:
-      cout << "Error Code: EBUSY" << endl;
-      break;
-    case EACCES:
-      cout << "Error Code: EACCES" << endl;
-      break;
-  }
-}
-
-/*******************************************************************************
- * int setV4L2Control(int fd, unsigned int id, int value)
- * 
- * Set the V4L2 control "id" for device "fd" to "value"
- ******************************************************************************/
-int setV4L2Control(int fd, unsigned int id, int value)
-{
-  struct v4l2_control control;
-  
-  memset(&control, 0, sizeof (control));
-  control.id = id;
-  control.value = value;
-  if (-1 == ioctl(fd, VIDIOC_S_CTRL, &control))
-  {
-    writeV4L2Error(fd, id, value);
-    return -1;
-  }
-  else return 0;
-}
-
-/*******************************************************************************
- * int getV4L2Control(int fd, unsigned int id)
- * 
- * Returns the current value of the V4L2 control "id" for device "fd"
- ******************************************************************************/
-int getV4L2Control(int fd, unsigned int id)
-{
-  struct v4l2_control control;
-  
-  memset(&control, 0, sizeof (control));
-  control.id = id;
-  if (-1 == ioctl(fd, VIDIOC_G_CTRL, &control)) return -1;
-  else return control.value;
-}
+// V4L2 Global Device Object
+V4L2Control picamctrl;
 
 
 ////////////////////////
@@ -180,8 +59,8 @@ int getV4L2Control(int fd, unsigned int id)
  ******************************************************************************/
 void whiteBalanceCallback(int, void*)
 {
-  setV4L2Control(fd, V4L2_CID_RED_BALANCE,redbalance*80);
-  setV4L2Control(fd, V4L2_CID_BLUE_BALANCE,bluebalance*80);
+  picamctrl.set(V4L2_CID_RED_BALANCE,redbalance*80);
+  picamctrl.set(V4L2_CID_BLUE_BALANCE,bluebalance*80);
 }
 
 /*******************************************************************************
@@ -214,12 +93,12 @@ void mouseCallback(int event, int x, int y, int flags, void* userdata)
  ******************************************************************************/
 void bcsCallback(int, void*)
 {
-  setV4L2Control(fd, V4L2_CID_BRIGHTNESS,brightness*80);
-  setV4L2Control(fd, V4L2_CID_CONTRAST,contrast*80);
-  setV4L2Control(fd, V4L2_CID_SATURATION,saturation*80);
-  cout << "B: " << getV4L2Control(fd, V4L2_CID_BRIGHTNESS) << "\t";
-  cout << "C: " << getV4L2Control(fd, V4L2_CID_CONTRAST) << "\t";
-  cout << "S: " << getV4L2Control(fd, V4L2_CID_SATURATION) << endl;
+  picamctrl.set(V4L2_CID_BRIGHTNESS,brightness*80);
+  picamctrl.set(V4L2_CID_CONTRAST,contrast*80);
+  picamctrl.set(V4L2_CID_SATURATION,saturation*80);
+  cout << "B: " << picamctrl.get(V4L2_CID_BRIGHTNESS) << "\t";
+  cout << "C: " << picamctrl.get(V4L2_CID_CONTRAST) << "\t";
+  cout << "S: " << picamctrl.get(V4L2_CID_SATURATION) << endl;
 }
 
 //////////////
@@ -234,7 +113,7 @@ void bcsCallback(int, void*)
 void *takePictures(void*)
 {
   // Initialize exposure settings
-  setV4L2Control(fd, V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE );
+  picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE );
   
   // Clear the frame buffer
   for(int i=0; i<5; i++)
@@ -247,12 +126,12 @@ void *takePictures(void*)
   {
     // Get bright frame
     cap.grab();
-    setV4L2Control(fd, V4L2_CID_EXPOSURE_ABSOLUTE, DARK_EXPOSURE );
+    picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, DARK_EXPOSURE );
     cap.retrieve( brightframe );
     
     // Get dark frame
     cap.grab();
-    setV4L2Control(fd, V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE );
+    picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE );
     cap.retrieve( darkframe );
   }
   
@@ -271,7 +150,7 @@ int main(int argc, char** argv)
   
   // Open the camera!
   cap.open(0);
-  fd = open("/dev/video0",  O_RDWR /* required */ | O_NONBLOCK, 0);
+  picamctrl.open("/dev/video0");
 
   if ( !cap.isOpened() )
   {
@@ -284,18 +163,17 @@ int main(int argc, char** argv)
   
   
   // Set camera exposure control to manual
-  setV4L2Control(fd, V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_MANUAL);
+  picamctrl.set(V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_MANUAL);
   
   // Set camera awb to manual ?
-  setV4L2Control(fd, V4L2_CID_AUTO_N_PRESET_WHITE_BALANCE,
-                     V4L2_WHITE_BALANCE_MANUAL);
+  picamctrl.set(V4L2_CID_AUTO_N_PRESET_WHITE_BALANCE,V4L2_WHITE_BALANCE_MANUAL);
 
   // Set camera iso to manual
-  setV4L2Control(fd, V4L2_CID_ISO_SENSITIVITY_AUTO, 0);
+  picamctrl.set(V4L2_CID_ISO_SENSITIVITY_AUTO, 0);
   
   // Initialize exposure, iso values
-  setV4L2Control(fd, V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE);
-  setV4L2Control(fd, V4L2_CID_ISO_SENSITIVITY, 0);
+  picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE);
+  picamctrl.set(V4L2_CID_ISO_SENSITIVITY, 0);
     
   // Set capture camera size
   cap.set(CV_CAP_PROP_FRAME_WIDTH,FRAME_WIDTH);
@@ -392,8 +270,8 @@ int main(int argc, char** argv)
 //     imshow( source_window, mask );
 
     // Print white balance to screen
-//     cout << "Red:  " << getV4L2Control(fd, V4L2_CID_RED_BALANCE) << endl;
-//     cout << "Blue: " << getV4L2Control(fd, V4L2_CID_BLUE_BALANCE) << endl;
+//     cout << "Red:  " << picamctrl.get(V4L2_CID_RED_BALANCE) << endl;
+//     cout << "Blue: " << picamctrl.get(V4L2_CID_BLUE_BALANCE) << endl;
     
     // check for press of enter key
    key = waitKey(1);
@@ -407,5 +285,5 @@ int main(int argc, char** argv)
   
   // close camera
   cap.release();
-  close(fd);
+  picamctrl.close();
 }// end main
