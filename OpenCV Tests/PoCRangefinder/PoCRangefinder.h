@@ -13,7 +13,10 @@
 #include <sstream>
 #include <ostream>
 #include <string>
+
+// Multithreading
 #include <pthread.h>
+#include <sched.h>
 #include <unistd.h>
 
 #include <linux/videodev2.h>

@@ -212,7 +212,22 @@ int main(int argc, char** argv)
   
   // Start multithreading!
   pthread_t cameraThread;
-  pthread_create (&cameraThread, NULL, takePictures, NULL);
+  
+  // Setting Priorities
+  pthread_attr_t tattr;
+  sched_param param;
+  
+  // Initialize attributes with defaults
+  pthread_attr_init (&tattr);
+  // Save the parameters to "param"
+  pthread_attr_getschedparam (&tattr, &param);
+  // Set the priority parameter of "param", leaving others at default
+  param.sched_priority = sched_get_priority_max(SCHED_RR) - 1;
+  // Set attributes to modified parameters
+  pthread_attr_setschedparam (&tattr, &param);
+
+  // Create thread using modified attributes
+  pthread_create (&cameraThread, &tattr, takePictures, NULL);
   
   
   // Pause for 2 seconds to let everything initialize
