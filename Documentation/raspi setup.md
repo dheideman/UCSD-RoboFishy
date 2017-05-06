@@ -47,6 +47,11 @@ allow-hotplug wlan0
 iface wlan0 inet dhcp
     wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
 ```
+
+Generate Password Hash
+```
+echo -n password_here | iconv -t utf16le | openssl md4
+```
     
 /etc/wpa_supplicant/wpa_supplicant.conf:
 ```
@@ -55,12 +60,14 @@ ctrl_interface_group=0
 update_config=1
 network={
   ssid="<your WiFi network name>"
-  psk="<your WiFi network password>"
+  psk=hash:<your hash here>
 }
 ```
 
 Note:
   * See below for information on connecting to "eduroam" networks.
+  * Multiple network connections can be added in wpa_supplicant.conf by adding another `network={...}` tag.
+  * Priorities for each network can be set using the tag `priority=...` inside each `network` tag.
   
   
 Setting Static IP Address
@@ -79,7 +86,7 @@ interface usb0
   static domain_name_servers=192.168.7.1
 ```
 
-  Notes:
+Notes:
   * The "/24" at the end of the "ip_address" is required for USB connections
   * "routers" should be the address of the computer that you are connecting from
   * "domain_name_servers" can either be the computer you are connecting from, or an actual domain name server like "8.8.8.8"
@@ -109,15 +116,15 @@ network={
    ca_cert="/etc/ssl/certs/AddTrust_External_Root.pem"
    eap=PEAP
    phase2="auth=MSCHAPV2"
-   identity="<your login name here>"
+   identity="<your university email address>"
    password=hash:<your hash here>
 }
 ```
 
-Generate Password Hash
-```
-echo -n password_here | iconv -t utf16le | openssl md4
-```
+Notes:
+  * For UCSD, the login name for eduroam is your university email address (i.e. "robofishy@ucsd.edu").
+  * For other institutions, use whatever login you usually use for eduroam.
+
 
 
 Get all the opencv dependencies
