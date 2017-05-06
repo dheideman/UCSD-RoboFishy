@@ -30,7 +30,7 @@ V4L2Control::V4L2Control()
  ******************************************************************************/
 V4L2Control::V4L2Control(char* device)
 {
-  this->fd = open(device,  O_RDWR /* required */ | O_NONBLOCK, 0);
+  this->fd = ::open(device,  O_RDWR /* required */ | O_NONBLOCK, 0);
   if (this->fd == -1)
   {
     cout << "Error: Could not open device \"" << device << "\"" << endl;
@@ -71,7 +71,7 @@ int  V4L2Control::open(char* device)
   }
   
   // Now go and open the requested file.
-  this->fd = open(device,  O_RDWR /* required */ | O_NONBLOCK, 0);
+  this->fd = ::open(device,  O_RDWR /* required */ | O_NONBLOCK, 0);
   if (this->fd == -1)
   {
     cout << "Error: Could not open device \"" << device << "\"" << endl;
@@ -106,7 +106,7 @@ int  V4L2Control::close()
   if (this->initialized)
   {
     // Try closing device.
-    if(close(fd)==-1)
+    if( ::close(fd)==-1)
     {
       // Device closing failed
       cout << "Error closing V4L2 device" << endl;
