@@ -1,3 +1,91 @@
+# Raspberry Pi Preparation (Zero, Zero W, or 3)
+
+Operating System
+------
+Raspbian Jessie Lite
+
+
+Install Image
+------
+Follow the directions for your host computer's operating system:
+https://www.raspberrypi.org/documentation/installation/installing-images/
+
+
+Enabling SSH over USB
+------
+https://www.thepolyglotdeveloper.com/2016/06/connect-raspberry-pi-zero-usb-cable-ssh/
+
+1. In a terminal, navigate into the boot folder
+2. Add to the end of config.txt:
+   `dtoverlay=dwc2`
+3. Add after "rootwait" in cmdline.txt:
+   `modules-load=dwc2,g_ether`
+4. Create ssh file (no extension) by typing:
+   `touch ssh`
+5. In /etc/dhcpcd.conf add:
+   (More information on dhcpcd.conf below)
+```
+interface usb0
+  static ip_address=192.168.7.2/24
+  static routers=192.168.7.1
+  static domain_name_servers=192.168.7.1
+```
+6. Exit, type `sync`, wait for it to finish, then take SD card out and put into pi zero
+7. Plug a USB cable into the computer and then into the USB port on the pi zero (not the power port)
+8. Open a terminal and type `sudo ip a add 192.168.7.1/24 dev usb0`
+9. You're ready to ssh into that puppy! Type `ssh pi@192.168.7.2`, then type default pw: `raspberry`
+
+Note:
+  * Even if you do not plan to ssh into the Pi over USB, it is advisable to perform this step, as it also enables SSH over Ethernet.
+
+
+Connecting to WiFi
+------
+/etc/network/interfaces:
+```
+allow-hotplug wlan0
+iface wlan0 inet dhcp
+    wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+```
+    
+/etc/wpa_supplicant/wpa_supplicant.conf:
+```
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+ctrl_interface_group=0
+update_config=1
+network={
+  ssid="<your WiFi network name>"
+  psk="<your WiFi network password>"
+}
+```
+
+Note:
+  * See below for information on connecting to "eduroam" networks.
+  
+  
+Setting Static IP Address
+------
+In /etc/dhcpcd.conf:
+  change the addresses for the interface you want to use
+  * usb0  = USB connection (connecting to most computers)
+  * wlan0 = WiFi connection
+  * eth0  = Ethernet connection (not available on Pi Zero)
+  
+  Example:
+```
+interface usb0
+  static ip_address=192.168.7.2/24
+  static routers=192.168.7.1
+  static domain_name_servers=192.168.7.1
+```
+
+  Notes:
+  * The "/24" at the end of the "ip_address" is required for USB connections
+  * "routers" should be the address of the computer that you are connecting from
+  * "domain_name_servers" can either be the computer you are connecting from, or an actual domain name server like "8.8.8.8"
+  * When connecting to your Pi over WiFi using a static IP address, it may be necessary to change in /etc/network/interfaces `iface wlan0 inet dhcp` to `iface wlan0 inet manual`.
+
+
 Connecting to eduroam
 ------
 https://servicedesk.rose-hulman.edu/link/portal/710/4769/Article/372/How-do-I-connect-a-Raspberry-Pi-to-the-Eduroam-Wireless-Network
