@@ -19,7 +19,7 @@ using namespace std;
 #define IMAGE_EXTENSION ".jpg"
 
 #define BRIGHT_EXPOSURE 100
-#define DARK_EXPOSURE   1 //exposure
+#define DARK_EXPOSURE   exposure //1
 
 // Image Size
 //#define FRAME_WIDTH     3280  // 8 megapixels
@@ -196,12 +196,12 @@ int main(int argc, char** argv)
 //   createTrackbar( " Blue:", source_window, &bluebalance, 100, whiteBalanceCallback );
   
   // Create trackbar for exposure setting
-//   createTrackbar( " Exposure:", source_window, &exposure, 100, NULL);
+  createTrackbar( " Exposure:", source_window, &exposure, 100, NULL);
   
   // Create brightness, saturation and contrast trackbars
-  createTrackbar( " Brightness:", source_window, &brightness, 100, NULL);
-  createTrackbar( " Contrast:", source_window, &contrast, 100, NULL);
-  createTrackbar( " Saturation:", source_window, &saturation, 100, NULL);
+//   createTrackbar( " Brightness:", source_window, &brightness, 100, NULL);
+//   createTrackbar( " Contrast:", source_window, &contrast, 100, NULL);
+//   createTrackbar( " Saturation:", source_window, &saturation, 100, NULL);
   
   //set the callback function for any mouse event
   setMouseCallback(source_window, mouseCallback, NULL);
