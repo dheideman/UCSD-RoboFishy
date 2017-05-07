@@ -41,7 +41,7 @@ Mat darkframe, brightframe;
 VideoCapture cap;
 int redbalance = 20;
 int bluebalance = 20;
-int exposure = 10;
+int exposure = 100;
 int brightness = 50;
 int contrast = 50;
 int saturation = 50;
@@ -96,9 +96,9 @@ void mouseCallback(int event, int x, int y, int flags, void* userdata)
  ******************************************************************************/
 void bcsCallback(int, void*)
 {
-  picamctrl.set(V4L2_CID_BRIGHTNESS,brightness*80);
-  picamctrl.set(V4L2_CID_CONTRAST,contrast*80);
-  picamctrl.set(V4L2_CID_SATURATION,saturation*80);
+  picamctrl.set(V4L2_CID_BRIGHTNESS,brightness);
+  picamctrl.set(V4L2_CID_CONTRAST,contrast);
+  picamctrl.set(V4L2_CID_SATURATION,saturation);
   cout << "B: " << picamctrl.get(V4L2_CID_BRIGHTNESS) << "\t";
   cout << "C: " << picamctrl.get(V4L2_CID_CONTRAST) << "\t";
   cout << "S: " << picamctrl.get(V4L2_CID_SATURATION) << endl;
