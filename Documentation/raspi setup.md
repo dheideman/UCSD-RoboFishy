@@ -69,6 +69,7 @@ network={
 ```
 
 Note:
+  * The built-in Wi-Fi chips on the Pi 3 and Pi Zero do not support 5 GHz Wi-Fi connections.  Use only 2.4 GHz Wi-Fi networks.
   * See below for information on connecting to "eduroam" networks.
   * Multiple network connections can be added in wpa_supplicant.conf by adding another `network={...}` tag.
   * Priorities for each network can be set using the tag `priority=...` inside each `network` tag.
