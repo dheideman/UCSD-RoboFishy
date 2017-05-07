@@ -29,6 +29,10 @@ interface usb0
   static ip_address=192.168.7.2/24
   static routers=192.168.7.1
   static domain_name_servers=192.168.7.1
+interface eth0
+  static ip_address=192.168.7.2
+  static routers=192.168.7.1
+  static domain_name_servers=192.168.7.1
 ```
 6. Exit, type `sync`, wait for it to finish, then take SD card out and put into pi zero
 7. Plug a USB cable into the computer and then into the USB port on the pi zero (not the power port)
