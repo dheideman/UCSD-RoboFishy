@@ -185,7 +185,6 @@ sudo make install
 
 V4L2 Driver for Raspberry Pi
 ------
-Currently not using V4L2 driver: see RaspiCam
 
 Someone said on the internet:
 
@@ -227,7 +226,9 @@ v4l2-ctl --list-formats
 
 RaspiCam
 ------
-Using raspicam because it allows for the adjustment of more raspberry pi camera properties.
+Not currently in use:  See V4L2 Driver above.
+
+Raspicam allows for the adjustment of more raspberry pi camera properties than pure OpenCV.
 https://www.uco.es/investiga/grupos/ava/node/40
 
 ```

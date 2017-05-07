@@ -20,7 +20,7 @@ using namespace std;
 
 #define BRIGHT_EXPOSURE exposure //100
 #define DARK_EXPOSURE   exposure //1
-#define ISO_VALUE       0
+#define ISO_VALUE       1
 
 // Image Size
 //#define FRAME_WIDTH     3280  // 8 megapixels
@@ -42,7 +42,7 @@ Mat darkframe, brightframe;
 VideoCapture cap;
 int redbalance = 20;
 int bluebalance = 20;
-int exposure = 10;
+int exposure = 5;
 int brightness = 50;
 int contrast = 50;
 int saturation = 50;
