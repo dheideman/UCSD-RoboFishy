@@ -1,3 +1,0 @@
-/home/pi/OpenCV Practice/ExposureTests/CMakeFiles/edit_cache.dir
-/home/pi/OpenCV Practice/ExposureTests/CMakeFiles/rebuild_cache.dir
-/home/pi/OpenCV Practice/ExposureTests/CMakeFiles/ExposureTests.dir
