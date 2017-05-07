@@ -42,7 +42,7 @@ Mat darkframe, brightframe;
 VideoCapture cap;
 int redbalance = 20;
 int bluebalance = 20;
-int exposure = 10;
+int exposure = 1;
 int brightness = 50;
 int contrast = 50;
 int saturation = 50;
@@ -207,7 +207,7 @@ int main(int argc, char** argv)
 //   createTrackbar( " Exposure:", source_window, &exposure, 100, NULL);
   
   // Create brightness, saturation and contrast trackbars
-  createTrackbar( " Brightness:", source_window, &brightness, 100, bcsCallback);
+//   createTrackbar( " Brightness:", source_window, &brightness, 100, bcsCallback);
   createTrackbar( " Contrast:", source_window, &contrast, 100, bcsCallback);
   createTrackbar( " Saturation:", source_window, &saturation, 100, bcsCallback);
   
