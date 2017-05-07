@@ -1,3 +1,0 @@
-/Users/dheideman/Desktop/TakePictures/CMakeFiles/rebuild_cache.dir
-/Users/dheideman/Desktop/TakePictures/CMakeFiles/edit_cache.dir
-/Users/dheideman/Desktop/TakePictures/CMakeFiles/TakePictures.dir
