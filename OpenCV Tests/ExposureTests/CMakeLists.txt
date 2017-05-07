@@ -1,8 +1,0 @@
-cmake_minimum_required(VERSION 2.8)
-project( ExposureTests )
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} /usr/local/lib/cmake/)
-find_package( OpenCV )
-find_package( raspicam REQUIRED )
-include_directories( ${OpenCV_INCLUDE_DIRS} )
-add_executable( ExposureTests ExposureTests.cpp )
-target_link_libraries( ExposureTests ${OpenCV_LIBS} ${raspicam_CV_LIBS} )

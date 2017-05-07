@@ -1,3 +1,103 @@
+# Raspberry Pi Preparation (Zero, Zero W, or 3)
+
+Operating System
+------
+Raspbian Jessie Lite
+
+
+Install Image
+------
+Follow the directions for your host computer's operating system:
+https://www.raspberrypi.org/documentation/installation/installing-images/
+
+
+Enabling SSH over USB
+------
+https://www.thepolyglotdeveloper.com/2016/06/connect-raspberry-pi-zero-usb-cable-ssh/
+
+1. In a terminal, navigate into the boot folder
+2. Add to the end of config.txt:
+   `dtoverlay=dwc2`
+3. Add after "rootwait" in cmdline.txt:
+   `modules-load=dwc2,g_ether`
+4. Create ssh file (no extension) by typing:
+   `touch ssh`
+5. In /etc/dhcpcd.conf add:
+   (More information on dhcpcd.conf below)
+```
+interface usb0
+  static ip_address=192.168.7.2/24
+  static routers=192.168.7.1
+  static domain_name_servers=192.168.7.1
+interface eth0
+  static ip_address=192.168.7.2
+  static routers=192.168.7.1
+  static domain_name_servers=192.168.7.1
+```
+6. Exit, type `sync`, wait for it to finish, then take SD card out and put into pi zero
+7. Plug a USB cable into the computer and then into the USB port on the pi zero (not the power port)
+8. Open a terminal and type `sudo ip a add 192.168.7.1/24 dev usb0`
+9. You're ready to ssh into that puppy! Type `ssh pi@192.168.7.2`, then type default pw: `raspberry`
+
+Note:
+  * Even if you do not plan to ssh into the Pi over USB, it is advisable to perform this step, as it also enables SSH over Ethernet.  Change `interface usb0` to `interface eth0`.
+
+
+Connecting to WiFi
+------
+/etc/network/interfaces:
+```
+allow-hotplug wlan0
+iface wlan0 inet dhcp
+    wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+```
+
+Generate Password Hash
+```
+echo -n password_here | iconv -t utf16le | openssl md4
+```
+    
+/etc/wpa_supplicant/wpa_supplicant.conf:
+```
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+ctrl_interface_group=0
+update_config=1
+network={
+  ssid="<your WiFi network name>"
+  psk=hash:<your hash here>
+}
+```
+
+Note:
+  * The built-in Wi-Fi chips on the Pi 3 and Pi Zero do not support 5 GHz Wi-Fi connections.  Use only 2.4 GHz Wi-Fi networks.
+  * See below for information on connecting to "eduroam" networks.
+  * Multiple network connections can be added in wpa_supplicant.conf by adding another `network={...}` tag.
+  * Priorities for each network can be set using the tag `priority=...` inside each `network` tag.
+  
+  
+Setting Static IP Address
+------
+In /etc/dhcpcd.conf:
+  change the addresses for the interface you want to use
+  * usb0  = USB connection (connecting to most computers)
+  * wlan0 = WiFi connection
+  * eth0  = Ethernet connection (not available on Pi Zero)
+  
+  Example:
+```
+interface usb0
+  static ip_address=192.168.7.2/24
+  static routers=192.168.7.1
+  static domain_name_servers=192.168.7.1
+```
+
+Notes:
+  * The "/24" at the end of the "ip_address" is required for USB connections
+  * "routers" should be the address of the computer that you are connecting from
+  * "domain_name_servers" can either be the computer you are connecting from, or an actual domain name server like "8.8.8.8"
+  * When connecting to your Pi over WiFi using a static IP address, it may be necessary to change in /etc/network/interfaces `iface wlan0 inet dhcp` to `iface wlan0 inet manual`.
+
+
 Connecting to eduroam
 ------
 https://servicedesk.rose-hulman.edu/link/portal/710/4769/Article/372/How-do-I-connect-a-Raspberry-Pi-to-the-Eduroam-Wireless-Network
@@ -21,28 +121,15 @@ network={
    ca_cert="/etc/ssl/certs/AddTrust_External_Root.pem"
    eap=PEAP
    phase2="auth=MSCHAPV2"
-   identity="<your login name here>"
+   identity="<your university email address>"
    password=hash:<your hash here>
 }
 ```
 
-Generate Password Hash
-```
-echo -n password_here | iconv -t utf16le | openssl md4
-```
+Notes:
+  * For UCSD, the login name for eduroam is your university email address (i.e. "robofishy@ucsd.edu").
+  * For other institutions, use whatever login you usually use for eduroam.
 
-
-Get all the opencv dependencies
-------
-```
-sudo apt-get update
-sudo apt-get install libopencv-dev
-```
-
-
-Compile OpenCV
-------
-http://docs.opencv.org/2.4/doc/tutorials/introduction/linux_install/linux_install.html
 
 Expand Filesystem
 ------
@@ -52,11 +139,25 @@ sudo raspi-config
 ```
 under advanced options, expand filesystem
 
+
+Compile OpenCV
+------
+
 If `git` and `cmake` are not installed on your system (a brand-new Raspbian distro does not include them), install them with:
 ```bash
 sudo apt-get install git
 sudo apt-get install cmake
 ```
+
+Get all the opencv dependencies:
+```bash
+sudo apt-get update
+sudo apt-get install libopencv-dev
+```
+
+
+http://docs.opencv.org/2.4/doc/tutorials/introduction/linux_install/linux_install.html
+
 
 Download OpenCV from GitHub
 ```bash
