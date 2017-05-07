@@ -135,10 +135,6 @@ sudo apt-get install libopencv-dev
 ```
 
 
-Compile OpenCV
-------
-http://docs.opencv.org/2.4/doc/tutorials/introduction/linux_install/linux_install.html
-
 Expand Filesystem
 ------
 Before compiling OpenCV, expand the file system to take advantage of all the space on your SD card
@@ -152,6 +148,11 @@ If `git` and `cmake` are not installed on your system (a brand-new Raspbian dist
 sudo apt-get install git
 sudo apt-get install cmake
 ```
+
+
+Compile OpenCV
+------
+http://docs.opencv.org/2.4/doc/tutorials/introduction/linux_install/linux_install.html
 
 Download OpenCV from GitHub
 ```bash
