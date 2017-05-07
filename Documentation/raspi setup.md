@@ -131,15 +131,6 @@ Notes:
   * For other institutions, use whatever login you usually use for eduroam.
 
 
-
-Get all the opencv dependencies
-------
-```
-sudo apt-get update
-sudo apt-get install libopencv-dev
-```
-
-
 Expand Filesystem
 ------
 Before compiling OpenCV, expand the file system to take advantage of all the space on your SD card
@@ -148,16 +139,25 @@ sudo raspi-config
 ```
 under advanced options, expand filesystem
 
+
+Compile OpenCV
+------
+
 If `git` and `cmake` are not installed on your system (a brand-new Raspbian distro does not include them), install them with:
 ```bash
 sudo apt-get install git
 sudo apt-get install cmake
 ```
 
+Get all the opencv dependencies:
+```bash
+sudo apt-get update
+sudo apt-get install libopencv-dev
+```
 
-Compile OpenCV
-------
+
 http://docs.opencv.org/2.4/doc/tutorials/introduction/linux_install/linux_install.html
+
 
 Download OpenCV from GitHub
 ```bash
