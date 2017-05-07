@@ -20,6 +20,7 @@ using namespace std;
 
 #define BRIGHT_EXPOSURE exposure //100
 #define DARK_EXPOSURE   exposure //1
+#define ISO_VALUE       0
 
 // Image Size
 //#define FRAME_WIDTH     3280  // 8 megapixels
@@ -58,7 +59,8 @@ V4L2Control picamctrl;
 /*******************************************************************************
  * void whiteBalanceCallback(int, void*)
  * 
- * Sets white balance values
+ * Sets white balance values (from 1-7999)
+ * Changing position of trackbar calls this function
  ******************************************************************************/
 void whiteBalanceCallback(int, void*)
 {
@@ -70,21 +72,24 @@ void whiteBalanceCallback(int, void*)
  * void mouseCallback(int event, int x, int y, int flags, void* userdata)
  * 
  * Write HSV and RGB values of point clicked on to terminal
+ * Any mouse movement will call this function
  ******************************************************************************/
 void mouseCallback(int event, int x, int y, int flags, void* userdata)
 {
-  if  ( event == EVENT_LBUTTONDOWN )
+  if  ( event == EVENT_LBUTTONDOWN ) // Only run when left button is pressed
   {
     Vec3b intensity = hsv_frame.at<Vec3b>(y, x);
     int hue = intensity.val[0];
     int sat = intensity.val[1];
     int val = intensity.val[2];
+    // print out HSV values (sanity check)
     cout << "H: " << hue << ",\tS:" << sat << ",\tV:" << val << endl;
     
     Vec3b bgr = brightframe.at<Vec3b>(y, x);
     int b = bgr.val[0];
     int g = bgr.val[1];
     int r = bgr.val[2];
+    // print out RGB values (sanity check)
     cout << "B: " << b << ",\tG:" << g << ",\tR:" << r << endl;
   }
 }
@@ -92,13 +97,14 @@ void mouseCallback(int event, int x, int y, int flags, void* userdata)
 /*******************************************************************************
  * void bcsCallback(int, void*)
  * 
- * Sets brightness, contrast an saturation values
+ * Sets brightness, contrast and saturation values (1-100)
  ******************************************************************************/
 void bcsCallback(int, void*)
 {
-  picamctrl.set(V4L2_CID_BRIGHTNESS,brightness*80);
-  picamctrl.set(V4L2_CID_CONTRAST,contrast*80);
-  picamctrl.set(V4L2_CID_SATURATION,saturation*80);
+  picamctrl.set(V4L2_CID_BRIGHTNESS,brightness);
+  picamctrl.set(V4L2_CID_CONTRAST,contrast);
+  picamctrl.set(V4L2_CID_SATURATION,saturation);
+  // sanity checks: print out brightness, contrast, and saturation values
   cout << "B: " << picamctrl.get(V4L2_CID_BRIGHTNESS) << "\t";
   cout << "C: " << picamctrl.get(V4L2_CID_CONTRAST) << "\t";
   cout << "S: " << picamctrl.get(V4L2_CID_SATURATION) << endl;
@@ -111,14 +117,14 @@ void bcsCallback(int, void*)
 /*******************************************************************************
  * void *takePictures(void*)
  * 
- * Camera-handling thread: save images as soon as they come in
+ * Camera-handling thread: continuously save images as soon as they come in
  ******************************************************************************/
 void *takePictures(void*)
 {
   // Initialize exposure settings
   picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE );
   
-  // Clear the frame buffer
+  // Grab all 5 images from the frame buffer in order to clear the buffer
   for(int i=0; i<5; i++)
   {
     cap.grab();
@@ -127,14 +133,18 @@ void *takePictures(void*)
   // Loop quickly to pick up images as soon as they are taken
   while(substate.mode != STOPPED)
   {
-    // Get bright frame
+    // 'Grab' bright frame from webcam's image buffer
     cap.grab();
+    // Set exposure now (rather than later)
     picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, DARK_EXPOSURE );
+    // Retrieve encodes image from grab buffer to 'brightframe' variable
     cap.retrieve( brightframe );
     
-    // Get dark frame
+    // 'Grab' dark frame from webcam's image buffer
     cap.grab();
+    // Set exposure now (rather than later)
     picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE );
+    // Retrieve encodes image from grab buffer to 'darkframe' variable
     cap.retrieve( darkframe );
   }
   
@@ -152,23 +162,23 @@ int main(int argc, char** argv)
   substate.mode = INITIALIZING;
   
   // Open the camera!
-  cap.open(0);
+  cap.open(0); // opens first video device
   picamctrl.open("/dev/video0");
 
+  // check to make sure device properly opened
   if ( !cap.isOpened() )
   {
     cerr << "Error opening the camera (OpenCV)" << endl;
     return -1;
   }
   
-  // Set framerate
+  // Set framerate (OpenCV capture property)
   cap.set(CV_CAP_PROP_FPS,2);
-  
-  
-  // Set camera exposure control to manual
+    
+  // Set camera exposure control to manual (driver property)
   picamctrl.set(V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_MANUAL);
   
-  // Set camera awb to manual ?
+  // Set camera autowhitebalance to manual
   picamctrl.set(V4L2_CID_AUTO_N_PRESET_WHITE_BALANCE,V4L2_WHITE_BALANCE_MANUAL);
 
   // Set camera iso to manual
@@ -176,19 +186,17 @@ int main(int argc, char** argv)
   
   // Initialize exposure, iso values
   picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE);
-  picamctrl.set(V4L2_CID_ISO_SENSITIVITY, 0);
+  picamctrl.set(V4L2_CID_ISO_SENSITIVITY, ISO_VALUE);
     
-  // Set capture camera size
+  // Set capture camera size (resolution)
   cap.set(CV_CAP_PROP_FRAME_WIDTH,FRAME_WIDTH);
   cap.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);
-  
   
   // Fill images w/ initial images
   cap.read( brightframe );
   cap.read( darkframe );
-  
-  
-  // Open windows
+    
+  // Open windows on your monitor
   namedWindow( source_window, CV_WINDOW_AUTOSIZE );
   
   // Create trackbars for white balancing
@@ -203,10 +211,10 @@ int main(int argc, char** argv)
   createTrackbar( " Contrast:", source_window, &contrast, 100, bcsCallback);
   createTrackbar( " Saturation:", source_window, &saturation, 100, bcsCallback);
   
-  //set the callback function for any mouse event
+  // set the callback function for any mouse event
   setMouseCallback(source_window, mouseCallback, NULL);
   
-  //set default white balance
+  // set default white balance
   whiteBalanceCallback(0,0);
   
   
@@ -239,33 +247,33 @@ int main(int argc, char** argv)
   // Set mode to RUNNING
   substate.mode = RUNNING;
   
-//  char keyin = '0';
   int key = 0; 
   
   // Take a bunch of pictures
- while(key != 27)
+  while(key != 27) // 27 is keycode for escape key
 //   for(int i=1; i<=10; i++)
   { 
-    // Save most recent bright frame
-    Mat laserframe, darklaserframe;
-    brightframe.copyTo(laserframe);
-    darkframe.copyTo(darklaserframe);
+    // Save most recent bright frame to local variables
+    Mat localbrightframe, localdarkframe;
+    brightframe.copyTo(localbrightframe);
+    darkframe.copyTo(localdarkframe);
     
-    // Convert from BGR to HSV
+    // Convert from BGR to HSV using CV_BGR2HSV conversion
 //    Mat hsv_frame;
-    cvtColor(darklaserframe, hsv_frame, CV_BGR2HSV);
+    cvtColor(localdarkframe, hsv_frame, CV_BGR2HSV);
     
     // Find laser dot
-    Mat mask;
+    Mat mask; // b/w matrix for laser detection
 //     inRange(hsv_frame, Scalar(0, 0, 40), Scalar(180, 255, 255), mask);
+    // if hsv_frame is in scalar range, set that pixel to white and store in mask
     inRange(hsv_frame, Scalar(61, 50, 50), Scalar(89, 250, 250), mask);
     
     // Locate centroid of laser dot
     Moments m = moments(mask, false);
     Point p1(m.m10/m.m00, m.m01/m.m00);
     
-    // Draw circle w/ center at centroid on original image
-    circle( laserframe,p1,10.0,Scalar( 0, 0, 255 ));
+    // Draw red circle w/ center at centroid on original image
+    circle( localbrightframe, p1, 10.0, Scalar( 0, 0, 255 ));
     
 
     // Write coordinates in top left corner
@@ -274,7 +282,7 @@ int main(int argc, char** argv)
     Point org;
     org.x = 10;
     org.y = 20;
-    putText( laserframe, coordinates.str(), org, 1, 1, Scalar(0,0,255));
+    putText( localbrightframe, coordinates.str(), org, 1, 1, Scalar(0,0,255));
     
     // Create filename
 //     stringstream filename;
@@ -284,14 +292,12 @@ int main(int argc, char** argv)
  
     // Write image to file
 //     imwrite(filename.str(), laserframe);
-    imshow( source_window, laserframe );
-//     imshow( source_window, mask );
-
-    // Print white balance to screen
-//     cout << "Red:  " << picamctrl.get(V4L2_CID_RED_BALANCE) << endl;
-//     cout << "Blue: " << picamctrl.get(V4L2_CID_BLUE_BALANCE) << endl;
     
-    // check for press of enter key
+    // Display image on current open window
+    imshow( source_window, localbrightframe );
+    //     imshow( source_window, mask );
+
+   // wait 1 ms to check for press of escape key
    key = waitKey(1);
   } // end while
   
