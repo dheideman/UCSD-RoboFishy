@@ -1,6 +1,0 @@
-cmake_minimum_required(VERSION 2.8)
-project( TakePictures )
-find_package( OpenCV )
-include_directories( ${OpenCV_INCLUDE_DIRS} )
-add_executable( TakePictures TakePictures.cpp )
-target_link_libraries( TakePictures ${OpenCV_LIBS} )
