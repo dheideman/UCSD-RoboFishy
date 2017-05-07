@@ -1,0 +1,3 @@
+/home/pi/OpenCV Practice/ExposureLaser/CMakeFiles/edit_cache.dir
+/home/pi/OpenCV Practice/ExposureLaser/CMakeFiles/rebuild_cache.dir
+/home/pi/OpenCV Practice/ExposureLaser/CMakeFiles/ExposureLaser.dir
