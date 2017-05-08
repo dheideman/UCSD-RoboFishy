@@ -28,6 +28,11 @@ using namespace std;
 #define FRAME_WIDTH       1280  // 720 HD
 #define FRAME_HEIGHT      720   // 720 HD
 
+// Rangefinder Constants
+#define RANGE_K0          -567.7
+#define RANGE_K1          0.09943
+#define RANGE_K2          330.0
+
 
 //////////////////////
 // Global Variables //
@@ -279,6 +284,18 @@ int main(int argc, char** argv)
     // Write coordinates in top left corner
     stringstream coordinates;
     coordinates << "(" << p1.x << ", " << p1.y << ")";
+    Point org;
+    org.x = 10;
+    org.y = 40;
+    putText( localbrightframe, coordinates.str(), org, 1, 1, Scalar(0,0,255));
+    
+    // Calculate range
+    float range = (RANGE_K0 + RANGE_K1*p1.y) / (RANGE_K2 + p1.y);
+    cout << "Calculated Range: " << range << endl;
+    
+    // Write range in top left corner
+    stringstream rangestring;
+    coordinates << range << " ft";
     Point org;
     org.x = 10;
     org.y = 20;
