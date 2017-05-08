@@ -31,7 +31,7 @@ using namespace std;
 // Rangefinder Constants
 #define RANGE_K0          -567.7
 #define RANGE_K1          0.09943
-#define RANGE_K2          330.0
+#define RANGE_K2          -330.0
 
 
 //////////////////////
@@ -295,7 +295,7 @@ int main(int argc, char** argv)
     
     // Write range in top left corner
     stringstream rangestring;
-    coordinates << range << " ft";
+    rangestring << range << " ft";
     Point pnt;
     pnt.x = 10;
     pnt.y = 20;
