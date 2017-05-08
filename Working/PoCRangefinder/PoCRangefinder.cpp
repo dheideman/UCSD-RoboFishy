@@ -18,8 +18,8 @@ using namespace std;
 #define IMAGE_PREFIX    "images/image"
 #define IMAGE_EXTENSION ".jpg"
 
-#define BRIGHT_EXPOSURE exposure //100
-#define DARK_EXPOSURE   exposure //1
+#define BRIGHT_EXPOSURE 100
+#define DARK_EXPOSURE   5
 #define ISO_VALUE       1
 
 // Image Size
@@ -204,12 +204,12 @@ int main(int argc, char** argv)
 //   createTrackbar( " Blue:", source_window, &bluebalance, 100, whiteBalanceCallback );
   
   // Create trackbar for exposure setting
-  createTrackbar( " Exposure:", source_window, &exposure, 100, NULL);
+//   createTrackbar( " Exposure:", source_window, &exposure, 100, NULL);
   
   // Create brightness, saturation and contrast trackbars
 //   createTrackbar( " Brightness:", source_window, &brightness, 100, bcsCallback);
-  createTrackbar( " Contrast:", source_window, &contrast, 100, bcsCallback);
-  createTrackbar( " Saturation:", source_window, &saturation, 100, bcsCallback);
+//   createTrackbar( " Contrast:", source_window, &contrast, 100, bcsCallback);
+//   createTrackbar( " Saturation:", source_window, &saturation, 100, bcsCallback);
   
   // set the callback function for any mouse event
   setMouseCallback(source_window, mouseCallback, NULL);
@@ -283,15 +283,6 @@ int main(int argc, char** argv)
     org.x = 10;
     org.y = 20;
     putText( localbrightframe, coordinates.str(), org, 1, 1, Scalar(0,0,255));
-    
-    // Create filename
-//     stringstream filename;
-//     filename << IMAGE_PREFIX;
-//     if(i<10) filename << "0";   // add in a zero to 1-digit numbers
-//     filename << i << IMAGE_EXTENSION;
- 
-    // Write image to file
-//     imwrite(filename.str(), laserframe);
     
     // Display image on current open window
     imshow( source_window, localbrightframe );
