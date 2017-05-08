@@ -299,7 +299,7 @@ int main(int argc, char** argv)
     }
     else  // If coordinates are (0,0), we haven't detected anything.
     {
-      rangestring << range << "------ ft";
+      rangestring << "------ ft";
     }
     
     // Write range in top left corner
