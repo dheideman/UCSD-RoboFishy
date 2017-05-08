@@ -290,12 +290,19 @@ int main(int argc, char** argv)
     putText( localbrightframe, coordinates.str(), org, 1, 1, Scalar(0,0,255));
     
     // Calculate range
-    float range = (RANGE_K0 + RANGE_K1*p1.y) / (RANGE_K2 + p1.y);
-    cout << "Calculated Range: " << range << endl;
+    stringstream rangestring;
+    if(p1.x !=0)
+    {
+      float range = (RANGE_K0 + RANGE_K1*p1.y) / (RANGE_K2 + p1.y);
+//       cout << "Calculated Range: " << range << endl;
+      rangestring << range << " ft";
+    }
+    else
+    {
+      rangestring << range << "------ ft";
+    }
     
     // Write range in top left corner
-    stringstream rangestring;
-    rangestring << range << " ft";
     Point pnt;
     pnt.x = 10;
     pnt.y = 20;
