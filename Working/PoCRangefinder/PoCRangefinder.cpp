@@ -297,7 +297,7 @@ int main(int argc, char** argv)
 //       cout << "Calculated Range: " << range << endl;
       rangestring << range << " ft";
     }
-    else
+    else  // If coordinates are (0,0), we haven't detected anything.
     {
       rangestring << range << "------ ft";
     }
