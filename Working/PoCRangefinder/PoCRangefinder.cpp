@@ -296,10 +296,10 @@ int main(int argc, char** argv)
     // Write range in top left corner
     stringstream rangestring;
     coordinates << range << " ft";
-    Point org;
-    org.x = 10;
-    org.y = 20;
-    putText( localbrightframe, coordinates.str(), org, 1, 1, Scalar(0,0,255));
+    Point pnt;
+    pnt.x = 10;
+    pnt.y = 20;
+    putText( localbrightframe, rangestring.str(), pnt, 1, 1, Scalar(0,0,255));
     
     // Display image on current open window
     imshow( source_window, localbrightframe );
