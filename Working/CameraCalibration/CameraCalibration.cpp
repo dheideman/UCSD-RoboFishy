@@ -24,21 +24,22 @@ using namespace std;
 #define FRAME_WIDTH       1280  // 720 HD
 #define FRAME_HEIGHT      720   // 720 HD
 
+// Balancing Region
+#define BALANCE_WIDTH     0.2
+#define BALANCE_HEIGHT    0.2
+
 
 //////////////////////
 // Global Variables //
 //////////////////////
 
 // Global Variables
-int stopprogram = 0;
 string sourcewindow = "Current Image";
 VideoCapture cap;
 int redbalance = 1600;
 int bluebalance = 1600;
 int exposure = 5;
-Mat frame;
-Mat bgrframe;
-Mat yuvframe;
+Mat bgrframe, yuvframe;
 
 // V4L2 Global Device Object
 V4L2Control picamctrl;
@@ -47,18 +48,6 @@ V4L2Control picamctrl;
 ////////////////////////
 // Callback Functions //
 ////////////////////////
-
-/*******************************************************************************
- * void whiteBalanceCallback(int, void*)
- * 
- * Sets white balance values (from 1-7999)
- * Changing position of trackbar calls this function
- ******************************************************************************/
-void whiteBalanceCallback(int, void*)
-{
-  picamctrl.set(V4L2_CID_RED_BALANCE,redbalance);
-  picamctrl.set(V4L2_CID_BLUE_BALANCE,bluebalance);
-}
 
 /*******************************************************************************
  * void mouseCallback(int event, int x, int y, int flags, void* userdata)
@@ -76,43 +65,15 @@ void mouseCallback(int event, int x, int y, int flags, void* userdata)
     int r = bgr.val[2];
     // print out RGB values (sanity check)
     cout << "B: " << b << ",\tG:" << g << ",\tR:" << r << endl;
+    
+    Vec3b yuv = yuvframe.at<Vec3b>(y, x);
+    int y = yuv.val[0];
+    int u = yuv.val[1];
+    int v = yuv.val[2];
+    // print out YUV values (sanity check)
+    cout << "Y: " << y << ",\tU:" << u << ",\tV:" << v << endl;
   }
 }
-
-
-//////////////
-// Threads! //
-//////////////
-
-/*******************************************************************************
- * void *takePictures(void*)
- * 
- * Camera-handling thread: continuously save images as soon as they come in
- ******************************************************************************/
-void *takePictures(void*)
-{
-  // Initialize exposure settings
-  picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE );
-  
-  // Grab all 5 images from the frame buffer in order to clear the buffer
-  for(int i=0; i<5; i++)
-  {
-    cap.grab();
-  }
-  
-  // Loop quickly to pick up images as soon as they are taken
-  while(!stopprogram)
-  {
-    // 'Grab' frame from webcam's image buffer
-    cap.grab();
-    // Retrieve encodes image from grab buffer to 'frame' variable
-    cap.retrieve( frame );
-  }
-  
-  // End thread
-  pthread_exit(NULL);
-}
-
 
 //////////
 // Main //
@@ -138,7 +99,10 @@ int main(int argc, char** argv)
   
   // Set camera autowhitebalance to manual
   picamctrl.set(V4L2_CID_AUTO_N_PRESET_WHITE_BALANCE,V4L2_WHITE_BALANCE_MANUAL);
-
+  
+  // Disable scene mode
+  picamctrl.set(V4L2_CID_SCENE_MODE, V4L2_SCENE_MODE_NONE);
+  
   // Set camera iso to manual
   picamctrl.set(V4L2_CID_ISO_SENSITIVITY_AUTO, 0);
   
@@ -150,12 +114,8 @@ int main(int argc, char** argv)
   cap.set(CV_CAP_PROP_FRAME_WIDTH,FRAME_WIDTH);
   cap.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);
     
-  // Open windows on your monitor
+  // Open window on your monitor
   namedWindow( source_window, CV_WINDOW_AUTOSIZE );
-  
-  // Create trackbars for white balancing
-//   createTrackbar( " Red: ", source_window, &redbalance, 100, whiteBalanceCallback );
-//   createTrackbar( " Blue:", source_window, &bluebalance, 100, whiteBalanceCallback );
   
   // Create trackbar for exposure setting
 //   createTrackbar( " Exposure:", source_window, &exposure, 100, NULL);
@@ -163,47 +123,66 @@ int main(int argc, char** argv)
   // set the callback function for any mouse event
   setMouseCallback(source_window, mouseCallback, NULL);
   
+  
   // set default white balance
-  whiteBalanceCallback(0,0);
+  picamctrl.set(V4L2_CID_RED_BALANCE, redbalance);
+  picamctrl.set(V4L2_CID_BLUE_BALANCE, bluebalance);
   
   
-  // Start multithreading!
-  pthread_t cameraThread;
+  // Calculate region within which we will be balancing the image
+  int balanceh_2 = FRAME_HEIGHT * BALANCE_HEIGHT / 2; // half balance box height
+  int balancew_2 = FRAME_WIDTH * BALANCE_WIDTH / 2;   // half balance box width
+  int framecentery = FRAME_HEIGHT / 2;  // y coord of "center" of frame
+  int framecenterx = FRAME_WIDTH / 2;   // x coord of "center" of frame
   
-  // Setting Priorities
-  pthread_attr_t tattr;
-  sched_param param;
+  // Calculate coordinates of balancing box
+  int balancexmin = framecenterx - balancew_2;
+  int balancexmax = framecenterx + balancew_2 - 1;
+  int balanceymin = framecentery - balanceh_2;
+  int balanceymax = framecentery + balanceh_2 - 1;
   
-  // Initialize attributes with defaults
-  pthread_attr_init (&tattr);
-  // Save the parameters to "param"
-  pthread_attr_getschedparam (&tattr, &param);
-  // Set the priority parameter of "param", leaving others at default
-  param.sched_priority = sched_get_priority_max(SCHED_RR) - 1;
-  // Set attributes to modified parameters
-  pthread_attr_setschedparam (&tattr, &param);
-
-  // Create thread using modified attributes
-  pthread_create (&cameraThread, &tattr, takePictures, NULL);
+  // Generate points for bounds of balancing box
+  Point b1 = Point(balancexmin, balanceymin);
+  Point b2 = Point(balancexmax, balanceymax);
   
   
-  // Pause for 2 seconds to let everything initialize
-  sleep(2);
+  // Grab all 5 images from the frame buffer in order to clear the buffer
+  for(int i=0; i<5; i++)
+  {
+    cap.grab();
+  }
+  
   
   // Announce that we're done initializing
   cout << "Done Initializing." << endl;
   
   int key = 0; 
   
-  // Take a bunch of pictures
+  // Loop quickly to pick up images as soon as they are taken
   while(key != 27) // 27 is keycode for escape key
-//   for(int i=1; i<=10; i++)
-  { 
-    // Save most recent frame to local variable
-    frame.copyTo(bgrframe);
+  {
+    // 'Grab' frame from webcam's image buffer
+    cap.grab();
+    // Retrieve encodes image from grab buffer to 'frame' variable
+    cap.retrieve( bgrframe );
     
     // Convert color spaces
     cvtColor(bgrframe, yuvframe, CV_BGR2YCrCb);
+    
+    // Obtain average YUV values over our balancing box area.
+    Scalar yuvmean = mean(yuvframe(Rect(b1, b2)));
+    float ubar = yuvmean[1];  // red
+    float vbar = yuvmean[2];  // blue
+    
+    // Check whether red (u) or blue (v) is more off.
+    if ( abs(ubar) > abs(vbar) )
+    {
+      // If red is more wrong, adjust red balance
+    }
+    
+    
+    // Draw rectangle in middle of image
+    rectangle(bgrframe, b1, b2 , Scalar(255, 255, 0));
     
     // Display image on current open window
     imshow( sourcewindow, bgrframe );
@@ -211,12 +190,6 @@ int main(int argc, char** argv)
    // wait 1 ms to check for press of escape key
    key = waitKey(1);
   } // end while
-  
-  // Set mode to STOPPED
-  stopprogram = 1;
-  
-  // Wait a second to let the threads stop
-  sleep(1);
   
   // close camera
   cap.release();
