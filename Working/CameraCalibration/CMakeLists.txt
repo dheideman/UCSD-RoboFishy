@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 2.8)
+project( CameraCalibration )
+find_package( OpenCV )
+find_package (Threads)
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+set(V4L2_FILES V4L2Control.h V4L2Control.cpp)
+add_executable( CameraCalibration CameraCalibration.cpp CameraCalibration.h ${V4L2_FILES} )
+target_link_libraries( CameraCalibration ${OpenCV_LIBS} ${CMAKE_THREAD_LIBS_INIT} )
