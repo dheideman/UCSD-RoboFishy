@@ -121,7 +121,7 @@ int main(int argc, char** argv)
 //   createTrackbar( " Exposure:", source_window, &exposure, 100, NULL);
   
   // set the callback function for any mouse event
-  setMouseCallback(source_window, mouseCallback, NULL);
+  setMouseCallback(sourcewindow, mouseCallback, NULL);
   
   
   // set default white balance
