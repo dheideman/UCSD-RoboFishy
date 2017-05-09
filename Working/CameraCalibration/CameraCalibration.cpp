@@ -106,7 +106,7 @@ int main(int argc, char** argv)
   picamctrl.set(V4L2_CID_ISO_SENSITIVITY_AUTO, 0);
   
   // Initialize exposure, iso values
-  picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE);
+  picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, EXPOSURE);
   picamctrl.set(V4L2_CID_ISO_SENSITIVITY, ISO_VALUE);
     
   // Set capture camera size (resolution)
