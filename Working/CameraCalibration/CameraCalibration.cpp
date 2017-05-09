@@ -115,7 +115,7 @@ int main(int argc, char** argv)
   cap.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);
     
   // Open window on your monitor
-  namedWindow( source_window, CV_WINDOW_AUTOSIZE );
+  namedWindow( sourcewindow, CV_WINDOW_AUTOSIZE );
   
   // Create trackbar for exposure setting
 //   createTrackbar( " Exposure:", source_window, &exposure, 100, NULL);
