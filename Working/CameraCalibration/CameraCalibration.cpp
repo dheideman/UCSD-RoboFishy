@@ -14,8 +14,7 @@ using namespace std;
 // Parameters //
 ////////////////
 
-#define BRIGHT_EXPOSURE 100
-#define DARK_EXPOSURE   5
+#define EXPOSURE        200
 #define ISO_VALUE       1
 
 // Image Size
@@ -178,8 +177,16 @@ int main(int argc, char** argv)
     if ( abs(ubar) > abs(vbar) )
     {
       // If red is more wrong, adjust red balance
+      redbalance -= 1.0*ubar;
+      picamctrl.set(V4L2_CID_RED_BALANCE, redbalance);
+  
     }
-    
+    else
+    {
+      // The blue is more wrong, so adjust blue balance
+      bluebalance -= 1.0*vbar;
+      picamctrl.set(V4L2_CID_BLUE_BALANCE, bluebalance);
+    }
     
     // Draw rectangle in middle of image
     rectangle(bgrframe, b1, b2 , Scalar(255, 255, 0));
