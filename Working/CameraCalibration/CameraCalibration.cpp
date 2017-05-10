@@ -173,17 +173,19 @@ int main(int argc, char** argv)
     float ubar = yuvmean[1];  // red
     float vbar = yuvmean[2];  // blue
     
+    cout << "Ubar: " << ubar << "\tVBar: " << vbar << endl;
+    
     // Check whether red (u) or blue (v) is more off.
     if ( abs(ubar) > abs(vbar) )
     {
       // If red is more wrong, adjust red balance
-      redbalance -= 1.0*ubar;
+      redbalance += 1.0*ubar;
       picamctrl.set(V4L2_CID_RED_BALANCE, redbalance);
     }
     else
     {
       // The blue is more wrong, so adjust blue balance
-      bluebalance -= 1.0*vbar;
+      bluebalance += 1.0*vbar;
       picamctrl.set(V4L2_CID_BLUE_BALANCE, bluebalance);
     }
     
