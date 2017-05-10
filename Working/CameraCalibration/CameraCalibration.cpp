@@ -179,13 +179,13 @@ int main(int argc, char** argv)
     if ( abs(ubar) > abs(vbar) )
     {
       // If red is more wrong, adjust red balance
-      redbalance += 1.0*ubar;
+      redbalance -= 0.5*ubar;
       picamctrl.set(V4L2_CID_RED_BALANCE, redbalance);
     }
     else
     {
       // The blue is more wrong, so adjust blue balance
-      bluebalance += 1.0*vbar;
+      bluebalance -= 0.5*vbar;
       picamctrl.set(V4L2_CID_BLUE_BALANCE, bluebalance);
     }
     
