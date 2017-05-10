@@ -170,22 +170,22 @@ int main(int argc, char** argv)
     
     // Obtain average YUV values over our balancing box area.
     Scalar yuvmean = mean(yuvframe(Rect(b1, b2)));
-    float ubar = yuvmean[1];  // red
-    float vbar = yuvmean[2];  // blue
+    float ubar = yuvmean[1];  // blue
+    float vbar = yuvmean[2];  // red
     
-    cout << "Ubar: " << ubar << "\tVBar: " << vbar << endl;
+    cout << "Vbar: " << vbar << "\tUBar: " << ubar << endl;
     
-    // Check whether red (u) or blue (v) is more off.
-    if ( abs(ubar) > abs(vbar) )
+    // Check whether blue (u) or red (v) is more off.
+    if ( abs(vbar) > abs(ubar) )
     {
       // If red is more wrong, adjust red balance
-      redbalance -= 0.5*ubar;
+      redbalance -= 0.5*vbar;
       picamctrl.set(V4L2_CID_RED_BALANCE, redbalance);
     }
     else
     {
       // The blue is more wrong, so adjust blue balance
-      bluebalance -= 0.5*vbar;
+      bluebalance -= 0.5*ubar;
       picamctrl.set(V4L2_CID_BLUE_BALANCE, bluebalance);
     }
     
