@@ -268,10 +268,21 @@ int main(int argc, char** argv)
     cvtColor(localdarkframe, hsv_frame, CV_BGR2HSV);
     
     // Find laser dot
-    Mat mask; // b/w matrix for laser detection
-//     inRange(hsv_frame, Scalar(0, 0, 40), Scalar(180, 255, 255), mask);
+    Mat1b mask; // b/w matrix for laser detection
+    
     // if hsv_frame is in scalar range, set that pixel to white and store in mask
+    
+    // White
+//     inRange(hsv_frame, Scalar(0, 0, 40), Scalar(180, 255, 255), mask);
+    
+    // Green
     inRange(hsv_frame, Scalar(61, 50, 50), Scalar(89, 250, 250), mask);
+    
+    // Red
+//    Mat1b mask1, mask2;
+//    inRange(hsv_frame, Scalar(1, 50, 50), Scalar(15, 250, 250), mask1);
+//    inRange(hsv_frame, Scalar(165, 50, 50), Scalar(179, 250, 250), mask2);
+//    mask = mask1 | mask2;    
     
     // Locate centroid of laser dot
     Moments m = moments(mask, false);
