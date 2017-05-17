@@ -22,10 +22,10 @@ int main(int argc, char** argv)
 {
     if( argc != 3 )
     {
-      cout << " Usage: ./FLANN <img1> <img2>" << endl;
+      cout << " Usage: ./FeatureDemo <img1> <img2>" << endl;
       return -1;
     }
-
+    
     Mat img_object = imread( argv[1], IMREAD_GRAYSCALE );
     Mat img_scene = imread( argv[2], IMREAD_GRAYSCALE );
 
@@ -34,7 +34,7 @@ int main(int argc, char** argv)
       cout<< " --(!) Error reading images " << endl;
       return -1;
     }
-    
+
     /* Step 1: Detect the keypoints using Fast Detector */
     
     // Create detector
@@ -108,17 +108,20 @@ int main(int argc, char** argv)
     cout << "matches.size() = " << matches.size() << endl;
 
     // Calculate max and min distances between matched points
-    double max_dist = 0; double min_dist = 200;
+    double max_dist = 0; double min_dist = 200; double avg_dist = 0;
     for (int i = 0; i < descriptors_object.rows; i++)
     {
         double dist = matches[i].distance;
+        avg_dist += dist;
         if (dist < min_dist) min_dist = dist;
         if (dist > max_dist) max_dist = dist;
     }
+    avg_dist = avg_dist/descriptors_object.rows;
     
     // Write min and max distances to screen
     printf("-- Max dist : %f \n", max_dist);
     printf("-- Min dist : %f \n", min_dist);
+    printf("-- Avg dist : %f \n", avg_dist);
 
     /* Draw only "good" matches (i.e. whose distance is less than 3*min_dist) */
     
@@ -129,7 +132,7 @@ int main(int argc, char** argv)
 //     for (int i = 0; i < descriptors_object.rows; i++)
     for (int i = 0; i < matches.size(); i++)
     {
-        if (matches[i].distance <= 5 * min_dist)
+        if (matches[i].distance <= /*avg_dist/2*/ 3 * (min_dist+1))
         {
             good_matches.push_back(matches[i]);
         }
@@ -151,8 +154,7 @@ int main(int argc, char** argv)
     drawMatches(img_object, keypoints_object, img_scene, keypoints_scene, good_matches, img_matches, Scalar::all(-1), Scalar::all(-1), std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
 
     /* Localize the object */
-
-///*  
+    
     // Create vectors of all the coordinates of the "good" matches
     vector<Point2f> obj;
     vector<Point2f> scene;
@@ -167,7 +169,7 @@ int main(int argc, char** argv)
     // Write sizes of the localization vectors
     cout << "obj.size() = " << obj.size() << endl;
     cout << "scene.size() = " << scene.size() << endl;
-      
+     
     // Find perspective transformation between two planes.
     Mat H = findHomography(obj, scene, CV_RANSAC);
 
@@ -188,12 +190,12 @@ int main(int argc, char** argv)
     line(img_matches, scene_corners[0] + Point2f(img_object.cols, 0), scene_corners[1] + Point2f(img_object.cols, 0), Scalar(0, 255, 0), 4);
     line(img_matches, scene_corners[1] + Point2f(img_object.cols, 0), scene_corners[2] + Point2f(img_object.cols, 0), Scalar(0, 255, 0), 4);
     line(img_matches, scene_corners[2] + Point2f(img_object.cols, 0), scene_corners[3] + Point2f(img_object.cols, 0), Scalar(0, 255, 0), 4);
-    line(img_matches, scene_corners[3] + Point2f(img_object.cols, 0), scene_corners[0] + Point2f(img_object.cols, 0), Scalar(0, 255, 0), 4);
-
-//*/    
-
+    line(img_matches, scene_corners[3] + Point2f(img_object.cols, 0), scene_corners[0] + Point2f(img_object.cols, 0), Scalar(0, 255, 0), 4);  
+    
     // Show detected matches
     imshow("Good Matches & Object detection", img_matches);
+    
+//     imwrite("./SendaiTasselTest1b.jpg",img_matches);
 
     waitKey(0);
     return 0;
