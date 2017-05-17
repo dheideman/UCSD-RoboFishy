@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project( FeatureDemo )
+find_package( OpenCV )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+add_executable( FeatureDemo FeatureDemo.cpp )
+target_link_libraries( FeatureDemo ${OpenCV_LIBS} )

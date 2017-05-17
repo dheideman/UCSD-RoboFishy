@@ -278,3 +278,7 @@ http://www.raspberryconnect.com/network/item/315-rpi3-auto-wifi-hotspot-if-no-in
 Configure RasPi for I2C
 ------
 https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c
+
+Set Hostname
+------
+In /etc/hostname, the hostname
