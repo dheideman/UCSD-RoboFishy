@@ -35,11 +35,11 @@ int main(int argc, char** argv)
       return -1;
     }
     
-    /* Step 1: Detect the keypoints using ORB Detector */
+    /* Step 1: Detect the keypoints using Fast Detector */
     
     // Create detector
-    Ptr<FeatureDetector> detector = ORB::create();
-//     Ptr<FeatureDetector> detector = FastFeatureDetector::create();
+//     Ptr<FeatureDetector> detector = ORB::create();
+    Ptr<FeatureDetector> detector = FastFeatureDetector::create();
 
     // Create vector of KeyPoints for each image 
     vector<KeyPoint> keypoints_object, keypoints_scene;
@@ -57,12 +57,16 @@ int main(int argc, char** argv)
     
     // Create extractor (will characterize each feature)
     Ptr<DescriptorExtractor> extractor = ORB::create();
-//     Ptr<DescriptorExtractor> extractor = FastFeatureDetector::create();
+//     Ptr<DescriptorExtractor> extractor = KAZE::create();
+    
+    cout << "Created Extractor" << endl;
 
     // Create 2D matrix for descriptors for each image
     // Each row corresponds to a feature
     // 32 columns describe each feature
     Mat descriptors_object, descriptors_scene;
+    
+    cout << "Created descriptor matrices" << endl;
     
     // Characterize each feature, store characteristics in Mats
     extractor->compute(img_object, keypoints_object, descriptors_object);
@@ -76,9 +80,15 @@ int main(int argc, char** argv)
     
     // Make sure we have some descriptors, otherwise return error.
     if ( descriptors_object.empty() )
-       cvError(0,"MatchFinder","Object descriptor empty",__FILE__,__LINE__);    
+    {
+      cerr << "Error: descriptors_object is empty" << endl;
+      return -1;
+    }
     if ( descriptors_scene.empty() )
-       cvError(0,"MatchFinder","Scene descriptor empty",__FILE__,__LINE__);
+    {
+      cerr << "Error: descriptors_scene is empty" << endl;
+      return -1;
+    }
 
     /* Step 3: Matching descriptor vectors using FLANN matcher */
     
@@ -119,7 +129,7 @@ int main(int argc, char** argv)
 //     for (int i = 0; i < descriptors_object.rows; i++)
     for (int i = 0; i < matches.size(); i++)
     {
-        if (matches[i].distance < 10 * min_dist)
+        if (matches[i].distance <= 5 * min_dist)
         {
             good_matches.push_back(matches[i]);
         }
@@ -127,6 +137,12 @@ int main(int argc, char** argv)
     
     // Write number of "good" matches to screen (DEBUG)
     cout << "good_matches.size() = " << good_matches.size() << endl;
+    
+    if ( good_matches.size() == 0 )
+    {
+      cerr << "Error: no good matches detected" << endl;
+      return -1;
+    }
     
     // Create matrix to store final output image
     Mat img_matches;
