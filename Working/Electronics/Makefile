@@ -1,6 +1,6 @@
 # project name 
 # change to match your main c file
-TARGET = IMU
+TARGET = MainScript
 
 
 

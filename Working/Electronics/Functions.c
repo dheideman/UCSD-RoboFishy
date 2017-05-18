@@ -47,12 +47,24 @@ calib_t init_ms5837(void){
 	PyObject *pName, *pModule, *pDict, *pFunc, *pValue;
 	
 	pName = PyString_FromString("MS5837"); // input name of python source file
+	/*if (pName==NULL){ 
+		printf("%s\n", "NULL");
+	}
+	else{
+		printf("%s\n", "not NULL");
+	}*/
 	printf("%s\n", "After pName" );
 	PyRun_SimpleString("import sys");
-	printf("%s\n","Right befopre syspathappend" );
-	PyRun_SimpleString("sys.path.append(\"/home/pi/pca9685-master/Motors/MainScript\")");
+	printf("%s\n","Right before syspathappend" );
+	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/MainScript\")");
 	printf("%s\n", "After syspathappend" );
 	pModule = PyImport_Import(pName);
+	if (pModule==NULL){ 
+		printf("%s\n", "NULL");
+	}
+	else{
+		printf("%s\n", "not NULL");
+	}
 	printf("%s\n", "After pModule pName" );
 	pDict = PyModule_GetDict(pModule);
 	printf("%s\n","After GetDict" );
@@ -83,9 +95,9 @@ ms5837_t ms5837_read(calib_t arg_in){
 	calib_t calib = arg_in; // create struct to hold calibration data
 	PyObject *pName, *pModule, *pDict, *pFunc, *pArgs, *pValue;
 	
-	pName = PyString_FromString("MS5837"); // input name of python source file
+	pName = PyString_FromString("MS5837_example"); // input name of python source file
 	PyRun_SimpleString("import sys");
-	PyRun_SimpleString("sys.path.append(\"/home/pi/pca9685-master/Motors/MainScript\")");
+	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/MainScript\")");
 	pModule = PyImport_Import(pName);
 	pDict = PyModule_GetDict(pModule);
 	pFunc = PyDict_GetItemString(pDict, "read_press");
@@ -110,6 +122,14 @@ ms5837_t ms5837_read(calib_t arg_in){
 	return ms5837;
 };
 
+void start_Py_ms5837(void)
+{
+	char cmd[50];
+    strcpy(cmd,"python MS5837_example.py & exit");
+    system(cmd);
+    return;
+}
+
 
 // BNO055 FUNCTIONS //
 
@@ -123,7 +143,7 @@ void start_Py_bno055(void){
 bno055_t bno055_read(void){ // read values from bno055
 	bno055_t bno055;
 	char buf[1000];
-	FILE *fd = fopen( "/home/pi/pca9685-master/Motors/bno055_fifo.fifo", "r");
+	FILE *fd = fopen( "/home/pi/UCSD-RoboFishy/Working/Electronics/bno055_fifo.fifo", "r");
 	fgets(buf,1000,fd);
 	fclose(fd);
 	sscanf(buf,"%f %f %f %f %f %f %i %i %i %i", 

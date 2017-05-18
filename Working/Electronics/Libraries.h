@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <Python.h>
 #include <time.h>
+#include <signal.h>		// capture control-c
 
 
 //#define PIN_BASE 300

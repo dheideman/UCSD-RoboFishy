@@ -77,7 +77,7 @@ while True:
     # Read the calibration status, 0=uncalibrated and 3=fully calibrated.	
     sys, gyro, accel, mag = bno.get_calibration_status()
     _string = "%f %f %f %f %f %f %i %i %i %i" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
-    fifo = open("bno055_fifo.txt", "w")
+    fifo = open("bno055_fifo.fifo", "w")
     #_string = "%f %f %f %f %f %f %i %i %i %i" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
     fifo.write(_string)
     fifo.close()
