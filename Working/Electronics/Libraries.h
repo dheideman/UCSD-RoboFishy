@@ -8,11 +8,14 @@
 #include <signal.h>		// capture control-c
 
 
-//#define PIN_BASE 300
 #define PIN_BASE 300
 #define MAX_PWM 4096
 #define HERTZ 370
 #define PCA9685_ADDR 0x40
+#define CHANNEL_1 0
+#define CHANNEL_2 1
+#define CHANNEL_3 2
+#define CHANNEL_4 3
 
 
 // struct for hold ms5837 calibration values

@@ -149,14 +149,30 @@ int main()
 	cleanup_auv();*/
 
 
-	
-	start_Py_bno055();
-	start_Py_ms5837();
+
+
+	int fd = pca9685Setup(PIN_BASE, 0x40, HERTZ);	//initialize PCA9685 board
+	if (fd < 0)
+	{
+		printf("Error in setup\n");
+		return fd;
+	}
+	pca9685PWMReset(fd);	//Resets output of the board
+	int active=1;
+	while(active){
+	pwmWrite(PIN_BASE, calcTicks(0,HERTZ));	//send input signal that is low enough to reach the 
+	delay(5000);
+	active=0;
+	}				//"neutral" or power-off area in order 
+	printf("%s\n","Past setup" );							//to arm the ESC (long beep); green LED on ESC
+								//will light up
+	//start_Py_bno055();
+	//start_Py_ms5837();
 	delay(1000); //Delay is so that the IMU can initialize and run bn055_read.py
 	while (1){	 //before the code below tries to read it and seg faults.
 		
 		// read imu values
-		bno055 = bno055_read();
+		/*bno055 = bno055_read();
 		float new_yaw = bno055.yaw+sstate.num_yaw_spins*360;
 		sstate.roll = bno055.pitch; // intentionally reversed
 		sstate.pitch[0] = bno055.roll; // intentionally reversed
@@ -167,49 +183,27 @@ int main()
 		sstate.gyro = bno055.gyro;
 		sstate.accel = bno055.accel;
 		sstate.mag = bno055.mag;
-		printf("%f\n",  bno055.roll);
-		delay(100);
+		delay(100);*/
 	
-
-	/*	printf("Motors example\n");
-
-	int fd = pca9685Setup(PIN_BASE, 0x40, HERTZ);	//initialize PCA9685 board
-	if (fd < 0)
-	{
-		printf("Error in setup\n");
-		return fd;
-	}
-
-	pca9685PWMReset(fd);
-
-	int active=1;
-	while (active){
-		pwmWrite (PIN_BASE, 10);	//send input signal that is low enough to reach the 
-		delay(1000);								//"neutral" or power-off area in order to arm the ESC (long beep); green LED on ESC will light up
-		active=0;
-		printf("%i \n",0);
-	}
-	printf("Hello");
-		pwmWrite (PIN_BASE, 0);					//set motor to desired PWM output (4000 is the max value the Afro ESCs accept)
-		//printf("Hello");
-
-*/
-	//start_Py_ms5837();
-
-	//while(1)
-	//{
+		//Set Motors to desired PWM Outputs
+		pwmWrite (PIN_BASE, 1000);	
+		pwmWrite(PIN_BASE+1, 1900);	//set motor to desired PWM output (4000 is the max value the Afro ESCs accept)
 		
 
-		// get pressure value
-		//printf("%s\n","Just before while loop" );
-		calib = init_ms5837();
-		//printf("%s\n", "After calib");
-		ms5837 = ms5837_read(calib);
-		//printf("%s\n", "After read");
-		printf("%f\n", ms5837.pressure);
-		//printf("%f", calib);
-		//printf("%f\n", ms5837);
-		delay(100); 
+
+		//start_Py_ms5837();
+
+		//while(1)
+		//{
+			
+
+			// get pressure value
+			//printf("%s\n","Just before while loop" );
+			/*calib = init_ms5837();
+			ms5837 = ms5837_read(calib);
+			printf("%f\n", ms5837.pressure);
+			//printf("%f\n", ms5837);
+			delay(100); */
 	}
 
 

@@ -5,15 +5,15 @@
 // calculate PWM input
 int calcTicks(float impulseMs, int hertz)
 {
-	float cycleMs = 1000.0f / hertz;									//calculate period
-	return (int)(MAX_PWM * (0.45*impulseMs+1.64) / cycleMs + 0.5f);		//formula for setting PWM output
+	float cycleMs = 1000.0f / hertz;									// calculate period
+	return (int)(MAX_PWM * (0.45*impulseMs+1.64) / cycleMs + 0.5f);		// formula for setting PWM output
 }
 
 // initialize motors function
 int initialize_motors(int channels[4], float freq){
 	int i;
-	int fd = pca9685Setup(PIN_BASE, PCA9685_ADDR, HERTZ);				//setup PCA9685 board
-	pca9685PWMReset(fd);
+	int fd = pca9685Setup(PIN_BASE, PCA9685_ADDR, HERTZ);				// setup PCA9685 board
+	pca9685PWMReset(fd);												// reset all output
 	//usleep(10);
 	for( i = 0; (i < 4); i = i+1 ){
 		pwmWrite (PIN_BASE+channels[i], 1500);
