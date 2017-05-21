@@ -74,16 +74,11 @@ int main(int argc, const char** argv)
 //     resize(rgbframe, rgbframe, Size(640, 480));
     
     // just make current frame gray
-    cvtColor(rgbframe, greyframe[0], COLOR_BGR2GRAY);
-    
-    
-    // For all optical flow you need a sequence of images, or at least 2 of
-    // them (previous and current frame).
-    // There is a picture of previous frame. Do some optical flow alg. 
+    cvtColor(rgbframe, greyframe[0], COLOR_BGR2GRAY); 
     
     // calculate optical flow 
-    calcOpticalFlowFarneback(greyframe[1], greyframe[0], flow, 0.4, 1, 12, 2, 8, 1.2, 0);
-
+    calcOpticalFlowFarneback( greyframe[1], greyframe[0], flow,
+                              0.4, 1, 12, 2, 8, 1.2, 0);
                        
     // Draw flow vectors
     for (int y = 0; y < rgbframe.rows; y += 5)
@@ -106,7 +101,7 @@ int main(int argc, const char** argv)
     // draw the results
     imshow(WINDOW_NAME, rgbframe);
     
-    // fill previous image again
+    // save current grey frame to "old" grey frame
     greyframe[0].copyTo(greyframe[1]);
     
   } // end while()
