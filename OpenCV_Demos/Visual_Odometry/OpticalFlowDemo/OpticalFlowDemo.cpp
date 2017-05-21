@@ -19,7 +19,7 @@
 #define WINDOW_NAME   "Optical Flow Demo"
 #define FRAME_WIDTH   1280
 #define FRAME_HEIGHT  720
-#define CAMERA_FPS    300
+#define CAMERA_FPS    30
 
 using namespace cv;
 using namespace std;
