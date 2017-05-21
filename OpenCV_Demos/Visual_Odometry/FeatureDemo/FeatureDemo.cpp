@@ -132,7 +132,7 @@ int main(int argc, char** argv)
 //     for (int i = 0; i < descriptors_object.rows; i++)
     for (int i = 0; i < matches.size(); i++)
     {
-        if (matches[i].distance <= /*avg_dist/2*/ 3 * (min_dist+1))
+        if (matches[i].distance <= /*avg_dist/2*/ 2 * (min_dist+1))
         {
             good_matches.push_back(matches[i]);
         }
@@ -191,6 +191,9 @@ int main(int argc, char** argv)
     line(img_matches, scene_corners[1] + Point2f(img_object.cols, 0), scene_corners[2] + Point2f(img_object.cols, 0), Scalar(0, 255, 0), 4);
     line(img_matches, scene_corners[2] + Point2f(img_object.cols, 0), scene_corners[3] + Point2f(img_object.cols, 0), Scalar(0, 255, 0), 4);
     line(img_matches, scene_corners[3] + Point2f(img_object.cols, 0), scene_corners[0] + Point2f(img_object.cols, 0), Scalar(0, 255, 0), 4);  
+    
+    // Write H to screen
+    cout << "H = "<< endl << " "  << H << endl << endl;
     
     // Show detected matches
     imshow("Good Matches & Object detection", img_matches);
