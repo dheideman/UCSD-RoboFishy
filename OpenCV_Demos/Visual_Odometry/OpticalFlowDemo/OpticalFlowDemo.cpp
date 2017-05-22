@@ -51,7 +51,7 @@ int main(int argc, const char** argv)
   cap.set(CV_CAP_PROP_FPS,CAMERA_FPS);
   
   Mat rgbframe;
-  Mat greyframe[2];
+  Mat greyframe[2];   // 0: new, 1: old
   Mat flow;
   
   // Make sure buffer is clear
@@ -102,7 +102,7 @@ int main(int argc, const char** argv)
     imshow(WINDOW_NAME, rgbframe);
     
     // save current grey frame to "old" grey frame
-    greyframe[0].copyTo(greyframe[1]);
+    cv::swap(greyframe[0],greyframe[1]);
     
   } // end while()
 }
