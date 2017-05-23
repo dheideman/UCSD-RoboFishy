@@ -37,11 +37,11 @@ int main(int argc, char** argv)
   int ex = static_cast<int>(cap.get(CV_CAP_PROP_FOURCC));
   
   // Acquire input size 
-  Size framesize = Size((int) cap.get(CV_CAP_PROP_FRAME_WIDTH),
+  Size framesize = Size((int) cap.get(CV_CAP_PROP_FRAME_WIDTH)*2,
                         (int) cap.get(CV_CAP_PROP_FRAME_HEIGHT));
   
   // Get FPS
-  float fps = 10;//cap.get(CV_CAP_PROP_FPS);
+  float fps = 5;//cap.get(CV_CAP_PROP_FPS);
   
   // Initialize video writer
   VideoWriter outputvideo;
