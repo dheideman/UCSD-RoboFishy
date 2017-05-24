@@ -121,15 +121,17 @@ void bcsCallback(int, void*)
   cout << "C: " << picamctrl.get(V4L2_CID_CONTRAST) << "\t";
   cout << "S: " << picamctrl.get(V4L2_CID_SATURATION) << endl;
 }
-// Did this work???
+
 /*******************************************************************************
  * void exposureCallback(int, void*)
  *
  * Sets Sets the exposure, white balance, and Image Sensitivity
- *******************************************************************************/
-// void exposureCallback(int, void*)
-// {
-  // picamcrl.set(V4L2_CID_ 
+ ******************************************************************************/
+void exposureCallback(int, void*)
+{
+  picamcrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, exposure );
+}
+  
 //////////////
 // Threads! //
 //////////////

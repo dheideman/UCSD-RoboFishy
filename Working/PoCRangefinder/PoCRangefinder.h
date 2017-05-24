@@ -62,6 +62,8 @@ typedef struct sub_state_t
 // Callback Functions
 void whiteBalanceCallback(int, void*);
 void mouseCallback(int event, int x, int y, int flags, void* userdata);
+void bcsCallback(int, void*);
+void exposureCallback(int, void*);
 
 // Threads
 void *takePictures(void*);
