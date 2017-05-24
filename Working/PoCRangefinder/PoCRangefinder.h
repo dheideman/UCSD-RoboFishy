@@ -37,10 +37,22 @@ typedef enum sub_mode_t
   STOPPED
 } sub_mode_t;
 
+// Armed? enumerated type
+typedef enum armed_t
+{
+  ARMED,
+  DISARMED
+} armed_t;
+
 // Submersible overall state type
 typedef struct sub_state_t
 {
-  sub_mode_t mode;
+  sub_mode_t  mode;           // Operating mode
+  double      range;          // Range to bottom
+  double      depth;          // Depth below surface
+//   cv::Mat     pose;           // Location + Yaw of sub
+  armed_t     laserarmed;     // Whether the laser can be turned on or not
+//   cv::Mat     imuorientation; // Orientation as determined by IMU
 } sub_state_t;
 
 /////////////////////////
