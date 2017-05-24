@@ -27,10 +27,14 @@ using namespace std;
 //#define FRAME_HEIGHT    2464  // 8 megapixels
 #define FRAME_WIDTH       1280  // 720 HD
 #define FRAME_HEIGHT      720   // 720 HD
+
 // Rangefinder Constants
 #define RANGE_K0          -567.7
 #define RANGE_K1          0.09943
 #define RANGE_K2          -330.0
+
+// Window Names
+#define SOURCE_WINDOW     "Bright Image"
 
 
 //////////////////////
@@ -41,7 +45,6 @@ using namespace std;
 sub_state_t substate;
 
 // Global Variables
-string source_window = "Bright Image";
 Mat darkframe, brightframe;
 VideoCapture cap;
 int redbalance = 20;
@@ -54,7 +57,7 @@ int cropleft = 420;
 int croptop = 0;
 int cropwidth = 320;
 int cropheight = 720;
-Mat hsv_frame;
+Mat hsvframe;
 
 // V4L2 Global Device Object
 V4L2Control picamctrl;
@@ -87,7 +90,7 @@ void mouseCallback(int event, int x, int y, int flags, void* userdata)
   if  ( event == EVENT_LBUTTONDOWN ) // Only run when left button is pressed
   {
    // How do we know what we're looking at?
-    Vec3b intensity = hsv_frame.at<Vec3b>(y, x);
+    Vec3b intensity = hsvframe.at<Vec3b>(y, x);
     int hue = intensity.val[0];
     int sat = intensity.val[1];
     int val = intensity.val[2];
@@ -214,23 +217,23 @@ int main(int argc, char** argv)
   cap.read( darkframe );
     
   // Open windows on your monitor
-  namedWindow( source_window, CV_WINDOW_AUTOSIZE ); // How Do we know which Images? 
+  namedWindow( SOURCE_WINDOW, CV_WINDOW_AUTOSIZE ); // How Do we know which Images? 
  // We Probably want to look at dark image values.....
   
   // Create trackbars for white balancing
-//   createTrackbar( " Red: ", source_window, &redbalance, 100, whiteBalanceCallback );
-//   createTrackbar( " Blue:", source_window, &bluebalance, 100, whiteBalanceCallback );
+//   createTrackbar( " Red: ", SOURCE_WINDOW, &redbalance, 100, whiteBalanceCallback );
+//   createTrackbar( " Blue:", SOURCE_WINDOW, &bluebalance, 100, whiteBalanceCallback );
   
   // Create trackbar for exposure setting
-//   createTrackbar( " Exposure:", source_window, &exposure, 100, NULL);
+//   createTrackbar( " Exposure:", SOURCE_WINDOW, &exposure, 100, NULL);
   
   // Create brightness, saturation and contrast trackbars
-//   createTrackbar( " Brightness:", source_window, &brightness, 100, bcsCallback);
-//   createTrackbar( " Contrast:", source_window, &contrast, 100, bcsCallback);
-//   createTrackbar( " Saturation:", source_window, &saturation, 100, bcsCallback);
+//   createTrackbar( " Brightness:", SOURCE_WINDOW, &brightness, 100, bcsCallback);
+//   createTrackbar( " Contrast:", SOURCE_WINDOW, &contrast, 100, bcsCallback);
+//   createTrackbar( " Saturation:", SOURCE_WINDOW, &saturation, 100, bcsCallback);
   
   // set the callback function for any mouse event
-  setMouseCallback(source_window, mouseCallback, NULL);
+  setMouseCallback(SOURCE_WINDOW, mouseCallback, NULL);
   
   // set default white balance
   whiteBalanceCallback(0,0);
@@ -277,24 +280,24 @@ int main(int argc, char** argv)
     darkframe.copyTo(localdarkframe);
 
     // Convert from BGR to HSV using CV_BGR2HSV conversion
-//    Mat hsv_frame;
-    cvtColor(localdarkframe, hsv_frame, CV_BGR2HSV);
+//    Mat hsvframe;
+    cvtColor(localdarkframe, hsvframe, CV_BGR2HSV);
 //  crop the local darkframe and brightframe images
     Rect roi(cropleft,croptop,cropwidth,cropheight);
-    Mat hsvframeroi = hsv_frame(roi);
+    Mat hsvframeroi = hsvframe(roi);
     Mat brightframeroi = localbrightframe(roi);
     Mat darkframeroi = localdarkframe(roi);
     
     // Find laser dot
     Mat1b mask; // b/w matrix for laser detection
     
-    // if hsv_frame is in scalar range, set that pixel to white and store in mask
+    // if hsvframe is in scalar range, set that pixel to white and store in mask
     
     // White
-//     inRange(hsv_frame, Scalar(0, 0, 40), Scalar(180, 255, 255), mask);
+//     inRange(hsvframe, Scalar(0, 0, 40), Scalar(180, 255, 255), mask);
     
     // Green
-   // inRange(hsv_frame, Scalar(61, 50, 50), Scalar(89, 250, 250), mask);
+   // inRange(hsvframe, Scalar(61, 50, 50), Scalar(89, 250, 250), mask);
    // inRange(hsvframeroi, Scalar(60, 50, 50), Scalar(89, 255, 255), mask);
     
     // Red
@@ -343,10 +346,10 @@ int main(int argc, char** argv)
     //putText( brightframeroi, rangestring.str(), pnt, 1, 1, Scalar(0,0,255));
     
     // Display image on current open window
-    imshow( source_window, localbrightframe );
-   // imshow( source_window, brightframeroi );
-   // imshow( source_window, darkframeroi );
-   // imshow( source_window, mask );
+    imshow( SOURCE_WINDOW, localbrightframe );
+   // imshow( SOURCE_WINDOW, brightframeroi );
+   // imshow( SOURCE_WINDOW, darkframeroi );
+   // imshow( SOURCE_WINDOW, mask );
 
    // wait 1 ms to check for press of escape key
    key = waitKey(1);
