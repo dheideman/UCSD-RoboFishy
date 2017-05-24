@@ -121,7 +121,7 @@ class MS5837(object):
         self._calculate()
         
         return True
-    print "line 124"
+    
     def setFluidDensity(self, denisty):
         self._fluidDensity = denisty
         
