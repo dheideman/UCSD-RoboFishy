@@ -299,9 +299,26 @@ enable_uart=1
 
 Setup RasPi for DS18B20 temperature sensor:
 ------
+https://pimylifeup.com/raspberry-pi-temperature-sensor/
+
+Open up the boot config file:
+``'
 sudo nano /boot/config.txt
+'''
 
 At the bottom of this file, insert the following line:
 ```
 dtoverlay=w1-gpio
 ```
+
+Reboot the Raspi:
+```
+sudo reboot
+```
+
+Load the necessary modules:
+```
+sudo modprobe w1-gpio
+sudo modprobe w1-thermo
+```
+
