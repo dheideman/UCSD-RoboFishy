@@ -70,7 +70,7 @@ sw, bl, accel, mag, gyro = bno.get_revision()
 
 #print('Reading BNO055 data, press Ctrl-C to quit...')
 while True:
-        # Read the Euler angles for heading, roll, pitch (all in degrees).
+    # Read the Euler angles for heading, roll, pitch (all in degrees).
     heading, roll, pitch = bno.read_euler()
 	# Gyroscope data (in degrees per second):
     p,q,r = bno.read_gyroscope()
@@ -81,7 +81,7 @@ while True:
     #_string = "%f %f %f %f %f %f %i %i %i %i" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
     fifo.write(_string)
     fifo.close()
-    print "%f %f %f %f %f %f %i %i %i %i\n" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
+    #print "%f %f %f %f %f %f %i %i %i %i\n" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
 	
     #out, err = cproc.communicate(input)
     # Print everything out.
