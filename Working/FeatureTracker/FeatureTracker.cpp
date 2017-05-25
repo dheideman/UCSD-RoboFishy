@@ -87,7 +87,6 @@ int main(int argc, char** argv)
     
     // Create extractor (will characterize each feature)
     Ptr<DescriptorExtractor> extractor = ORB::create();
-//     Ptr<DescriptorExtractor> extractor = KAZE::create();
     
     // Create 2D matrix for descriptors for each image
     // Each row corresponds to a feature
@@ -97,12 +96,6 @@ int main(int argc, char** argv)
     // Characterize each feature, store characteristics in Mats
     extractor->compute(newimg, newkeypoints, newdescriptors);
     extractor->compute(oldimg, oldkeypoints, olddescriptors);
-    
-    // Print number of rows, columns for each image (DEBUG)
-//     cout << "# Rows, object: " << newdescriptors.rows << endl;
-//     cout << "# Cols, object: " << newdescriptors.cols << endl;
-//     cout << "# Rows, scene:  " << olddescriptors.rows << endl;
-//     cout << "# Cols, scene:  " << olddescriptors.cols << endl;
     
     // Make sure we have some descriptors, otherwise return error.
     if ( newdescriptors.empty() )
@@ -140,9 +133,6 @@ int main(int argc, char** argv)
     
     // Calculate matches between two images
     matcher->match(newdescriptors, olddescriptors, matches);
-    
-    // Write number of matches to screen (DEBUG)
-//     cout << "matches.size() = " << matches.size() << endl;
 
     // Calculate max and min distances between matched points
     double max_dist = 0; double min_dist = 200; double avg_dist = 0;
@@ -154,11 +144,6 @@ int main(int argc, char** argv)
         if (dist > max_dist) max_dist = dist;
     }
     avg_dist = avg_dist/newdescriptors.rows;
-    
-    // Write min and max distances to screen
-//     printf("-- Max dist : %f \n", max_dist);
-//     printf("-- Min dist : %f \n", min_dist);
-//     printf("-- Avg dist : %f \n", avg_dist);
 
     /* Draw only "good" matches (i.e. whose distance is less than 3*min_dist) */
     
@@ -242,11 +227,6 @@ int main(int argc, char** argv)
     // Write pose to screen
     cout << "pose = "<< endl << " "  << pose << endl << endl;
     
-//     cout << "X: " << x << endl;
-//     cout << "Y: " << y << endl;
-//     cout << "X: " << H.at<double>(0, 2) << endl;
-//     cout << "Y: " << H.at<double>(1, 2) << endl;
-    
     // Show detected matches
     imshow("Good Matches & Object detection", matchesimg);
     
@@ -255,8 +235,6 @@ int main(int argc, char** argv)
     
     // Copy newframe to oldframe.
     newimg.copyTo(oldimg);
-//     imwrite("./SendaiTasselTest1b.jpg",matchesimg);
-//     waitKey(0);
   }
   return 0;
 }
