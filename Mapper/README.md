@@ -8,6 +8,7 @@ Building
 ------
 Run cmake:
 ```
+mkdir Build (if it does not already exist)
 cd Build
 cmake ..
 ```
