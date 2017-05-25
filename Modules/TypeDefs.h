@@ -5,8 +5,7 @@
  * 
  ******************************************************************************/
 
-#include <linux/videodev2.h>
-#include "V4L2Control.h"
+#include <cv.hpp>
 
 //////////////////////
 // Type definitions //
@@ -40,3 +39,11 @@ typedef struct sub_state_t
   armed_t     laserarmed;     // Whether the laser can be turned on or not
 //   cv::Mat     imuorientation; // Orientation as determined by IMU
 } sub_state_t;
+
+// Bright and Dark Frame storage struct
+typedef struct sub_images_t
+{
+  cv::Mat brightframe;  // The brighter image (used for mapping)
+  cv::Mat darkframe;    // The darker image (used for range finding)
+} sub_images_t;
+
