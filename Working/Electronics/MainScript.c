@@ -32,21 +32,19 @@
 
 // Saturation Constants //
 #define PITCH_SAT 10	// upper limit of pitch controller
-#define YAW_SAT 300		// upper limit of yaw controller
+#define YAW_SAT 1		// upper limit of yaw controller
 #define INT_SAT 10		// upper limit of integral windup
 #define DINT_SAT 10		// upper limit of depth integral windup
 
 // Filter Values //
 #define A1 0.3			// for MS5837 pressure sensor
 #define A2 0.4			// for MS5837 pressure sensor
-#define B1 0.15
-#define B2 0.7
 
 // Fluid Densities in kg/m^3 //
 #define DENSITY_FRESHWATER 997
 #define DENSITY_SALTWATER 1029
 
-// Gravity Constant in m/s^2 //
+// Acceleration Due to Gravity in m/s^2 //
 #define GRAVITY 9.81
 
 // Depth start value //
@@ -109,7 +107,8 @@ typedef struct system_state_t
 	int mag;					// magnetometer calibrations status (0=uncalibrated, 3=fully calibrated)
 
 	float control_u[4];			// control outputs: depth,roll,pitch,yaw
-	float esc_out[4];			// normalized (0-1) outputs to motors
+	float esc_out;				// control output to motors
+	//float esc_out[4];			// normalized (0-1) outputs to motors
 	int num_yaw_spins; 			// remember number of spins around Z-axis
 }system_state_t;
 
@@ -143,6 +142,7 @@ float mix_matrix[4][4] = \
 PI_THREAD (trajectory_thread); 		// thread for defining the setpoints (Undetermined rate up to user keep below 2 Hz)
 PI_THREAD (navigation_thread); 		// thread for running the control system (200 Hz) & ensuring AUV doesn't travel more than 10m down
 PI_THREAD (depth_thread); 			// thread for measuring the pressure of the system (20 Hz)
+PI_THREAD (temperature_thread);		// thread for measuring internal temperature of electronics housing
 PI_THREAD (vision_thread);			// thread for relative positioning via RaspiCam 
 PI_THREAD (logging_thread); 		// thread for recording data (10 Hz)
 
@@ -191,6 +191,10 @@ int main()
 		printf ("\nFailed to start logging thread\n");
 	}
 	*/
+	/*if (piThreadCreate (temperature_thread) != 0)
+	{
+		printf ("\nFailed to start temperature thread\n");
+	}*/
 	while(get_state()!=EXITING)
 	{
 		usleep(100000);
@@ -265,28 +269,6 @@ PI_THREAD (depth_thread)
 
 PI_THREAD (navigation_thread)
 {
-	/*
-	int fd = pca9685Setup(PIN_BASE, 0x40, HERTZ);	//initialize PCA9685 board
-	if (fd < 0)
-	{
-		printf("Error in setup\n");
-		return fd;
-	}
-	pca9685PWMReset(fd);	//Resets output of the board
-	int active=1;
-	while(active)
-	{
-		pwmWrite(PIN_BASE, calcTicks(0,HERTZ));	//send input signal that is low enough to reach the 
-		delay(5000);
-		active=0;
-	}				//"neutral" or power-off area in order 
-	printf("%s\n","Past setup");							//to arm the ESC (long beep); green LED on ESC
-															//will light up
-	//start_Py_bno055();
-	//start_Py_ms5837();
-	//delay(1000); //Delay is so that the IMU can initialize and run bn055_read.py
-	*/	
-
 	static float u[4];	// normalized roll, pitch, yaw, throttle, components
 	initialize_motors(motor_channels, HERTZ);
 	static float new_esc[4];
@@ -297,9 +279,12 @@ PI_THREAD (navigation_thread)
 	delay(1000); // Delay is so that the IMU can initialize and run bn055_read.py
 	while(get_state()!=EXITING)
 	{
+		// set motors to constant PWM output for straight line //
+		pwmWrite (PIN_BASE+motor_channels[0], 2106.4);	// set motor to 20%
+		pwmWrite (PIN_BASE+motor_channels[1], 3819.6);	// set motor to 20%
+
 		// read IMU values
 		bno055 = bno055_read();
-		// delay(1000)	// try to get rid of runtime error at startup
 		//float new_yaw = bno055.yaw+sstate.num_yaw_spins*360;
 		sstate.yaw[0] = bno055.yaw;		
 		sstate.roll = bno055.pitch; // intentionally reversed 
@@ -339,12 +324,14 @@ PI_THREAD (navigation_thread)
 					setpoint.yaw = 0;
 
 					// control output //
-					if(sstate.yaw[0]<180)
+					if(sstate.yaw[0]<180)	// AUV is pointed right
 					{
+						// u[2] is negative
 						u[2] = KP_YAW*(setpoint.yaw-sstate.yaw[0]); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
 					}
-					else
+					else    // AUV is pointed left
 					{
+						// u[2] is positive
 						u[2] = KP_YAW*(setpoint.yaw-(sstate.yaw[0]-360)); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller	
 					}
 
@@ -359,8 +346,8 @@ PI_THREAD (navigation_thread)
 					}
 
 					// mix controls //
-					//printf("u[2]: %f\n", u[2]);
-					if(mix_controls(u[0],u[1],u[2],u[3],&new_esc[0],2)<0)
+					printf("u[2]: %f\n", u[2]);
+					/*if(mix_controls(u[0],u[1],u[2],u[3],&new_esc[0],2)<0)
 					{
 						printf("ERROR, mixing failed\n");
 					}
@@ -374,49 +361,49 @@ PI_THREAD (navigation_thread)
 						{
 							new_esc[i]=-1.0;
 						}
-					}
+					}*/
+
 
 					// ESC outputs //
-					sstate.esc_out[0] = new_esc[0];		// port motor (CCW)
-					sstate.esc_out[1] = new_esc[1];		// starboard motor (CW)
+					sstate.esc_out = u[2];
+					//sstate.esc_out[0] = new_esc[0];		// port motor (CCW)
+					//sstate.esc_out[1] = new_esc[1];		// starboard motor (CW)
 
 					// print ESC values
-					printf("ESC1: %f ESC2: %f \n ", sstate.esc_out[0],sstate.esc_out[1]);
+					//printf("ESC1: %f ESC2: %f \n ", sstate.esc_out[0],sstate.esc_out[1]);
 
 					// saturate motor output values //
 					if(sstate.yaw[0]>180)	// port motor (CCW)
 					{
-						output_port = -26.18*100*sstate.esc_out[0]+2630;
-						if(output_port>2630)
-						{
-							output_port = 2630;
-						}
-						else if(output_port<2106.4)	// set motor output at 20% of max for testing purposes
-						//else if(output_port<12)
+						output_port = -26.18*100*sstate.esc_out+2630;
+						if(output_port<2106.4)	// set motor output at 20% of max for testing purposes
 						{
 							output_port = 2106.4;		// for testing purposes
-							//output_port = 12;
+							printf("Port PWM Output1: %f\n", output_port);
 						}
-						pwmWrite(PIN_BASE+motor_channels[0], output_port);
+						output_starboard = 3819.6-(2630-output_port)/(2630-12)*(4905-2718);	// starboard motor output = base 20% minus percentage that port motor increased by
+						output_port = output_port-523.6;
+						pwmWrite(PIN_BASE+motor_channels[0], output_port);	// port motor at base 20% + yaw control output
+						pwmWrite(PIN_BASE+motor_channels[1], output_starboard);				// starboard motor at base 20%
 					}
-					if(sstate.yaw[1]<180)	// starboard motor (CW)
+					else	// starboard motor (CW)
 					{
-						output_starboard = 13.77*100*sstate.esc_out[1]+2718;
+						output_starboard = 13.77*100*-sstate.esc_out+2718;
 						if(output_starboard>3819.6) // set motor output at 20% of max for testing purposes
 						//if(output_starboard>4095)
 						{
 							output_starboard = 3819.6;	// for testing purposes
 							//output_starboard = 4095;
+							printf("Starboard PWM Output1: %f\n", output_starboard);
 						}
-						else if(output_starboard<2718)
-						{
-							output_starboard = 2718;
-						}
-						pwmWrite(PIN_BASE+motor_channels[1], output_starboard);
+						output_port = 2106.4 + (output_starboard-2718)/(4905-2718)*(2630-12);	// port motor output = base 20% minus percentage that starboard motor increased by
+						output_starboard = output_starboard+437.4;
+						pwmWrite(PIN_BASE+motor_channels[1], output_starboard);	//	starboard motor output = base 20% + yaw control output
+						pwmWrite(PIN_BASE+motor_channels[0], output_port);				// port motor at base 20%
 					}
 					
 					// print motor PWM outputs //
-					printf("Port PWM Output: %f Starboard PWM Output: %f\n", 
+					printf("Port PWM Output2: %f Starboard PWM Output2: %f\n", 
 						output_port, output_starboard);
 
 					// set old values to current values //
@@ -427,8 +414,8 @@ PI_THREAD (navigation_thread)
 					sstate.r[1] = sstate.r[0];
 					
 					// read temperature values from DS18B20 //
-					ds18b20 = ds18b20_read();	// temperature in deg C
-					printf("Temperature: %f", ds18b20.temperature);	
+					//ds18b20 = ds18b20_read();	// temperature in deg C
+					//printf("Temperature: %f", ds18b20.temperature);	
 					if(ds18b20.temperature>60)	
 					{
 						for( i=0; i<4; i++ )
