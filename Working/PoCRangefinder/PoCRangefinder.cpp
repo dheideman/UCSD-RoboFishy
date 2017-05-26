@@ -54,10 +54,6 @@ int exposure = 5;
 int brightness = 50;
 int contrast = 50;
 int saturation = 50;
-int cropleft = 480;
-int croptop = 0;
-int cropwidth = 320;
-int cropheight = 720;
 Mat hsvframe;
 
 // V4L2 Global Device Object
@@ -165,7 +161,6 @@ void *takePictures(void*)
   cap.read( brightframe );
   cap.read( darkframe );
 
-  printf("After cap.read");
   // Grab all 5 images from the frame buffer in order to clear the buffer
   for(int i=0; i<5; i++)
   {
@@ -207,9 +202,12 @@ void *takePictures(void*)
  ******************************************************************************/
 void *rangeFinder(void*)
 {
-  int key = 0; 
+  int cropwidth = 0.3*FRAME_WIDTH;
+  int cropheight = FRAME_HEIGHT - 1;
+  int cropleft = (FRAME_WIDTH - cropwidth)/2;
+  int croptop = 0;
   // Take a bunch of pictures
-  while(key != 27) // 27 is keycode for escape key
+  while(substate.mode != STOPPED) 
 //   for(int i=1; i<=10; i++)
   { 
     // Save most recent bright frame to local variables
@@ -289,8 +287,6 @@ void *rangeFinder(void*)
     //imshow( SOURCE_WINDOW, brightframeroi );
     // imshow( SOURCE_WINDOW, darkframeroi );
     // imshow( SOURCE_WINDOW, mask );
-    // wait 1 ms to check for press of escape key
-    key = waitKey(1);
    } // end while
    
    // Set mode to STOPPED
@@ -352,6 +348,8 @@ int main(int argc, char** argv)
   sleep(4);
 
   pthread_t rangeThread;
+
+  // Create schedule parameters
   pthread_attr_t rangetattr;
   sched_param rangeparam;
   
@@ -366,14 +364,29 @@ int main(int argc, char** argv)
 
   pthread_create (&rangeThread, &rangetattr, rangeFinder, NULL);
   
+ 
   // Announce that we're done initializing
   cout << "Done Initializing." << endl;
-  
+   
   // Set mode to RUNNING
   substate.mode = RUNNING;
-  sleep(4); 
-  
+  cout << "RUNNING" << endl;
 
+  // initialize key command
+  int key = 0; 
+
+  //Loop until user presses esc
+  while(key != 27)
+  {
+    key = waitKey(1);
+  }
+  
+  // Give it time to shut down threads
+  sleep(2);
+
+  // Set mode to STOPPED
+  substate.mode = STOPPED; 
+  cout << "STOPPED." << endl;
   
   
 }// end main
