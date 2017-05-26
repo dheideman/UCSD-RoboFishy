@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project( FeatureTracker )
+find_package( OpenCV )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+add_executable( FeatureTracker FeatureTracker.cpp )
+target_link_libraries( FeatureTracker ${OpenCV_LIBS} )
