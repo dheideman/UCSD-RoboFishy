@@ -150,32 +150,32 @@ PoCRangefinder.cpp.s:
 	$(MAKE) -f CMakeFiles/PoCRangefinder.dir/build.make CMakeFiles/PoCRangefinder.dir/PoCRangefinder.cpp.s
 .PHONY : PoCRangefinder.cpp.s
 
-V4L2Control.o: V4L2Control.cpp.o
+home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.o: home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o
 
-.PHONY : V4L2Control.o
+.PHONY : home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.o
 
 # target to build an object file
-V4L2Control.cpp.o:
-	$(MAKE) -f CMakeFiles/PoCRangefinder.dir/build.make CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.o
-.PHONY : V4L2Control.cpp.o
+home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o:
+	$(MAKE) -f CMakeFiles/PoCRangefinder.dir/build.make CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o
+.PHONY : home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o
 
-V4L2Control.i: V4L2Control.cpp.i
+home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.i: home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.i
 
-.PHONY : V4L2Control.i
+.PHONY : home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.i
 
 # target to preprocess a source file
-V4L2Control.cpp.i:
-	$(MAKE) -f CMakeFiles/PoCRangefinder.dir/build.make CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.i
-.PHONY : V4L2Control.cpp.i
+home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.i:
+	$(MAKE) -f CMakeFiles/PoCRangefinder.dir/build.make CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.i
+.PHONY : home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.i
 
-V4L2Control.s: V4L2Control.cpp.s
+home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.s: home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.s
 
-.PHONY : V4L2Control.s
+.PHONY : home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.s
 
 # target to generate assembly for a file
-V4L2Control.cpp.s:
-	$(MAKE) -f CMakeFiles/PoCRangefinder.dir/build.make CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.s
-.PHONY : V4L2Control.cpp.s
+home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.s:
+	$(MAKE) -f CMakeFiles/PoCRangefinder.dir/build.make CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.s
+.PHONY : home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.s
 
 # Help Target
 help:
@@ -189,9 +189,9 @@ help:
 	@echo "... PoCRangefinder.o"
 	@echo "... PoCRangefinder.i"
 	@echo "... PoCRangefinder.s"
-	@echo "... V4L2Control.o"
-	@echo "... V4L2Control.i"
-	@echo "... V4L2Control.s"
+	@echo "... home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.o"
+	@echo "... home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.i"
+	@echo "... home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.s"
 .PHONY : help
 
 

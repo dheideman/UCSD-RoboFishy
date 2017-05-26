@@ -5,7 +5,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/PoCRangefinder.cpp" "/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/CMakeFiles/PoCRangefinder.dir/PoCRangefinder.cpp.o"
-  "/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/V4L2Control.cpp" "/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.o"
+  "/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp" "/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

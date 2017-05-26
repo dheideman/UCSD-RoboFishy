@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/PoCRangefinder.dir/PoCRangefinder.cpp.o"
-  "CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.o"
+  "CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o"
   "PoCRangefinder.pdb"
   "PoCRangefinder"
 )

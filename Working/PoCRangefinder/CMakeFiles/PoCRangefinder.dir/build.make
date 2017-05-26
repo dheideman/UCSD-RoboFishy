@@ -81,40 +81,40 @@ CMakeFiles/PoCRangefinder.dir/PoCRangefinder.cpp.o.provides: CMakeFiles/PoCRange
 CMakeFiles/PoCRangefinder.dir/PoCRangefinder.cpp.o.provides.build: CMakeFiles/PoCRangefinder.dir/PoCRangefinder.cpp.o
 
 
-CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.o: CMakeFiles/PoCRangefinder.dir/flags.make
-CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.o: V4L2Control.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.o -c /home/pi/UCSD-RoboFishy/Working/PoCRangefinder/V4L2Control.cpp
+CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o: CMakeFiles/PoCRangefinder.dir/flags.make
+CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o: /home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o -c /home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp
 
-CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/pi/UCSD-RoboFishy/Working/PoCRangefinder/V4L2Control.cpp > CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.i
+CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp > CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.i
 
-CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/pi/UCSD-RoboFishy/Working/PoCRangefinder/V4L2Control.cpp -o CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.s
+CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp -o CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.s
 
-CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.o.requires:
+CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o.requires:
 
-.PHONY : CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.o.requires
+.PHONY : CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o.requires
 
-CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.o.provides: CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.o.requires
-	$(MAKE) -f CMakeFiles/PoCRangefinder.dir/build.make CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.o.provides.build
-.PHONY : CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.o.provides
+CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o.provides: CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o.requires
+	$(MAKE) -f CMakeFiles/PoCRangefinder.dir/build.make CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o.provides.build
+.PHONY : CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o.provides
 
-CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.o.provides.build: CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.o
+CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o.provides.build: CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o
 
 
 # Object files for target PoCRangefinder
 PoCRangefinder_OBJECTS = \
 "CMakeFiles/PoCRangefinder.dir/PoCRangefinder.cpp.o" \
-"CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.o"
+"CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o"
 
 # External object files for target PoCRangefinder
 PoCRangefinder_EXTERNAL_OBJECTS =
 
 PoCRangefinder: CMakeFiles/PoCRangefinder.dir/PoCRangefinder.cpp.o
-PoCRangefinder: CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.o
+PoCRangefinder: CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o
 PoCRangefinder: CMakeFiles/PoCRangefinder.dir/build.make
 PoCRangefinder: /usr/local/lib/libopencv_ml.so.3.2.0
 PoCRangefinder: /usr/local/lib/libopencv_objdetect.so.3.2.0
@@ -142,7 +142,7 @@ CMakeFiles/PoCRangefinder.dir/build: PoCRangefinder
 .PHONY : CMakeFiles/PoCRangefinder.dir/build
 
 CMakeFiles/PoCRangefinder.dir/requires: CMakeFiles/PoCRangefinder.dir/PoCRangefinder.cpp.o.requires
-CMakeFiles/PoCRangefinder.dir/requires: CMakeFiles/PoCRangefinder.dir/V4L2Control.cpp.o.requires
+CMakeFiles/PoCRangefinder.dir/requires: CMakeFiles/PoCRangefinder.dir/home/pi/UCSD-RoboFishy/Modules/V4L2Control/V4L2Control.cpp.o.requires
 
 .PHONY : CMakeFiles/PoCRangefinder.dir/requires
 
