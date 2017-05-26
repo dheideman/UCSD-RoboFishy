@@ -1,0 +1,3 @@
+/home/pi/UCSD-RoboFishy/Working/Electronics2/CMakeFiles/edit_cache.dir
+/home/pi/UCSD-RoboFishy/Working/Electronics2/CMakeFiles/rebuild_cache.dir
+/home/pi/UCSD-RoboFishy/Working/Electronics2/CMakeFiles/MainScript.dir

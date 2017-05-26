@@ -1,8 +1,8 @@
 /*****************************************************************************
- * Rangefinder.cpp
+ * PoCRangefinder.cpp
  *
  * Take images at varying distances from target to calibrate laser stick
- * - Moved all camera settings and capture into thread
+ *
  ******************************************************************************/
 
 #include "PoCRangefinder.h"
@@ -93,7 +93,7 @@ void mouseCallback(int event, int x, int y, int flags, void* userdata)
     int val = intensity.val[2];
     // print out HSV values (sanity check)
     cout << "H: " << hue << ",\tS:" << sat << ",\tV:" << val << endl;
-    
+    // Can we change this to Dark Frame?
     Vec3b bgr = darkframe.at<Vec3b>(y, x);
     int b = bgr.val[0];
     int g = bgr.val[1];
@@ -118,8 +118,15 @@ void bcsCallback(int, void*)
   cout << "C: " << picamctrl.get(V4L2_CID_CONTRAST) << "\t";
   cout << "S: " << picamctrl.get(V4L2_CID_SATURATION) << endl;
 }
-
- 
+// Did this work???
+/*******************************************************************************
+ * void exposureCallback(int, void*)
+ *
+ * Sets Sets the exposure, white balance, and Image Sensitivity
+ *******************************************************************************/
+// void exposureCallback(int, void*)
+// {
+  // picamcrl.set(V4L2_CID_ 
 //////////////
 // Threads! //
 //////////////
@@ -131,44 +138,15 @@ void bcsCallback(int, void*)
  ******************************************************************************/
 void *takePictures(void*)
 {
-  // Open the camera
-  cap.open(0);  
-  // opens first video device
-  picamctrl.open("/dev/video0");
-
-  // check to make sure device properly opened
-  if ( !cap.isOpened() )
-  {
-    cerr << "Error opening the camera (OpenCV)" << endl; 
-  }
- 
-  // Set framerate (OpenCV capture property)
-  cap.set(CV_CAP_PROP_FPS,2);
-    
-  // Set camera exposure, white balance, and iso control to manual (driver property)
-  picamctrl.set(V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_MANUAL);
-  picamctrl.set(V4L2_CID_AUTO_N_PRESET_WHITE_BALANCE,V4L2_WHITE_BALANCE_MANUAL);
-  picamctrl.set(V4L2_CID_ISO_SENSITIVITY_AUTO, 0);
+  // Initialize exposure settings
+  picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE );
   
-  // Initialize exposure, iso values
-  picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE);
-  picamctrl.set(V4L2_CID_ISO_SENSITIVITY, ISO_VALUE);
-    
-  // Set capture camera size (resolution)
-  cap.set(CV_CAP_PROP_FRAME_WIDTH,FRAME_WIDTH);
-  cap.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);
-  
-  // Fill images w/ initial images
-  cap.read( brightframe );
-  cap.read( darkframe );
-
-  printf("After cap.read");
   // Grab all 5 images from the frame buffer in order to clear the buffer
   for(int i=0; i<5; i++)
   {
     cap.grab();
   }
-   
+  
   // Loop quickly to pick up images as soon as they are taken
   while(substate.mode != STOPPED)
   {
@@ -191,14 +169,6 @@ void *takePictures(void*)
   pthread_exit(NULL);
 }
 
-/*******************************************************************************
- * void *rangeFinder(void*)
- * 
- * Calculate range to the bottom and save in a global state variable
- ******************************************************************************/
-//void *rangeFinder(void*)
-//{
-
 
 //////////
 // Main //
@@ -208,9 +178,44 @@ int main(int argc, char** argv)
   // We're initializing!
   substate.mode = INITIALIZING;
   
+  // Open the camera!
+  cap.open(0); // opens first video device
+  picamctrl.open("/dev/video0");
+
+  // check to make sure device properly opened
+  if ( !cap.isOpened() )
+  {
+    cerr << "Error opening the camera (OpenCV)" << endl;
+    return -1;
+  }
+ // Can all of these Parameters be set in a Thread? 
+  // Set framerate (OpenCV capture property)
+  cap.set(CV_CAP_PROP_FPS,2);
+    
+  // Set camera exposure control to manual (driver property)
+  picamctrl.set(V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_MANUAL);
+  
+  // Set camera autowhitebalance to manual
+  picamctrl.set(V4L2_CID_AUTO_N_PRESET_WHITE_BALANCE,V4L2_WHITE_BALANCE_MANUAL);
+
+  // Set camera iso to manual
+  picamctrl.set(V4L2_CID_ISO_SENSITIVITY_AUTO, 0);
+  
+  // Initialize exposure, iso values
+  picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE);
+  picamctrl.set(V4L2_CID_ISO_SENSITIVITY, ISO_VALUE);
+    
+  // Set capture camera size (resolution)
+  cap.set(CV_CAP_PROP_FRAME_WIDTH,FRAME_WIDTH);
+  cap.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);
+  
+  // Fill images w/ initial images
+  cap.read( brightframe );
+  cap.read( darkframe );
     
   // Open windows on your monitor
-  namedWindow( source_window, CV_WINDOW_AUTOSIZE ); 
+  namedWindow( source_window, CV_WINDOW_AUTOSIZE ); // How Do we know which Images? 
+ // We Probably want to look at dark image values.....
   
   // Create trackbars for white balancing
 //   createTrackbar( " Red: ", source_window, &redbalance, 100, whiteBalanceCallback );
@@ -272,9 +277,9 @@ int main(int argc, char** argv)
     darkframe.copyTo(localdarkframe);
 
     // Convert from BGR to HSV using CV_BGR2HSV conversion
+//    Mat hsv_frame;
     cvtColor(localdarkframe, hsv_frame, CV_BGR2HSV);
-
-    //crop the local darkframe and brightframe images
+//  crop the local darkframe and brightframe images
     Rect roi(cropleft,croptop,cropwidth,cropheight);
     Mat hsvframeroi = hsv_frame(roi);
     Mat brightframeroi = localbrightframe(roi);
@@ -283,20 +288,20 @@ int main(int argc, char** argv)
     // Find laser dot
     Mat1b mask; // b/w matrix for laser detection
     
-    //if hsv_frame is in scalar range, set that pixel to white and store in mask
+    // if hsv_frame is in scalar range, set that pixel to white and store in mask
     
     // White
 //     inRange(hsv_frame, Scalar(0, 0, 40), Scalar(180, 255, 255), mask);
     
     // Green
-//    inRange(hsv_frame, Scalar(61, 50, 50), Scalar(89, 250, 250), mask);
-//    inRange(hsvframeroi, Scalar(60, 50, 50), Scalar(89, 255, 255), mask);
+   // inRange(hsv_frame, Scalar(61, 50, 50), Scalar(89, 250, 250), mask);
+    inRange(hsvframeroi, Scalar(60, 50, 50), Scalar(89, 255, 255), mask);
     
     // Red
-//    Mat1b mask1, mask2;
-//    inRange(hsvframeroi, Scalar(1, 50, 50), Scalar(15, 250, 250), mask1);
-//    inRange(hsvframeroi, Scalar(165, 50, 50), Scalar(179, 250, 250), mask2);
-//    mask = mask1 | mask2;    
+   // Mat1b mask1, mask2;
+   // inRange(hsvframeroi, Scalar(1, 50, 50), Scalar(15, 250, 250), mask1);
+   // inRange(hsvframeroi, Scalar(165, 50, 50), Scalar(179, 250, 250), mask2);
+   // mask = mask1 | mask2;    
     
     // Locate centroid of laser dot
     Moments m = moments(mask, false);
@@ -304,18 +309,18 @@ int main(int argc, char** argv)
     
     // Draw red circle w/ center at centroid on original image
     circle( localbrightframe, p1, 10.0, Scalar( 0, 0, 255 ));
-//    circle( brightframeroi, p1, 10.0, Scalar( 0, 0, 255 ));
-//    circle( darkframeroi, p1, 10.0, Scalar( 0, 0, 255 ));
+    //circle( brightframeroi, p1, 10.0, Scalar( 0, 0, 255 ));
+   // circle( darkframeroi, p1, 10.0, Scalar( 0, 0, 255 ));
     
 
     // Write coordinates in top left corner
     stringstream coordinates;
     coordinates << "(" << p1.x << ", " << p1.y << ")";
     Point org;
-    org.x = 10;
-    org.y = 40;
+    org.x = 620;
+    org.y = 10;
     putText( localbrightframe, coordinates.str(), org, 1, 1, Scalar(0,0,255));
-//    putText( brightframeroi, coordinates.str(), org, 1, 1, Scalar(0,0,255));
+    //putText( brightframeroi, coordinates.str(), org, 1, 1, Scalar(0,0,255));
     
     // Calculate range
     stringstream rangestring;
@@ -332,14 +337,14 @@ int main(int argc, char** argv)
     
     // Write range in top left corner
     Point pnt;
-    pnt.x = 10;
-    pnt.y = 20;
-    putText( localbrightframe, rangestring.str(), pnt, 1, 1, Scalar(0,0,255));
+    pnt.x = 620;
+    pnt.y = 50;
+    putText( localbrightframe, rangestring.str(), pnt, 1, 3, Scalar(0,0,255));
     //putText( brightframeroi, rangestring.str(), pnt, 1, 1, Scalar(0,0,255));
     
     // Display image on current open window
-   // imshow( source_window, localbrightframe );
-    imshow( source_window, brightframeroi );
+    imshow( source_window, localbrightframe );
+   // imshow( source_window, brightframeroi );
    // imshow( source_window, darkframeroi );
    // imshow( source_window, mask );
 

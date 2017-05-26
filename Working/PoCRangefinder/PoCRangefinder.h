@@ -37,10 +37,19 @@ typedef enum sub_mode_t
   STOPPED
 } sub_mode_t;
 
+// Laser Armed enumerated type
+typedef enum armed_t
+{
+  ARMED,
+  DISARMED
+} armed_t;
+
 // Submersible overall state type
 typedef struct sub_state_t
 {
   sub_mode_t mode;
+  double    range;
+  armed_t   laserarmed;
 } sub_state_t;
 
 /////////////////////////
@@ -53,3 +62,4 @@ void mouseCallback(int event, int x, int y, int flags, void* userdata);
 
 // Threads
 void *takePictures(void*);
+//void *rangeFinder(void*);
