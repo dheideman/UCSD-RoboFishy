@@ -183,9 +183,6 @@ PYTHON_LIBRARY:FILEPATH=/usr/lib/arm-linux-gnueabihf/libpython2.7.so
 //Path to a library.
 PYTHON_LIBRARY_DEBUG:FILEPATH=PYTHON_LIBRARY_DEBUG-NOTFOUND
 
-//The directory containing a CMake configuration file for wiringPiPca9685.
-wiringPiPca9685_DIR:PATH=wiringPiPca9685_DIR-NOTFOUND
-
 
 ########################
 # INTERNAL cache entries

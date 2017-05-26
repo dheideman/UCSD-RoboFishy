@@ -290,7 +290,7 @@ void *rangeFinder(void*)
    } // end while
    
    // Set mode to STOPPED
-   substate.mode = STOPPED;
+   
    pthread_exit(NULL);
 }
    
@@ -358,7 +358,7 @@ int main(int argc, char** argv)
   // Save the parameters to "param"
   pthread_attr_getschedparam (&rangetattr, &rangeparam);
   // Set the priority parameter of "param", leaving others at default
-  param.sched_priority = sched_get_priority_max(SCHED_RR) - 2;
+  param.sched_priority = sched_get_priority_max(SCHED_RR) - 1;
   // Set attributes to modified parameters
   pthread_attr_setschedparam (&rangetattr, &rangeparam);
 
