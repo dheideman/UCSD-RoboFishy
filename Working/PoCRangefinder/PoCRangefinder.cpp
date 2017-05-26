@@ -1,11 +1,12 @@
-/*****************************************************************************
- * Rangefinder.cpp
+/****************************************************************************
+ *PoCRangefinder.cpp
  *
  * Take images at varying distances from target to calibrate laser stick
  * - Moved all camera settings and capture into thread
  ******************************************************************************/
 
 #include "PoCRangefinder.h"
+
 
 using namespace cv;
 using namespace std;
@@ -188,6 +189,12 @@ void *takePictures(void*)
     // Retrieve encodes image from grab buffer to 'darkframe' variable
     cap.retrieve( darkframe );
   }
+  // Wait a second to let the threads stop
+  sleep(1);
+  
+  // close camera
+  cap.release();
+  picamctrl.close();
   
   // End thread
   pthread_exit(NULL);
@@ -198,10 +205,99 @@ void *takePictures(void*)
  * 
  * Calculate range to the bottom and save in a global state variable
  ******************************************************************************/
-//void *rangeFinder(void*)
-//{
+void *rangeFinder(void*)
+{
+  int key = 0; 
+  // Take a bunch of pictures
+  while(key != 27) // 27 is keycode for escape key
+//   for(int i=1; i<=10; i++)
+  { 
+    // Save most recent bright frame to local variables
+    Mat localbrightframe, localdarkframe;
+    brightframe.copyTo(localbrightframe);
+    darkframe.copyTo(localdarkframe);
 
+    // Convert from BGR to HSV using CV_BGR2HSV conversion
 
+    //  Mat hsvframe;
+    cvtColor(localdarkframe, hsvframe, CV_BGR2HSV);
+    //crop the local darkframe and brightframe images
+    Rect roi(cropleft,croptop,cropwidth,cropheight);
+    Mat hsvframeroi = hsvframe(roi);
+    Mat brightframeroi = localbrightframe(roi);
+    Mat darkframeroi = localdarkframe(roi);
+     
+    // Find laser dot
+    Mat1b mask; // b/w matrix for laser detection
+    
+  // if hsvframe is in scalar range, set that pixel to white and store in mask
+    
+    // White
+  // inRange(hsvframe, Scalar(0, 0, 40), Scalar(180, 255, 255), mask);
+  
+    // Green
+   // inRange(hsvframe, Scalar(61, 50, 50), Scalar(89, 250, 250), mask);
+   // inRange(hsvframeroi, Scalar(60, 50, 50), Scalar(89, 255, 255), mask);
+    
+    // Red
+//    Mat1b mask1, mask2;
+//    inRange(hsvframeroi, Scalar(1, 50, 50), Scalar(15, 250, 250), mask1);
+//    inRange(hsvframeroi, Scalar(165, 50, 50), Scalar(179, 250, 250), mask2);
+//    mask = mask1 | mask2;    
+    
+    // Locate centroid of laser dot
+    Moments m = moments(mask, false);
+    Point p1(m.m10/m.m00+cropleft, m.m01/m.m00);
+    
+    // Draw red circle w/ center at centroid on original image
+    circle( localbrightframe, p1, 10.0, Scalar( 0, 0, 255 ));
+//    circle( brightframeroi, p1, 10.0, Scalar( 0, 0, 255 ));
+//    circle( darkframeroi, p1, 10.0, Scalar( 0, 0, 255 ));
+    
+
+    // Write coordinates in top left corner
+    stringstream coordinates;
+    coordinates << "(" << p1.x << ", " << p1.y << ")";
+    Point org;
+    org.x = 10;
+    org.y = 40;
+    putText( localbrightframe, coordinates.str(), org, 1, 1, Scalar(0,0,255));
+  //    putText( brightframeroi, coordinates.str(), org, 1, 1, Scalar(0,0,255));
+    
+    // Calculate range
+    stringstream rangestring;
+    if(p1.x !=0)
+    {
+      float range = (RANGE_K0 + RANGE_K1*p1.y) / (RANGE_K2 + p1.y);
+//       cout << "Calculated Range: " << range << endl;
+      rangestring << range << " ft";
+    }
+    else  // If coordinates are (0,0), we haven't detected anything.
+    {
+      rangestring << "------ ft";
+    }
+    
+     // Write range in top left corner
+    Point pnt;
+    pnt.x = 10;
+    pnt.y = 20;
+    putText( localbrightframe, rangestring.str(), pnt, 1, 1, Scalar(0,0,255));
+    //putText( brightframeroi, rangestring.str(), pnt, 1, 1, Scalar(0,0,255));
+    
+    // Display image on current open window
+    imshow( SOURCE_WINDOW, localbrightframe );
+    //imshow( SOURCE_WINDOW, brightframeroi );
+    // imshow( SOURCE_WINDOW, darkframeroi );
+    // imshow( SOURCE_WINDOW, mask );
+    // wait 1 ms to check for press of escape key
+    key = waitKey(1);
+   } // end while
+   
+   // Set mode to STOPPED
+   substate.mode = STOPPED;
+   pthread_exit(NULL);
+}
+   
 //////////
 // Main //
 //////////
@@ -235,7 +331,6 @@ int main(int argc, char** argv)
   
   // Start multithreading!
   pthread_t cameraThread;
-  
   // Setting Priorities
   pthread_attr_t tattr;
   sched_param param;
@@ -254,109 +349,31 @@ int main(int argc, char** argv)
   
   
   // Pause for 2 seconds to let everything initialize
-  sleep(2);
+  sleep(4);
+
+  pthread_t rangeThread;
+  pthread_attr_t rangetattr;
+  sched_param rangeparam;
+  
+  // Initialize attributes with defaults
+  pthread_attr_init (&rangetattr);
+  // Save the parameters to "param"
+  pthread_attr_getschedparam (&rangetattr, &rangeparam);
+  // Set the priority parameter of "param", leaving others at default
+  param.sched_priority = sched_get_priority_max(SCHED_RR) - 2;
+  // Set attributes to modified parameters
+  pthread_attr_setschedparam (&rangetattr, &rangeparam);
+
+  pthread_create (&rangeThread, &rangetattr, rangeFinder, NULL);
   
   // Announce that we're done initializing
   cout << "Done Initializing." << endl;
   
   // Set mode to RUNNING
   substate.mode = RUNNING;
+  sleep(4); 
   
-  int key = 0; 
-  
-  // Take a bunch of pictures
-  while(key != 27) // 27 is keycode for escape key
-//   for(int i=1; i<=10; i++)
-  { 
-    // Save most recent bright frame to local variables
-    Mat localbrightframe, localdarkframe;
-    brightframe.copyTo(localbrightframe);
-    darkframe.copyTo(localdarkframe);
 
-    // Convert from BGR to HSV using CV_BGR2HSV conversion
-
-//    Mat hsvframe;
-    cvtColor(localdarkframe, hsvframe, CV_BGR2HSV);
-//  crop the local darkframe and brightframe images
-    Rect roi(cropleft,croptop,cropwidth,cropheight);
-    Mat hsvframeroi = hsvframe(roi);
-    Mat brightframeroi = localbrightframe(roi);
-    Mat darkframeroi = localdarkframe(roi);
-    
-    // Find laser dot
-    Mat1b mask; // b/w matrix for laser detection
-    
-    // if hsvframe is in scalar range, set that pixel to white and store in mask
-    
-    // White
-   // inRange(hsvframe, Scalar(0, 0, 40), Scalar(180, 255, 255), mask);
-    
-    // Green
-   // inRange(hsvframe, Scalar(61, 50, 50), Scalar(89, 250, 250), mask);
-   // inRange(hsvframeroi, Scalar(60, 50, 50), Scalar(89, 255, 255), mask);
-    
-    // Red
-//    Mat1b mask1, mask2;
-//    inRange(hsvframeroi, Scalar(1, 50, 50), Scalar(15, 250, 250), mask1);
-//    inRange(hsvframeroi, Scalar(165, 50, 50), Scalar(179, 250, 250), mask2);
-//    mask = mask1 | mask2;    
-    
-    // Locate centroid of laser dot
-    Moments m = moments(mask, false);
-    Point p1(m.m10/m.m00+cropleft, m.m01/m.m00);
-    
-    // Draw red circle w/ center at centroid on original image
-    circle( localbrightframe, p1, 10.0, Scalar( 0, 0, 255 ));
-//    circle( brightframeroi, p1, 10.0, Scalar( 0, 0, 255 ));
-//    circle( darkframeroi, p1, 10.0, Scalar( 0, 0, 255 ));
-    
-
-    // Write coordinates in top left corner
-    stringstream coordinates;
-    coordinates << "(" << p1.x << ", " << p1.y << ")";
-    Point org;
-    org.x = 10;
-    org.y = 40;
-    putText( localbrightframe, coordinates.str(), org, 1, 1, Scalar(0,0,255));
-//    putText( brightframeroi, coordinates.str(), org, 1, 1, Scalar(0,0,255));
-    
-    // Calculate range
-    stringstream rangestring;
-    if(p1.x !=0)
-    {
-      float range = (RANGE_K0 + RANGE_K1*p1.y) / (RANGE_K2 + p1.y);
-//       cout << "Calculated Range: " << range << endl;
-      rangestring << range << " ft";
-    }
-    else  // If coordinates are (0,0), we haven't detected anything.
-    {
-      rangestring << "------ ft";
-    }
-    
-    // Write range in top left corner
-    Point pnt;
-    pnt.x = 10;
-    pnt.y = 20;
-    putText( localbrightframe, rangestring.str(), pnt, 1, 1, Scalar(0,0,255));
-    //putText( brightframeroi, rangestring.str(), pnt, 1, 1, Scalar(0,0,255));
-    
-    // Display image on current open window
-    imshow( SOURCE_WINDOW, localbrightframe );
-   // imshow( SOURCE_WINDOW, brightframeroi );
-   // imshow( SOURCE_WINDOW, darkframeroi );
-   // imshow( SOURCE_WINDOW, mask );
-
-   // wait 1 ms to check for press of escape key
-   key = waitKey(1);
-  } // end while
   
-  // Set mode to STOPPED
-  substate.mode = STOPPED;
   
-  // Wait a second to let the threads stop
-  sleep(1);
-  
-  // close camera
-  cap.release();
-  picamctrl.close();
 }// end main

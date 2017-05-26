@@ -62,7 +62,7 @@ cv.hpp
 highgui.h
 -
 opencv2/imgproc/imgproc.hpp
-/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/opencv2/imgproc/imgproc.hpp
+-
 iostream
 -
 fstream

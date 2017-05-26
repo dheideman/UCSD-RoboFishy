@@ -8,7 +8,7 @@
 // OpenCV
 #include <cv.hpp>
 #include <highgui.h>
-#include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2/imgproc/imgproc.hpp>
 
 // Streams
 #include <iostream>
@@ -29,38 +29,6 @@
 #include <linux/videodev2.h>
 #include "../../Modules/V4L2Control/V4L2Control.h"
 
-//////////////////////
-// Type definitions //
-//////////////////////
-
-// Submersible operating mode enumerated type
-typedef enum sub_mode_t
-{
-  INITIALIZING,
-  RUNNING,
-  PAUSED,
-  CONFUSED,
-  PANICKING,
-  STOPPED
-} sub_mode_t;
-
-typedef enum armed_t
-{
-  ARMED,
-  DISARMED
-} armed_t;
-
-// Submersible overall state type
-typedef struct sub_state_t
-{
-  sub_mode_t  mode;           // Operating mode
-  double      range;          // Range to bottom
-  double      depth;          // Depth below surface
-//   cv::Mat     pose;           // Location + Yaw of sub
-  armed_t     laserarmed;     // Whether the laser can be turned on or not
-//   cv::Mat     imuorientation; // Orientation as determined by IMU
-} sub_state_t;
-
 /////////////////////////
 // Function Prototypes //
 /////////////////////////
@@ -73,4 +41,4 @@ void exposureCallback(int, void*);
 
 // Threads
 void *takePictures(void*);
-//void *rangeFinder(void*);
+void *rangeFinder(void*);
