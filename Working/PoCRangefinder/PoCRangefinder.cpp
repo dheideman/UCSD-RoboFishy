@@ -162,31 +162,34 @@ void *takePictures(void*)
   cap.read( darkframe );
 
   // Grab all 5 images from the frame buffer in order to clear the buffer
+  printf("%s\n","Before For Loop" );
   for(int i=0; i<5; i++)
   {
     cap.grab();
   }
-   
+  printf("%s\n","After For Loop" );
   // Loop quickly to pick up images as soon as they are taken
   while(substate.mode != STOPPED)
   {
     // 'Grab' bright frame from webcam's image buffer
-    cap.grab();
+    cap.read(brightframe);
+    //cap.grab();
     // Set exposure now (rather than later)
     picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, DARK_EXPOSURE );
     // Retrieve encodes image from grab buffer to 'brightframe' variable
-    cap.retrieve( brightframe );
+    //cap.retrieve( brightframe );
     
     // 'Grab' dark frame from webcam's image buffer
-    cap.grab();
+    cap.read(darkframe);
+    //cap.grab();
     // Set exposure now (rather than later)
     picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE );
     // Retrieve encodes image from grab buffer to 'darkframe' variable
-    cap.retrieve( darkframe );
+    //cap.retrieve( darkframe );
+    printf("Camera While Loop \n");
+    usleep(200000);
   }
-  // Wait a second to let the threads stop
-  sleep(1);
-  
+    
   // close camera
   cap.release();
   picamctrl.close();
@@ -206,25 +209,23 @@ void *rangeFinder(void*)
   int cropheight = FRAME_HEIGHT - 1;
   int cropleft = (FRAME_WIDTH - cropwidth)/2;
   int croptop = 0;
+  Rect roi(cropleft,croptop,cropwidth,cropheight);
   // Take a bunch of pictures
   while(substate.mode != STOPPED) 
 //   for(int i=1; i<=10; i++)
   { 
+    printf("%s\n","rangeFinder thread" );
     // Save most recent bright frame to local variables
     Mat localbrightframe, localdarkframe;
     brightframe.copyTo(localbrightframe);
-    darkframe.copyTo(localdarkframe);
+    darkframe(roi).copyTo(localdarkframe);
 
     // Convert from BGR to HSV using CV_BGR2HSV conversion
 
     //  Mat hsvframe;
     cvtColor(localdarkframe, hsvframe, CV_BGR2HSV);
-    //crop the local darkframe and brightframe images
-    Rect roi(cropleft,croptop,cropwidth,cropheight);
-    Mat hsvframeroi = hsvframe(roi);
-    Mat brightframeroi = localbrightframe(roi);
-    Mat darkframeroi = localdarkframe(roi);
-     
+    
+         
     // Find laser dot
     Mat1b mask; // b/w matrix for laser detection
     
@@ -235,13 +236,13 @@ void *rangeFinder(void*)
   
     // Green
    // inRange(hsvframe, Scalar(61, 50, 50), Scalar(89, 250, 250), mask);
-   // inRange(hsvframeroi, Scalar(60, 50, 50), Scalar(89, 255, 255), mask);
+   // inRange(hsvframe, Scalar(60, 50, 50), Scalar(89, 255, 255), mask);
     
     // Red
-//    Mat1b mask1, mask2;
-//    inRange(hsvframeroi, Scalar(1, 50, 50), Scalar(15, 250, 250), mask1);
-//    inRange(hsvframeroi, Scalar(165, 50, 50), Scalar(179, 250, 250), mask2);
-//    mask = mask1 | mask2;    
+    Mat1b mask1, mask2;
+    inRange(hsvframe, Scalar(1, 50, 50), Scalar(15, 250, 250), mask1);
+    inRange(hsvframe, Scalar(165, 50, 50), Scalar(179, 250, 250), mask2);
+    mask = mask1 | mask2;    
     
     // Locate centroid of laser dot
     Moments m = moments(mask, false);
@@ -249,8 +250,8 @@ void *rangeFinder(void*)
     
     // Draw red circle w/ center at centroid on original image
     circle( localbrightframe, p1, 10.0, Scalar( 0, 0, 255 ));
-//    circle( brightframeroi, p1, 10.0, Scalar( 0, 0, 255 ));
-//    circle( darkframeroi, p1, 10.0, Scalar( 0, 0, 255 ));
+//    circle( brightframe, p1, 10.0, Scalar( 0, 0, 255 ));
+//    circle( darkframe, p1, 10.0, Scalar( 0, 0, 255 ));
     
 
     // Write coordinates in top left corner
@@ -284,6 +285,7 @@ void *rangeFinder(void*)
     
     // Display image on current open window
     imshow( SOURCE_WINDOW, localbrightframe );
+    sleep(1);
     //imshow( SOURCE_WINDOW, brightframeroi );
     // imshow( SOURCE_WINDOW, darkframeroi );
     // imshow( SOURCE_WINDOW, mask );
@@ -358,7 +360,7 @@ int main(int argc, char** argv)
   // Save the parameters to "param"
   pthread_attr_getschedparam (&rangetattr, &rangeparam);
   // Set the priority parameter of "param", leaving others at default
-  param.sched_priority = sched_get_priority_max(SCHED_RR) - 1;
+  rangeparam.sched_priority = sched_get_priority_max(SCHED_RR)/2;
   // Set attributes to modified parameters
   pthread_attr_setschedparam (&rangetattr, &rangeparam);
 
@@ -378,7 +380,7 @@ int main(int argc, char** argv)
   //Loop until user presses esc
   while(key != 27)
   {
-    key = waitKey(1);
+    key = waitKey(2500);
   }
   
   // Give it time to shut down threads
