@@ -11,11 +11,38 @@
  ******************************************************************************/
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include "../../Modules/TypeDefs.h"
 
 #define OUTPUT_VIDEO_NAME "DemoVideo.avi"
+#define FRAME_WIDTH       1280
+#define FRAME_HEIGHT      720
+#define MIN_MINDIST       10
+#define MAX_N_MATCHES     50
+#define PI                3.141592653589793
 
 using namespace cv;
 using namespace std;
+
+// Points to transform to calculate motion
+// [0] = center point
+// [1] = top-center point
+vector<Point2f> pretfpts(2);    // Pre TF Pts
+vector<Point2f> posttfpts(2);   // Post TF Pts
+vector<Point2f> deltatfpts(2);  // Delta TF Pts
+
+// Global state variable
+sub_state_t substate;
+
+/*******************************************************************************
+ * bool compareDMatch(const DMatch& a, const DMatch& b)
+ *
+ * Returns true if the distance in match a is smaller than match b.
+ * Used for sorting matches smallest to largest
+ ******************************************************************************/
+bool compareDMatch(const DMatch& a, const DMatch& b)
+{
+  return a.distance < b.distance;
+}
 
 //////////
 // Main //
@@ -48,19 +75,21 @@ int main(int argc, char** argv)
   outputvideo.open(OUTPUT_VIDEO_NAME, ex, fps, framesize, true);
 //*/
   
-  // Initialize coordinates
-  Mat pose = (Mat_<double>(3,3) << 1, 0, 0, 0, 1, 0, 0, 0, 1);
-  double x = 0;
-  double y = 0;
+  // Initialize transformpoints
+  pretfpts[0] = cvPoint(FRAME_WIDTH/2, FRAME_HEIGHT/2); // center
+  pretfpts[1] = cvPoint(FRAME_WIDTH/2, 0); // center-top
   
   // Initialize frames
   Mat newimg, oldimg;
   
-  for(int i=0; i<10; i++)
+  // Clear buffer
+  for(int i=0; i<5; i++)
   {
     cap.read(oldimg);
   }
   
+  
+  // MAIN LOOP!
   while (waitKey(1) != 27)
   {
     // Get pictures
@@ -135,33 +164,58 @@ int main(int argc, char** argv)
     matcher->match(newdescriptors, olddescriptors, matches);
 
     // Calculate max and min distances between matched points
-    double max_dist = 0; double min_dist = 200; double avg_dist = 0;
+    double avgdist = 0;
+    double mindist = FRAME_WIDTH;
     for (int i = 0; i < newdescriptors.rows; i++)
     {
-        double dist = matches[i].distance;
-        avg_dist += dist;
-        if (dist < min_dist) min_dist = dist;
-        if (dist > max_dist) max_dist = dist;
+      double dist = matches[i].distance;
+      avgdist += dist;
+      if (dist < mindist) mindist = dist;
     }
-    avg_dist = avg_dist/newdescriptors.rows;
+    avgdist = avgdist/newdescriptors.rows;
+    if(mindist < MIN_MINDIST) mindist = MIN_MINDIST;
+    
+    // Calculate standard deviation
+    double stddev = 0;
+    double avgdist2 = pow(avgdist,2);
+    for (int i = 0; i < newdescriptors.rows; i++)
+    {
+      stddev += (pow(matches[i].distance,2) - avgdist2);
+    }
+    stddev = sqrt(stddev/newdescriptors.rows);
+    cout << "Avg Distance = " << avgdist << endl;
+    cout << "Standard Dev = " << stddev << endl;
 
     /* Draw only "good" matches (i.e. whose distance is less than 3*min_dist) */
+    // Sort matches by distance: shortest to longest
+    sort(matches.begin(), matches.end(), compareDMatch);
     
     // Create vector of "good" matches
     vector< DMatch > goodmatches;
     
     // Iterate through matches?
 //     for (int i = 0; i < newdescriptors.rows; i++)
-    for (int i = 0; i < matches.size(); i++)
-    {
-        if (matches[i].distance <= /*avg_dist/2*/ 10 * (min_dist+1))
-        {
-            goodmatches.push_back(matches[i]);
-        }
-    }
+//     for (int i = 0; i < matches.size(); i++)
+//     {
+//       if (matches[i].distance <= 3*mindist + 0.1*FRAME_HEIGHT)
+//       {
+//         goodmatches.push_back(matches[i]);
+//       }
+//     }
     
     // Write number of "good" matches to screen (DEBUG)
+    cout << "matches.size() = " << matches.size() << endl;
     cout << "goodmatches.size() = " << goodmatches.size() << endl;
+    cout << "goodmatches:" << endl;
+    
+    int nmatches = matches.size();
+    int ngoodmatches = (nmatches/2 > MAX_N_MATCHES ? MAX_N_MATCHES : nmatches/2);
+    
+    for(int i=0; i<ngoodmatches; i++)
+    {
+      goodmatches.push_back(matches[i]);
+      cout << "\t" << goodmatches[i].distance << endl;
+    }
     
     if ( goodmatches.size() == 0 )
     {
@@ -217,15 +271,28 @@ int main(int argc, char** argv)
     // Write H to screen
     cout << "H = "<< endl << " "  << H << endl << endl;
     
-    // Update position estimate
-    x -= H.at<double>(0, 2);
-    y -= H.at<double>(1, 2);
+    // Transform reference points to determine motion
+    perspectiveTransform(pretfpts, posttfpts, H);
     
-    // Calculate new pose
-    pose = H*pose;
+    // Calculate pure dx, dy of points (transformed - initial position
+    deltatfpts[0] = posttfpts[0] - pretfpts[0]; // center
+    deltatfpts[1] = posttfpts[1] - pretfpts[0]; // top-center
+    
+    // Calculate dtheta using top-center motion
+    float dtheta = atan2(-1*deltatfpts[1].x, -1*deltatfpts[1].y);
+    cout << dtheta*180/PI << endl;
+    
+    // Calculate new pose    
+    float dx = deltatfpts[0].x;
+    float dy = deltatfpts[0].y;
+    float st = sin(substate.pose.z);
+    float ct = cos(substate.pose.z);
+    substate.pose.x += st*dx + ct*dy;
+    substate.pose.y += ct*dx - st*dy;
+    substate.pose.z += dtheta;
     
     // Write pose to screen
-    cout << "pose = "<< endl << " "  << pose << endl << endl;
+    cout << "pose = "<< endl << " "  << substate.pose << endl << endl;
     
     // Show detected matches
     imshow("Good Matches & Object detection", matchesimg);
