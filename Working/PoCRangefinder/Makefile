@@ -20,16 +20,15 @@ RM := rm -f
 INSTALL_DIR = /usr/bin/
 
 # linking Objects
-$(TARGET): $(SOURCES) $(OBJECTS)
+$(TARGET): $(OBJECTS)
 	@$(LINKER) $(@) $(OBJECTS) V4L2Control.o $(LFLAGS) $(LIBS)
 	@echo
 	@echo "Linking Complete"
-
+	@echo $(OBJECTS)
 
 # compiling command
 $(OBJECTS): %.o : %.cpp
 	@$(TOUCH) $(CC) $(CFLAGS) -c $< -o $(@)
-	@echo "Compiled "$<" successfully!"
 
 
 # install to /usr/bin

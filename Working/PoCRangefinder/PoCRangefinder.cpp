@@ -172,20 +172,20 @@ void *takePictures(void*)
   while(substate.mode != STOPPED)
   {
     // 'Grab' bright frame from webcam's image buffer
-    cap.read(brightframe);
-    //cap.grab();
+    //cap.read(brightframe);
+    cap.grab();
     // Set exposure now (rather than later)
     picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, DARK_EXPOSURE );
     // Retrieve encodes image from grab buffer to 'brightframe' variable
-    //cap.retrieve( brightframe );
+    cap.retrieve( brightframe );
     
     // 'Grab' dark frame from webcam's image buffer
-    cap.read(darkframe);
-    //cap.grab();
+    //cap.read(darkframe);
+    cap.grab();
     // Set exposure now (rather than later)
     picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE );
     // Retrieve encodes image from grab buffer to 'darkframe' variable
-    //cap.retrieve( darkframe );
+    cap.retrieve( darkframe );
     printf("Camera While Loop \n");
     usleep(200000);
   }
