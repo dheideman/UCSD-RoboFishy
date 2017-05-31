@@ -1,6 +1,6 @@
 # project name 
 # change to match your main c file
-TARGET = MainScript
+TARGET = PoCRangefinder
 
 
 
@@ -20,7 +20,7 @@ RM := rm -f
 INSTALL_DIR = /usr/bin/
 
 # linking Objects
-$(TARGET): $(OBJECTS)
+$(TARGET): $(SOURCES) $(OBJECTS)
 	@$(LINKER) $(@) $(OBJECTS) V4L2Control.o $(LFLAGS) $(LIBS)
 	@echo
 	@echo "Linking Complete"
