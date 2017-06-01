@@ -25,29 +25,34 @@
 ///////////////////////////////////////////////////////////////////////////////////
 
 // struct for hold ms5837 calibration values
-typedef struct{
+typedef struct
+{
 	float C1, C2, C3, C4, C5, C6;
 }calib_t;
 
 // struct for holding ms5837 return values
-typedef struct {
+typedef struct 
+{
 	//float pressure, temperature;
 	float pressure;
 }ms5837_t;
 
 // struct for holding bno055 return values
-typedef struct {
+typedef struct 
+{
 	float yaw, roll, pitch, p, q, r;
 	int sys, gyro, accel, mag;
 }bno055_t;
 
 // struct for holding ds18b20 temperature sensor return values
-typedef struct {
+typedef struct 
+{
 	float temperature;
 }ds18b20_t;
 
 // Program Flow and State Control
-typedef enum state_t {
+typedef enum state_t 
+{
 	UNINITIALIZED,
 	RUNNING,
 	PAUSED,

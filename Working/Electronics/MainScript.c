@@ -271,7 +271,7 @@ PI_THREAD (navigation_thread)
 {
 	static float u[4];	// normalized roll, pitch, yaw, throttle, components
 	initialize_motors(motor_channels, HERTZ);
-	static float new_esc[4];
+	//static float new_esc[4];
 	float output_port;		// port motor duty cycle output
 	float output_starboard;	// starboard motor duty cycle output
 	printf("\n");
