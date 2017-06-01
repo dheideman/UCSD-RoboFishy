@@ -9,7 +9,7 @@ TOUCH 	 := $(shell touch *)
 CC	:= g++
 LINKER   := g++ -o
 CFLAGS	:= -c -Wall -g -I/usr/include/python2.7 `pkg-config --cflags opencv`
-LFLAGS	:= -lwiringPi -lpython2.7 -I/usr/include/python2.7 -lwiringPiPca9685 -lpthread
+LFLAGS	:= -lwiringPi -lpython2.7 -I/usr/include/python2.7 -lwiringPiPca9685
 
 SOURCES  := $(wildcard *.cpp)
 INCLUDES := $(wildcard *.h)
@@ -21,7 +21,7 @@ INSTALL_DIR = /usr/bin/
 
 # linking Objects
 $(TARGET): $(OBJECTS)
-	@$(LINKER) $(@) $(OBJECTS) $(LFLAGS) $(LIBS)
+	@$(LINKER) $(@) $(OBJECTS) $(LFLAGS)
 	@echo
 	@echo "Linking Complete"
 
