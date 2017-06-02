@@ -162,12 +162,12 @@ void *takePictures(void*)
   cap.read( darkframe );
 
   // Grab all 5 images from the frame buffer in order to clear the buffer
-  printf("%s\n","Before For Loop" );
+  //printf("%s\n","Before For Loop" );
   for(int i=0; i<5; i++)
   {
     cap.grab();
   }
-  printf("%s\n","After For Loop" );
+  printf("%s\n","BUFFER CLEARED" );
   // Loop quickly to pick up images as soon as they are taken
   while(substate.mode != STOPPED)
   {
@@ -179,6 +179,7 @@ void *takePictures(void*)
     // Retrieve encodes image from grab buffer to 'brightframe' variable
     cap.retrieve( brightframe );
     
+    printf("Brightframe Captured \n");
     // 'Grab' dark frame from webcam's image buffer
     //cap.read(darkframe);
     cap.grab();
@@ -186,7 +187,8 @@ void *takePictures(void*)
     picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE );
     // Retrieve encodes image from grab buffer to 'darkframe' variable
     cap.retrieve( darkframe );
-    printf("Camera While Loop \n");
+
+    printf("Darkframe Captured \n");
     usleep(200000);
   }
     
@@ -268,7 +270,8 @@ void *rangeFinder(void*)
     if(p1.x !=0)
     {
       float range = (RANGE_K0 + RANGE_K1*p1.y) / (RANGE_K2 + p1.y);
-//       cout << "Calculated Range: " << range << endl;
+      substate.range = range;
+      cout << "Calculated Range: " << substate.range << endl;
       rangestring << range << " ft";
     }
     else  // If coordinates are (0,0), we haven't detected anything.
@@ -284,9 +287,8 @@ void *rangeFinder(void*)
     //putText( brightframeroi, rangestring.str(), pnt, 1, 1, Scalar(0,0,255));
     
     // Display image on current open window
-    imshow( SOURCE_WINDOW, localbrightframe );
     sleep(1);
-    //imshow( SOURCE_WINDOW, brightframeroi );
+    imshow( SOURCE_WINDOW, localbrightframe );
     // imshow( SOURCE_WINDOW, darkframeroi );
     // imshow( SOURCE_WINDOW, mask );
    } // end while
@@ -380,6 +382,7 @@ int main(int argc, char** argv)
   //Loop until user presses esc
   while(key != 27)
   {
+    //imshow( SOURCE_WINDOW, localbrightframe );
     key = waitKey(2500);
   }
   
