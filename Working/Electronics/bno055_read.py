@@ -48,8 +48,16 @@ bno = BNO055.BNO055(serial_port='/dev/ttyAMA0', rst=18)
 #    logging.basicConfig(level=logging.DEBUG)
 
 # Initialize the BNO055 and stop if something went wrong.
-if not bno.begin():
-    raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')
+#if not bno.begin():
+imu_initialized = False
+print "Initializing IMU..."
+start_time = time.time()
+while not imu_initialized:
+    imu_initialized = bno.begin()
+    if (time.time() - start_time) > 10:      
+        #print failure statement if IMU not intiialized after 10 seconds
+        raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')
+        break
 
 # Print system status and self test result.
 status, self_test, error = bno.get_system_status()
