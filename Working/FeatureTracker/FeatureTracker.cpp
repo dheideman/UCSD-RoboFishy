@@ -21,11 +21,13 @@
 #define DEBUG
 
 #define OUTPUT_VIDEO_NAME "DemoVideo.avi"
-#define FRAME_WIDTH       1280
-#define FRAME_HEIGHT      720
+#define FRAME_WIDTH       640
+#define FRAME_HEIGHT      480
 #define MIN_MINDIST       10
-#define MAX_MATCHES       50
+#define MAX_MATCHES       500
 #define PI                3.141592653589793
+
+#define MATCH_CIRCLE_R    5      // Match circle radius, px
 
 using namespace cv;
 using namespace std;
@@ -261,7 +263,8 @@ int main(int argc, char** argv)
   }
   cap.retrieve(subimages.brightframe);
   
-  // We're done grabbing images
+  // Initialize RNG
+  RNG rng(12345);
 
   // Create point arrays for image corners
   vector<Point2f> newcorners(4);
@@ -274,7 +277,7 @@ int main(int argc, char** argv)
   newcorners[3] = cvPoint(0, FRAME_HEIGHT);
   
   // Create matrix to store final output image
-  Mat matchesimg(Size(2*FRAME_WIDTH,FRAME_HEIGHT),CV_16SC3);
+  Mat matchesimg(Size(2*FRAME_WIDTH,FRAME_HEIGHT),CV_8UC3);
   
   // Initialize scheduling parameters, priorities
   sched_param param;
@@ -317,7 +320,7 @@ int main(int argc, char** argv)
   pthread_attr_destroy(&tattrmed);
   pthread_attr_destroy(&tattrhigh);
   
-  sleep(2);
+  sleep(1);
   
   // MAIN LOOP!
   while (waitKey(1) != 27)
@@ -333,6 +336,25 @@ int main(int argc, char** argv)
     
     // Transform corner points by H to get corresponding points on scene image
     perspectiveTransform(newcorners, oldcorners, odomdata.H);
+    
+    // Combine images
+    Mat left(matchesimg, Rect(0, 0, FRAME_WIDTH, FRAME_HEIGHT));
+    odomdata.newimg.copyTo(left);
+    Mat right(matchesimg, Rect(FRAME_WIDTH, 0, FRAME_WIDTH, FRAME_HEIGHT));
+    odomdata.oldimg.copyTo(right);
+    
+    // Draw matches
+    for(int i=0; i<odomdata.oldpts.size(); i++)
+    {
+      Scalar color = Scalar(rng.uniform(0,255), rng.uniform(0, 255),
+                            rng.uniform(0, 255));
+      Point2f shiftoldpt = odomdata.oldpts[i] + Point2f(FRAME_WIDTH, 0);
+      
+      circle(matchesimg, odomdata.newpts[i], MATCH_CIRCLE_R, color, 1, 8, 0);
+      circle(matchesimg, shiftoldpt, MATCH_CIRCLE_R, color, 1, 8, 0);
+      
+      line(matchesimg, odomdata.newpts[i], shiftoldpt, color, 1);
+    }
 
     // Draw box around detected object in scene image
     line(matchesimg, oldcorners[0] + Point2f(FRAME_WIDTH, 0), oldcorners[1] + Point2f(FRAME_WIDTH, 0), Scalar(0, 255, 0), 4);
@@ -341,7 +363,7 @@ int main(int argc, char** argv)
     line(matchesimg, oldcorners[3] + Point2f(FRAME_WIDTH, 0), oldcorners[0] + Point2f(FRAME_WIDTH, 0), Scalar(0, 255, 0), 4);  
     
     // Show detected matches
-//     imshow("Good Matches & Object detection", subimages.brightframe/*matchesimg*/);
+    imshow("Good Matches & Object detection", matchesimg);
     usleep(10*1000);
   }
   return 0;
