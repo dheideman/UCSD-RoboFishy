@@ -337,7 +337,7 @@ int main(int argc, char** argv)
     // Transform corner points by H to get corresponding points on scene image
     perspectiveTransform(newcorners, oldcorners, odomdata.H);
     
-    // Combine images
+    // Combine images onto image of matches (matchesimg)
     Mat left(matchesimg, Rect(0, 0, FRAME_WIDTH, FRAME_HEIGHT));
     odomdata.newimg.copyTo(left);
     Mat right(matchesimg, Rect(FRAME_WIDTH, 0, FRAME_WIDTH, FRAME_HEIGHT));
@@ -346,21 +346,30 @@ int main(int argc, char** argv)
     // Draw matches
     for(int i=0; i<odomdata.oldpts.size(); i++)
     {
+      // Generate a random color
       Scalar color = Scalar(rng.uniform(0,255), rng.uniform(0, 255),
                             rng.uniform(0, 255));
+      
+      // Calculate position of pixel in old image
       Point2f shiftoldpt = odomdata.oldpts[i] + Point2f(FRAME_WIDTH, 0);
       
+      // Draw circles at each point
       circle(matchesimg, odomdata.newpts[i], MATCH_CIRCLE_R, color, 1, 8, 0);
       circle(matchesimg, shiftoldpt, MATCH_CIRCLE_R, color, 1, 8, 0);
       
+      // Draw a connecting line between the matches
       line(matchesimg, odomdata.newpts[i], shiftoldpt, color, 1);
     }
 
-    // Draw box around detected object in scene image
-    line(matchesimg, oldcorners[0] + Point2f(FRAME_WIDTH, 0), oldcorners[1] + Point2f(FRAME_WIDTH, 0), Scalar(0, 255, 0), 4);
-    line(matchesimg, oldcorners[1] + Point2f(FRAME_WIDTH, 0), oldcorners[2] + Point2f(FRAME_WIDTH, 0), Scalar(0, 255, 0), 4);
-    line(matchesimg, oldcorners[2] + Point2f(FRAME_WIDTH, 0), oldcorners[3] + Point2f(FRAME_WIDTH, 0), Scalar(0, 255, 0), 4);
-    line(matchesimg, oldcorners[3] + Point2f(FRAME_WIDTH, 0), oldcorners[0] + Point2f(FRAME_WIDTH, 0), Scalar(0, 255, 0), 4);  
+    // Draw box around detected object in scene image, one line at a time
+    line(matchesimg, oldcorners[0] + Point2f(FRAME_WIDTH, 0),
+         oldcorners[1] + Point2f(FRAME_WIDTH, 0), Scalar(0, 255, 0), 4);
+    line(matchesimg, oldcorners[1] + Point2f(FRAME_WIDTH, 0),
+         oldcorners[2] + Point2f(FRAME_WIDTH, 0), Scalar(0, 255, 0), 4);
+    line(matchesimg, oldcorners[2] + Point2f(FRAME_WIDTH, 0),
+         oldcorners[3] + Point2f(FRAME_WIDTH, 0), Scalar(0, 255, 0), 4);
+    line(matchesimg, oldcorners[3] + Point2f(FRAME_WIDTH, 0),
+         oldcorners[0] + Point2f(FRAME_WIDTH, 0), Scalar(0, 255, 0), 4);  
     
     // Show detected matches
     imshow("Good Matches & Object detection", matchesimg);
