@@ -1,6 +1,6 @@
 # project name 
 # change to match your main c file
-TARGET = MainScript
+TARGET = PoCRangefinder
 
 
 
@@ -24,12 +24,11 @@ $(TARGET): $(OBJECTS)
 	@$(LINKER) $(@) $(OBJECTS) V4L2Control.o $(LFLAGS) $(LIBS)
 	@echo
 	@echo "Linking Complete"
-
+	@echo $(OBJECTS)
 
 # compiling command
 $(OBJECTS): %.o : %.cpp
 	@$(TOUCH) $(CC) $(CFLAGS) -c $< -o $(@)
-	@echo "Compiled "$<" successfully!"
 
 
 # install to /usr/bin
