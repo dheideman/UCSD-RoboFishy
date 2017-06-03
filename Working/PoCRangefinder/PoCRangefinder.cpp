@@ -11,9 +11,9 @@
 using namespace cv;
 using namespace std;
 
-////////////////
-// Parameters //
-////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////// Parameters //////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 // Saved image params
 #define IMAGE_PREFIX    "images/image"
@@ -38,15 +38,18 @@ using namespace std;
 #define SOURCE_WINDOW     "Bright Image"
 
 
-//////////////////////
-// Global Variables //
-//////////////////////
+////////////////////////////////////////////////////////////////////////////////
+//////////////////////////// Global Variables //////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 // Global State Variable
 sub_state_t substate;
+sub_images_t subimages;
+local_images_t localimages;
 
 // Global Variables
 Mat darkframe, brightframe;
+Point p1;
 VideoCapture cap;
 int redbalance = 20;
 int bluebalance = 20;
@@ -60,9 +63,9 @@ Mat hsvframe;
 V4L2Control picamctrl;
 
 
-////////////////////////
-// Callback Functions //
-////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+//////////////////////////// Callback Functions ////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 /*******************************************************************************
  * void whiteBalanceCallback(int, void*)
@@ -178,8 +181,10 @@ void *takePictures(void*)
     picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, DARK_EXPOSURE );
     // Retrieve encodes image from grab buffer to 'brightframe' variable
     cap.retrieve( brightframe );
-    
+    //Save the matrix globally
+    subimages.brightframe = brightframe;
     printf("Brightframe Captured \n");
+    
     // 'Grab' dark frame from webcam's image buffer
     //cap.read(darkframe);
     cap.grab();
@@ -187,8 +192,10 @@ void *takePictures(void*)
     picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE );
     // Retrieve encodes image from grab buffer to 'darkframe' variable
     cap.retrieve( darkframe );
-
+    //Save the matrix globally
+    subimages.darkframe = darkframe;
     printf("Darkframe Captured \n");
+
     usleep(200000);
   }
     
@@ -218,20 +225,16 @@ void *rangeFinder(void*)
   { 
     printf("%s\n","rangeFinder thread" );
     // Save most recent bright frame to local variables
-    Mat localbrightframe, localdarkframe;
-    brightframe.copyTo(localbrightframe);
-    darkframe(roi).copyTo(localdarkframe);
+    //Mat localbrightframe, localdarkframe;
+    brightframe.copyTo(localimages.brightframe);
+    darkframe(roi).copyTo(localimages.darkframe);
 
     // Convert from BGR to HSV using CV_BGR2HSV conversion
-
-    //  Mat hsvframe;
-    cvtColor(localdarkframe, hsvframe, CV_BGR2HSV);
-    
-         
+    //cvtColor(localdarkframe, hsvframe, CV_BGR2HSV);
+    cvtColor(localimages.darkframe, hsvframe, CV_BGR2HSV);
+             
     // Find laser dot
     Mat1b mask; // b/w matrix for laser detection
-    
-  // if hsvframe is in scalar range, set that pixel to white and store in mask
     
     // White
   // inRange(hsvframe, Scalar(0, 0, 40), Scalar(180, 255, 255), mask);
@@ -249,21 +252,20 @@ void *rangeFinder(void*)
     // Locate centroid of laser dot
     Moments m = moments(mask, false);
     Point p1(m.m10/m.m00+cropleft, m.m01/m.m00);
+    //p1(m.m10/m.m00+cropleft, m.m01/m.m00);
     
     // Draw red circle w/ center at centroid on original image
-    circle( localbrightframe, p1, 10.0, Scalar( 0, 0, 255 ));
-//    circle( brightframe, p1, 10.0, Scalar( 0, 0, 255 ));
-//    circle( darkframe, p1, 10.0, Scalar( 0, 0, 255 ));
+    //circle( localbrightframe, p1, 10.0, Scalar( 0, 0, 255 ));
+    circle( localimages.brightframe, p1, 10.0, Scalar( 0, 0, 255 ));
     
-
     // Write coordinates in top left corner
     stringstream coordinates;
     coordinates << "(" << p1.x << ", " << p1.y << ")";
     Point org;
     org.x = 10;
     org.y = 40;
-    putText( localbrightframe, coordinates.str(), org, 1, 1, Scalar(0,0,255));
-  //    putText( brightframeroi, coordinates.str(), org, 1, 1, Scalar(0,0,255));
+    //putText( localbrightframe, coordinates.str(), org, 1, 1, Scalar(0,0,255));
+    putText( localimages.brightframe, coordinates.str(), org, 1, 1, Scalar(0,0,255));
     
     // Calculate range
     stringstream rangestring;
@@ -283,24 +285,22 @@ void *rangeFinder(void*)
     Point pnt;
     pnt.x = 10;
     pnt.y = 20;
-    putText( localbrightframe, rangestring.str(), pnt, 1, 1, Scalar(0,0,255));
+    putText( localimages.brightframe, rangestring.str(), pnt, 1, 1, Scalar(0,0,255));
     //putText( brightframeroi, rangestring.str(), pnt, 1, 1, Scalar(0,0,255));
     
     // Display image on current open window
     sleep(1);
-    imshow( SOURCE_WINDOW, localbrightframe );
+    // imshow( SOURCE_WINDOW, localbrightframe );
     // imshow( SOURCE_WINDOW, darkframeroi );
     // imshow( SOURCE_WINDOW, mask );
    } // end while
-   
-   // Set mode to STOPPED
-   
+        
    pthread_exit(NULL);
 }
    
-//////////
-// Main //
-//////////
+////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////// MAIN! //////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char** argv)
 { 
   // We're initializing!
@@ -371,18 +371,18 @@ int main(int argc, char** argv)
  
   // Announce that we're done initializing
   cout << "Done Initializing." << endl;
-   
+  sleep(4); 
   // Set mode to RUNNING
   substate.mode = RUNNING;
   cout << "RUNNING" << endl;
 
   // initialize key command
   int key = 0; 
-
+  
   //Loop until user presses esc
   while(key != 27)
   {
-    //imshow( SOURCE_WINDOW, localbrightframe );
+    imshow( SOURCE_WINDOW, localimages.brightframe );
     key = waitKey(2500);
   }
   

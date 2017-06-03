@@ -9,7 +9,7 @@
 #include <cv.hpp>
 #include <highgui.h>
 #include <opencv2/imgproc/imgproc.hpp>
-
+#include <wiringPi.h>
 // Streams
 #include <iostream>
 #include <fstream>
@@ -42,3 +42,12 @@ void exposureCallback(int, void*);
 // Threads
 void *takePictures(void*);
 void *rangeFinder(void*);
+
+//////////////////////
+// Type Definitions //
+//////////////////////
+typedef struct local_images_t
+{
+  cv::Mat brightframe;   // local version of brightframe
+  cv::Mat darkframe;     // local version of darkframe 
+} local_images_t;
