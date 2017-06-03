@@ -10,7 +10,7 @@
 
 #define PIN_BASE 300
 #define MAX_PWM 4096
-#define HERTZ 370
+#define HERTZ 400
 #define PCA9685_ADDR 0x40
 #define CHANNEL_1 0
 #define CHANNEL_2 1

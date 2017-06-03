@@ -212,7 +212,7 @@ logger = logging.getLogger(__name__)
 
 class BNO055(object):
 
-    def __init__(self, rst=None, address=BNO055_ADDRESS_A, i2c=None, gpio=None,
+    def __init__(self, rst=18, address=BNO055_ADDRESS_A, i2c=None, gpio=None,
                  serial_port=None, serial_timeout_sec=5, **kwargs):
         # If reset pin is provided save it and a reference to provided GPIO
         # bus (or the default system GPIO bus if none is provided).

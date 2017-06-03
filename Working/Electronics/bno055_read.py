@@ -52,10 +52,14 @@ bno = BNO055.BNO055(serial_port='/dev/ttyAMA0', rst=18)
 imu_initialized = False
 print "Initializing IMU..."
 start_time = time.time()
+counter = 0
 while not imu_initialized:
     imu_initialized = bno.begin()
+    print(imu_initialized)
+    counter += 1
+    print(counter)
     if (time.time() - start_time) > 10:      
-        #print failure statement if IMU not intiialized after 10 seconds
+        # print failure statement if IMU not intiialized after 10 seconds
         raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')
         break
 
@@ -89,7 +93,7 @@ while True:
     #_string = "%f %f %f %f %f %f %i %i %i %i" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
     fifo.write(_string)
     fifo.close()
-   # print "%f %f %f %f %f %f %i %i %i %i\n" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
+    print "%f %f %f %f %f %f %i %i %i %i\n" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
 	
     #out, err = cproc.communicate(input)
     # Print everything out.
