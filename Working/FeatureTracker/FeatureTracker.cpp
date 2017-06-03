@@ -39,14 +39,11 @@ typedef struct odom_data_t
   cv::Mat               oldimg;   // The older of the two images stored
   std::vector<Point2f>  newpts;   // The matched points in the new image
   std::vector<Point2f>  oldpts;   // The matched points in the new image
-  cv::Mat               H;        // Transformation matrix between images
+  cv::Mat               tf;       // Transformation matrix between images
 } odom_data_t;
 
 // Global odometry image struct
 odom_data_t odomdata;
-
-// Transformation matrix
-Mat H;
 
 // Thread attributes for different priorities
 pthread_attr_t tattrlow, tattrmed, tattrhigh;
@@ -199,10 +196,10 @@ void *visualOdometry(void* arg)
     }
      
     // Find perspective transformation between two planes.
-    odomdata.H = findHomography(odomdata.newpts, odomdata.oldpts, CV_RANSAC);
+    odomdata.tf = findHomography(odomdata.newpts, odomdata.oldpts, CV_RANSAC);
     
     // Transform reference points to determine motion
-    perspectiveTransform(pretfpts, posttfpts, odomdata.H);
+    perspectiveTransform(pretfpts, posttfpts, odomdata.tf);
     
     // Calculate pure dx, dy, dtheta of points (transformed - initial position)
     deltatfpts[0] = posttfpts[0] - pretfpts[0]; // center
@@ -220,9 +217,9 @@ void *visualOdometry(void* arg)
     substate.pose.y -= -dx*st + dy*ct;  // image y is reversed from sub y
     substate.pose.z += dtheta;          // theta stored as 'z'
     
-    // Write H, pose to screen
+    // Write tf, pose to screen
     #ifdef DEBUG
-    cout << "H = "<< endl << " "  << odomdata.H << endl << endl;
+    cout << "tf = "<< endl << " "  << odomdata.tf << endl << endl;
     cout << "pose = "<< endl << " " << substate.pose << endl << endl;
     #endif
     
@@ -334,8 +331,8 @@ int main(int argc, char** argv)
 // What do we do about newkeypoints and oldkeypoints?
 //     drawMatches(odomdata.newimg, newkeypoints, odomdata.oldimg, oldkeypoints, goodmatches, matchesimg, Scalar::all(-1), Scalar::all(-1), std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
     
-    // Transform corner points by H to get corresponding points on scene image
-    perspectiveTransform(newcorners, oldcorners, odomdata.H);
+    // Transform corner points by tf to get corresponding points on scene image
+    perspectiveTransform(newcorners, oldcorners, odomdata.tf);
     
     // Combine images onto image of matches (matchesimg)
     Mat left(matchesimg, Rect(0, 0, FRAME_WIDTH, FRAME_HEIGHT));
