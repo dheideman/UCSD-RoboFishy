@@ -32,7 +32,7 @@ int initialize_motors(int channels[4], float freq)
 			for( i = 0; i < 3; i++ )
 			{
 				//pwmWrite (PIN_BASE+i, calcTicks(0,HERTZ));
-				pwmWrite (PIN_BASE+i, 0);	//send input signal that is low enough to reach the 
+				pwmWrite (PIN_BASE+i, 2674);	//send input signal that is low enough to reach the 
 												//"neutral" or power-off area in order to arm the ESC (long beep); green LED on ESC will light up
 				delay(1000);								
 				active=0;
@@ -164,7 +164,7 @@ bno055_t bno055_read(void)	// read values from bno055 IMU
 { 
 	bno055_t bno055;
 	char buf[1000];
-	FILE *fd = fopen( "/home/pi/UCSD-RoboFishy/Working/Electronics/bno055_fifo.fifo", "r");
+	FILE *fd = fopen( "/home/pi/UCSD-RoboFishy/Working/Electronics/bno055_fifo.txt", "r");
 	fgets(buf,1000,fd);
 	fclose(fd);
 	sscanf(buf,"%f %f %f %f %f %f %i %i %i %i", 

@@ -48,8 +48,16 @@ bno = BNO055.BNO055(serial_port='/dev/ttyAMA0', rst=18)
 #    logging.basicConfig(level=logging.DEBUG)
 
 # Initialize the BNO055 and stop if something went wrong.
-if not bno.begin():
-    raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')
+#if not bno.begin():
+imu_initialized = False
+print "Initializing IMU..."
+start_time = time.time()
+while not imu_initialized:
+    imu_initialized = bno.begin()
+    if (time.time() - start_time) > 10:      
+        #print failure statement if IMU not intiialized after 10 seconds
+        raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')
+        break
 
 # Print system status and self test result.
 status, self_test, error = bno.get_system_status()
@@ -77,11 +85,11 @@ while True:
     # Read the calibration status, 0=uncalibrated and 3=fully calibrated.	
     sys, gyro, accel, mag = bno.get_calibration_status()
     _string = "%f %f %f %f %f %f %i %i %i %i" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
-    fifo = open("bno055_fifo.fifo", "w")
+    fifo = open("bno055_fifo.txt", "w")
     #_string = "%f %f %f %f %f %f %i %i %i %i" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
     fifo.write(_string)
     fifo.close()
-    #print "%f %f %f %f %f %f %i %i %i %i\n" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
+   # print "%f %f %f %f %f %f %i %i %i %i\n" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
 	
     #out, err = cproc.communicate(input)
     # Print everything out.
