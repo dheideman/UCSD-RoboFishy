@@ -45,5 +45,8 @@ typedef struct sub_images_t
 {
   cv::Mat brightframe;  // The brighter image (used for mapping)
   cv::Mat darkframe;    // The darker image (used for range finding)
+  
+  pthread_mutex_t brightframelock;   // Mutex lock for brightframe
+  pthread_mutex_t darkframelock;     // Mutex lock for darkframe
 } sub_images_t;
 

@@ -35,11 +35,16 @@ using namespace std;
 // Typedef of struct to store new/old images
 typedef struct odom_data_t
 {
-  cv::Mat               newimg;   // The newer of the two images stored
-  cv::Mat               oldimg;   // The older of the two images stored
-  std::vector<Point2f>  newpts;   // The matched points in the new image
-  std::vector<Point2f>  oldpts;   // The matched points in the new image
-  cv::Mat               tf;       // Transformation matrix between images
+  cv::Mat               newimg;       // The newer of the two images stored
+  cv::Mat               oldimg;       // The older of the two images stored
+  
+  pthread_mutex_t       newimglock;   // Mutex lock for newimg
+  pthread_mutex_t       oldimglock;   // Mutex lock for oldimg
+  
+  std::vector<Point2f>  newpts;       // The matched points in the new image
+  std::vector<Point2f>  oldpts;       // The matched points in the new image
+  
+  cv::Mat               tf;           // Transformation matrix between images
 } odom_data_t;
 
 // Global odometry image struct
@@ -65,6 +70,46 @@ bool compareDMatch(const DMatch& a, const DMatch& b)
   return a.distance < b.distance;
 }
 
+/*******************************************************************************
+ * int initializeOdomDataLock(odom_data_t *_odomdata)
+ *
+ * Initialize locks for odom_data_t variable
+ ******************************************************************************/
+int initializeOdomDataLock(odom_data_t *_odomdata)
+{
+  if (pthread_mutex_init(&_odomdata->newimglock, NULL) != 0)
+  {
+    cout << "Unable to initialize newimglock" << endl;
+    return 0;
+  }
+  if (pthread_mutex_init(&_odomdata->oldimglock, NULL) != 0)
+  {
+    cout << "Unable to initialize oldimglock" << endl;
+    return 0;
+  }
+  return 1;
+}
+
+/*******************************************************************************
+ * int initializeSubImagesLock(sub_images_t *_subimages)
+ *
+ * Initialize locks for sub_images_t variable
+ ******************************************************************************/
+int initializeSubImagesLock(sub_images_t *_subimages)
+{
+  if (pthread_mutex_init(&_subimages->brightframelock, NULL) != 0)
+  {
+    cout << "Unable to initialize brightframelock" << endl;
+    return 0;
+  }
+  if (pthread_mutex_init(&_subimages->darkframelock, NULL) != 0)
+  {
+    cout << "Unable to initialize darkframelock" << endl;
+    return 0;
+  }
+  return 1;
+}
+
 /////////////
 // Threads //
 /////////////
@@ -84,8 +129,16 @@ void *visualOdometry(void* arg)
 //   }
 //   // Or maybe just use a global struct containing new, old images and pts?
   
+  // Lock access to subimages.brightframe, odomdata.oldimg
+  pthread_mutex_lock(&subimages.brightframelock);
+  pthread_mutex_lock(&odomdata.oldimglock);
+  
   // Save bright frame to "old image"
   subimages.brightframe.copyTo(odomdata.oldimg);
+  
+  // Unlock access to subimages.brightframe, odomdata.oldimg
+  pthread_mutex_unlock(&odomdata.oldimglock);
+  pthread_mutex_unlock(&subimages.brightframelock);
   
   // Create detector (FAST)
   Ptr<FeatureDetector> detector = FastFeatureDetector::create();
@@ -140,8 +193,16 @@ void *visualOdometry(void* arg)
   
   while( substate.mode != RUNNING )
   {
-    // Save bright frame to "old image"
+    // Lock access to subimages.brightframe, odomdata.newimg
+    pthread_mutex_lock(&subimages.brightframelock);
+    pthread_mutex_lock(&odomdata.newimglock);
+  
+    // Save bright frame to "new image"
     subimages.brightframe.copyTo(odomdata.newimg);
+    
+    // Unlock access to subimages.brightframe, odomdata.newimg
+    pthread_mutex_unlock(&odomdata.newimglock);
+    pthread_mutex_unlock(&subimages.brightframelock);
     
     // Part 1: Detect features (KeyPoints)
     detector->detect(odomdata.newimg, newkeypoints);
@@ -276,6 +337,10 @@ int main(int argc, char** argv)
   // Create matrix to store final output image
   Mat matchesimg(Size(2*FRAME_WIDTH,FRAME_HEIGHT),CV_8UC3);
   
+  // Initialize Mutex locks
+  if(!initializeOdomDataLock(&odomdata)) return -1;
+  if(!initializeSubImagesLock(&subimages)) return -1;
+    
   // Initialize scheduling parameters, priorities
   sched_param param;
   int policy, maxpriority;
@@ -322,23 +387,32 @@ int main(int argc, char** argv)
   // MAIN LOOP!
   while (waitKey(1) != 27)
   {
-    // Get pictures
+    // Lock subimages.brightframe
+    pthread_mutex_lock(&subimages.brightframelock);
+    
+    // Get picture
     cap.read(subimages.brightframe);
     
-    // Create image?
-    
-    // Draw all those matches
-// What do we do about newkeypoints and oldkeypoints?
-//     drawMatches(odomdata.newimg, newkeypoints, odomdata.oldimg, oldkeypoints, goodmatches, matchesimg, Scalar::all(-1), Scalar::all(-1), std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
+    // Unlock subimages.brightframe
+    pthread_mutex_unlock(&subimages.brightframelock);
     
     // Transform corner points by tf to get corresponding points on scene image
     perspectiveTransform(newcorners, oldcorners, odomdata.tf);
+    
+    
+    // Lock odomdata.newimg, odomdata.oldimg
+    pthread_mutex_lock(&odomdata.newimglock);
+    pthread_mutex_lock(&odomdata.oldimglock);
     
     // Combine images onto image of matches (matchesimg)
     Mat left(matchesimg, Rect(0, 0, FRAME_WIDTH, FRAME_HEIGHT));
     odomdata.newimg.copyTo(left);
     Mat right(matchesimg, Rect(FRAME_WIDTH, 0, FRAME_WIDTH, FRAME_HEIGHT));
     odomdata.oldimg.copyTo(right);
+    
+    // Unlock odomdata.newimg, odomdata.oldimg
+    pthread_mutex_unlock(&odomdata.newimglock);
+    pthread_mutex_unlock(&odomdata.oldimglock);
     
     // Draw matches
     for(int i=0; i<odomdata.oldpts.size(); i++)
