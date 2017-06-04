@@ -1,4 +1,4 @@
-#include "pca9685.h"
+#include <pca9685.h>
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include <stdio.h>
@@ -19,9 +19,11 @@
 #define CHANNEL_5 4		// depth
 
 
-///////////////////////////////////////////////////////////////////////////////
-//////////////////////////////// Create Structs ///////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+/***************************************************************************
+ *
+ * Create Structs
+ *
+***************************************************************************/
 
 // struct for hold ms5837 calibration values
 typedef struct
@@ -49,14 +51,6 @@ typedef struct
 	float temperature;
 }ds18b20_t;
 
-//struct for pid controllers (depth and yaw)
-typedef struct 
-{
-	float setpoint;
-	float kp, ki, kd;
-	float perr, ierr, derr;
-}pid_data_t;
-
 // Program Flow and State Control
 typedef enum state_t
 {
@@ -67,10 +61,13 @@ typedef enum state_t
 }state_t;
 
 
-///////////////////////////////////////////////////////////////////////////////
-////////////////////////////// Function Prototypes ////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+/******************************************************************************
+*
+* Function Prototypes
+*
+******************************************************************************/
 
+// System state
 enum state_t get_state();
 int set_state(enum state_t);
 

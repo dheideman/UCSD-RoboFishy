@@ -123,15 +123,33 @@ typedef struct system_state_t
 
 //drive_mode_t drive_mode;			// holds the current drive mode
 //loop_mode_t loop_mode;				// holds the current loop mode
-cont_mode_t cont_mode;				// holds the current controller mode
-setpoint_t setpoint;				// holds the setpoint data structure with current setpoints
-system_state_t sstate;				// holds the system state structure with current system state
-bno055_t bno055;					// holds the latest data values from the BNO055
-calib_t calib;						// holds the calibration values for the MS5837 pressure sensor
-ms5837_t ms5837;					// holds the latest pressure value from the MS5837 pressure sensor
-ds18b20_t ds18b20;					// holds the latest temperature value from the DS18B20 temperature sensor
-pid_data_t yaw_pid;					// holds the constants and latest errors of the yaw pid controller
-pid_data_t depth_pid;				// holds the constants and latest errors of the depth pid controller
+
+// holds the current controller mode
+cont_mode_t cont_mode;
+
+// holds the setpoint data structure with current setpoints
+setpoint_t setpoint;
+
+// holds the system state structure with current system statesystem_state_t sstate;
+system_state_t sstate;
+
+// holds the latest data values from the BNO055
+bno055_t bno055;
+
+// holds the calibration values for the MS5837 pressure sensor
+calib_t pressure_calib;
+
+// holds the latest pressure value from the MS5837 pressure sensor
+ms5837_t ms5837;
+
+// holds the latest temperature value from the DS18B20 temperature sensor
+ds18b20_t ds18b20;
+
+// holds the constants and latest errors of the yaw pid controller
+pid_data_t yaw_pid;
+
+// holds the constants and latest errors of the depth pid controller
+pid_data_t depth_pid;
 
 int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4}; // motor channels
 float mix_matrix[4][4] = \
@@ -228,16 +246,16 @@ int main()
 	return 0;
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-///// Depth Thread for Recording Depth & Determining If AUV is in Water or Not
-///////////////////////////////////////////////////////////////////////////////
-/*
+/******************************************************************************
+* Depth Thread
+*
+* For Recording Depth & Determining If AUV is in Water or Not
+******************************************************************************/
 PI_THREAD (depth_thread)
 {
-
+	pressure_calib = init_ms5837();
+	sleep(0.001);
 }
-*/
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -249,7 +267,7 @@ PI_THREAD (depth_thread)
 	while(get_state()!=EXITING)
 	{
 		// get pressure value //
-		calib = init_ms5837();
+		pressure_calib = init_ms5837();
 		ms5837 = ms5837_read(calib);
 		//sstate.depth[0] = (ms5837.pressure-1013)*10.197-88.8;
 		sstate.depth[0] = (ms5837.pressure*UNITS_KPA-101.325)/
@@ -325,7 +343,7 @@ void *navigation(void* arg)
 		sstate.gyro = bno055.gyro;
 		sstate.accel = bno055.accel;
 		sstate.mag = bno055.mag;
-		
+
 		// Write captured values to screen
 		printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
 					 sstate.yaw[0], bno055.pitch, bno055.roll,
@@ -334,10 +352,10 @@ void *navigation(void* arg)
 					 bno055.mag);
 		//delay(1000);		// wait 1 sec until next read of IMU values
 		//delay(100);		// wait 0.1 sec until next read of IMU values
-		
-		
+
+
 		// Sanity test: Check if yaw control works
-		
+
 					// setpoints //
 					setpoint.yaw = 0;
 
