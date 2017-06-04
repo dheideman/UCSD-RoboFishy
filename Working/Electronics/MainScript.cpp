@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-///////////////Main script for the 2017 RoboFishy Scripps AUV//////////////////
+///////////////Main script for the 2017 RoboFishy Scripps AUV //////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Libraries.h"
@@ -145,6 +145,12 @@ ms5837_t ms5837;
 // holds the latest temperature value from the DS18B20 temperature sensor
 ds18b20_t ds18b20;
 
+// holds the constants and latest errors of the yaw pid controller
+pid_data_t yaw_pid;
+
+// holds the constants and latest errors of the depth pid controller
+pid_data_t depth_pid;
+
 int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4}; // motor channels
 float mix_matrix[4][4] = \
 			 {{1, -1, 1,-1}, // Roll
@@ -247,7 +253,7 @@ int main()
 ******************************************************************************/
 PI_THREAD (depth_thread)
 {
-	calib = init_ms5837();
+	pressure_calib = init_ms5837();
 	sleep(0.001);
 }
 
@@ -261,7 +267,7 @@ PI_THREAD (depth_thread)
 	while(get_state()!=EXITING)
 	{
 		// get pressure value //
-		calib = init_ms5837();
+		pressure_calib = init_ms5837();
 		ms5837 = ms5837_read(calib);
 		//sstate.depth[0] = (ms5837.pressure-1013)*10.197-88.8;
 		sstate.depth[0] = (ms5837.pressure*UNITS_KPA-101.325)/
@@ -324,7 +330,7 @@ void *navigation(void* arg)
 		//pwmWrite (PIN_BASE+motor_channels[0], 2106.4);	// set motor to 20%
 		//pwmWrite (PIN_BASE+motor_channels[1], 3819.6);	// set motor to 20%
 
-		// read IMU values
+		// read IMU values into sstate
 		bno055 = bno055_read();
 		//float new_yaw = bno055.yaw+sstate.num_yaw_spins*360;
 		sstate.yaw[0] = bno055.yaw;
@@ -337,30 +343,19 @@ void *navigation(void* arg)
 		sstate.gyro = bno055.gyro;
 		sstate.accel = bno055.accel;
 		sstate.mag = bno055.mag;
+
+		// Write captured values to screen
 		printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
-		sstate.yaw[0],bno055.pitch,bno055.roll, bno055.p,bno055.q,bno055.r,
-		bno055.sys,bno055.gyro,bno055.accel,bno055.mag);
+					 sstate.yaw[0], bno055.pitch, bno055.roll,
+					 bno055.p, bno055.q, bno055.r,
+					 bno055.sys, bno055.gyro, bno055.accel,
+					 bno055.mag);
 		//delay(1000);		// wait 1 sec until next read of IMU values
 		//delay(100);		// wait 0.1 sec until next read of IMU values
 
-///////////////////////////////////////////////////////////////////////////////
-////////////////// Sanity Test: Check if yaw control works ////////////////////
-///////////////////////////////////////////////////////////////////////////////
 
-		// switch case to check if the vehicle is in the water
-		//switch (drive_mode)
-		//{
-			/*case DRIVE_OFF:
-				for( i = 0; i <4; i++)
-				{
-					pwmWrite (PIN_BASE+motor_channels[i], 2674);	// set motor output to 0
-				}
-				break;
-			case DRIVE_ON:
-				switch (cont_mode)
-				{
-					case NAVIGATION:
-				*/
+		// Sanity test: Check if yaw control works
+
 					// setpoints //
 					setpoint.yaw = 0;
 
@@ -388,27 +383,12 @@ void *navigation(void* arg)
 
 					// mix controls //
 					printf("u[2]: %f\n", u[2]);
-					/*if(mix_controls(u[0],u[1],u[2],u[3],&new_esc[0],2)<0)
-					{
-						printf("ERROR, mixing failed\n");
-					}
-					for(i = 0; i < 2; i++)
-					{
-						if(new_esc[i]>1.0)
-						{
-							new_esc[i]=1.0;
-						}
-						else if(new_esc[i]<-1.0)
-						{
-							new_esc[i]=-1.0;
-						}
-					}*/
 
 
 					// ESC outputs //
 					sstate.esc_out = u[2];
-					//sstate.esc_out[0] = new_esc[0];		// port motor (CCW)
-					//sstate.esc_out[1] = new_esc[1];		// starboard motor (CW)
+					sstate.esc_out[0] = new_esc[0];		// port motor (CCW)
+					sstate.esc_out[1] = new_esc[1];		// starboard motor (CW)
 
 					// print ESC values
 					//printf("ESC1: %f ESC2: %f \n ", sstate.esc_out[0],sstate.esc_out[1]);

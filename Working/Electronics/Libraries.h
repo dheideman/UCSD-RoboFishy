@@ -62,10 +62,12 @@ typedef enum state_t
 
 
 /******************************************************************************
+*
 * Function Prototypes
 *
 ******************************************************************************/
 
+// System state
 enum state_t get_state();
 int set_state(enum state_t);
 
