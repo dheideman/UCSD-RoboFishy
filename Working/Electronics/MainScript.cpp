@@ -68,19 +68,19 @@ typedef enum loop_mode_t
 {
 	INNER,
 	OUTER,
-}loop_mode_t;	// contains which loop the code is in
+}loop_mode_t; // contains which loop the code is in
 */
 typedef enum cont_mode_t
 {
 	NAVIGATION,
-}cont_mode_t;	// contains the controller mode
+}cont_mode_t; // contains the controller mode
 
 typedef struct setpoint_t
 {
 	float roll;			// roll angle (rad)
 	float roll_rate;	// roll rate (rad/s)
 	float pitch;		// pitch angle (rad)
-	float pitch_rate;	// pitch rate (rad/s)
+	float pitch_rate; // pitch rate (rad/s)
 	float yaw;			// yaw angle in (rad)
 	float yaw_rate;		// yaw rate (rad/s)
 	float depth;		// z component in fixed coordinate system
@@ -113,7 +113,7 @@ typedef struct system_state_t
 	float control_u[4];			// control outputs: depth,roll,pitch,yaw
 	float esc_out;				// control output to motors
 	//float esc_out[4];			// normalized (0-1) outputs to motors
-	int num_yaw_spins; 			// remember number of spins around Z-axis
+	int num_yaw_spins;			// remember number of spins around Z-axis
 }system_state_t;
 
 
@@ -121,19 +121,19 @@ typedef struct system_state_t
 //////////////////////////// Global Variables /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-//drive_mode_t drive_mode; 			// holds the current drive mode
+//drive_mode_t drive_mode;			// holds the current drive mode
 //loop_mode_t loop_mode;				// holds the current loop mode
-cont_mode_t cont_mode; 				// holds the current controller mode
-setpoint_t setpoint; 				// holds the setpoint data structure with current setpoints
-system_state_t sstate; 				// holds the system state structure with current system state
-bno055_t bno055; 					// holds the latest data values from the BNO055
-calib_t calib; 						// holds the calibration values for the MS5837 pressure sensor
-ms5837_t ms5837; 					// holds the latest pressure value from the MS5837 pressure sensor
+cont_mode_t cont_mode;				// holds the current controller mode
+setpoint_t setpoint;				// holds the setpoint data structure with current setpoints
+system_state_t sstate;				// holds the system state structure with current system state
+bno055_t bno055;					// holds the latest data values from the BNO055
+calib_t calib;						// holds the calibration values for the MS5837 pressure sensor
+ms5837_t ms5837;					// holds the latest pressure value from the MS5837 pressure sensor
 ds18b20_t ds18b20;					// holds the latest temperature value from the DS18B20 temperature sensor
 
-int motor_channels[]  = {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4}; // motor channels
+int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4}; // motor channels
 float mix_matrix[4][4] = \
-		   {{1, -1, 1,-1}, // Roll
+			 {{1, -1, 1,-1}, // Roll
 			{ -1, 1,1,-1}, // Pitch
 			{1, -1,-1, -1}, // Yaw
 			{ 1, 1, 1, 1}}; // Thrust
@@ -143,7 +143,7 @@ float mix_matrix[4][4] = \
 ///////////////////////////////// Declare threads /////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-//PI_THREAD (navigation_thread); 		// thread for running the control system (200 Hz)
+//PI_THREAD (navigation_thread);		// thread for running the control system (200 Hz)
 
 // Thread attributes for different priorities
 pthread_attr_t tattrlow, tattrmed, tattrhigh;
@@ -162,8 +162,8 @@ int mix_controls(float r, float p, float y, float t, float* esc, int rotors);
 
 int main()
 {
-    // Initialize python interpreter
-    Py_Initialize();
+		// Initialize python interpreter
+	Py_Initialize();
 
 	//Set up Pi GPIO pins through wiringPi
 	wiringPiSetupGpio();
@@ -175,74 +175,49 @@ int main()
 	}
 	printf("\nAll components are initializated\n");
 	set_state(UNINITIALIZED);
-	//drive_mode = DRIVE_OFF;
-	//cont_mode = NAVIGATION;
-	//loop_mode = OUTER;
-	//loop_mode = INNER; // use this for yaw control and no depth control
+	
 
-	// start all threads w/ error checking //
-	/*if (piThreadCreate (depth_thread) != 0)
-	{
-		printf ("\nFailed to start depth thread\n");
-	}*/
-	/*if (piThreadCreate (trajectory_thread) != 0)
-	{
-		printf ("\nFailed to start trajectory thread\n");
-	}*/
-  // Initialize scheduling parameters, priorities
-  sched_param param;
-  int policy, maxpriority;
-      
-  // Initialize priorities
-  pthread_attr_init(&tattrlow);
-  pthread_attr_init(&tattrmed);
-  pthread_attr_init(&tattrhigh);
-             
-  // Get max priority
-  pthread_attr_getschedpolicy(&tattrlow, &policy);
-  maxpriority = sched_get_priority_max(policy);
-                   
-  // Extract scheduling parameter
-  pthread_attr_getschedparam (&tattrlow, &param);
-                       
-  // Set up low priority
-  param.sched_priority = maxpriority/4;
-  pthread_attr_setschedparam (&tattrlow, &param);
-                             
-  // Set up medium priority
-  param.sched_priority = maxpriority/2;
-  pthread_attr_setschedparam (&tattrmed, &param);
-                                
-  // Set up high priority
-  param.sched_priority = maxpriority-1;
-  pthread_attr_setschedparam (&tattrhigh, &param);
-                                         
-  // Thread handles
-  pthread_t navigationThread;
-                                              
-  // Create threads using modified attributes
-  pthread_create (&navigationThread, &tattrhigh, navigation, NULL);
-                                                  
-                                                  
-                                                  
-  // Destroy the thread attributes
-  pthread_attr_destroy(&tattrlow);
-  pthread_attr_destroy(&tattrmed);
-  pthread_attr_destroy(&tattrhigh);
-  	
- // if (piThreadCreate (navigation_thread) != 0)
-	//{
-		//printf ("\nFailed to start navigation thread\n");
-	//}
-	/*if (piThreadCreate (logging_thread) != 0)
-	{
-		printf ("\nFailed to start logging thread\n");
-	}
-	*/
-	/*if (piThreadCreate (temperature_thread) != 0)
-	{
-		printf ("\nFailed to start temperature thread\n");
-	}*/
+	
+	sched_param param;
+	int policy, maxpriority;
+			
+	// Initialize priorities
+	pthread_attr_init(&tattrlow);
+	pthread_attr_init(&tattrmed);
+	pthread_attr_init(&tattrhigh);
+						 
+	// Get max priority
+	pthread_attr_getschedpolicy(&tattrlow, &policy);
+	maxpriority = sched_get_priority_max(policy);
+									 
+	// Extract scheduling parameter
+	pthread_attr_getschedparam (&tattrlow, &param);
+											 
+	// Set up low priority
+	param.sched_priority = maxpriority/4;
+	pthread_attr_setschedparam (&tattrlow, &param);
+														 
+	// Set up medium priority
+	param.sched_priority = maxpriority/2;
+	pthread_attr_setschedparam (&tattrmed, &param);
+																
+	// Set up high priority
+	param.sched_priority = maxpriority-1;
+	pthread_attr_setschedparam (&tattrhigh, &param);
+																				 
+	// Thread handles
+	pthread_t navigationThread;
+																							
+	// Create threads using modified attributes
+	pthread_create (&navigationThread, &tattrhigh, navigation, NULL);
+																									
+																									
+																									
+	// Destroy the thread attributes
+	pthread_attr_destroy(&tattrlow);
+	pthread_attr_destroy(&tattrmed);
+	pthread_attr_destroy(&tattrhigh);
+	
 	while(get_state()!=EXITING)
 	{
 		usleep(100000);
@@ -303,13 +278,13 @@ PI_THREAD (depth_thread)
 	return 0;
 
 	// read temperature values from DS18B20 temperature sensor //
-					//ds18b20 = ds18b20_read();	// temperature in deg C
+					//ds18b20 = ds18b20_read(); // temperature in deg C
 					//printf("Temperature: %f", ds18b20.temperature);
 					/*if(ds18b20.temperature>60)
 					{
 						for( i=0; i<4; i++ )
 						{
-							pwmWrite(PIN_BASE+i, 2674);	// turn motors off if temperature gets too high
+							pwmWrite(PIN_BASE+i, 2674); // turn motors off if temperature gets too high
 						}
 					}*/
 //}
@@ -324,7 +299,7 @@ void *navigation(void* arg)
 	initialize_motors(motor_channels, HERTZ);
 	//static float new_esc[4];
 	float output_port;		// port motor output
-	float output_starboard;	// starboard motor output
+	float output_starboard; // starboard motor output
 	printf("\n");
 	init_controller();
 	//delay(1000); // Delay is so that the IMU can initialize and run bn055_read.py
@@ -376,12 +351,12 @@ void *navigation(void* arg)
 					setpoint.yaw = 0;
 
 					// control output //
-					if(sstate.yaw[0]<180)	// AUV is pointed right
+					if(sstate.yaw[0]<180) // AUV is pointed right
 					{
 						// u[2] is negative
 						u[2] = KP_YAW*(setpoint.yaw-sstate.yaw[0]); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
 					}
-					else    // AUV is pointed left
+					else		// AUV is pointed left
 					{
 						// u[2] is positive
 						u[2] = KP_YAW*(setpoint.yaw-(sstate.yaw[0]-360)); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
@@ -425,7 +400,7 @@ void *navigation(void* arg)
 					//printf("ESC1: %f ESC2: %f \n ", sstate.esc_out[0],sstate.esc_out[1]);
 
 					// saturate motor output values //
-					if(sstate.yaw[0]>180)	// port motor (CCW)
+					if(sstate.yaw[0]>180) // port motor (CCW)
 					{
 						output_port = -26.18*100*sstate.esc_out+2630;
 						if(output_port<(2630-(0.2*(2630-12))))	// set motor output at 20% of max for testing purposes (20% = 2106.4)
@@ -434,10 +409,10 @@ void *navigation(void* arg)
 							printf("Port PWM Output1: %f\n", output_port);
 						}
 
-						output_starboard = 3155.4-(2630-output_port)/(2630-12)*(4905-2718);	// starboard motor output = base 20% minus percentage that port motor increased by
+						output_starboard = 3155.4-(2630-output_port)/(2630-12)*(4905-2718); // starboard motor output = base 20% minus percentage that port motor increased by
 						if(output_starboard<(2718+0.1*(4905-2718)))
 						{
-							output_starboard =  2718+0.1*(4905-2718);	// set starboard motor output to no less than 10%
+							output_starboard =	2718+0.1*(4905-2718); // set starboard motor output to no less than 10%
 						}
 
 						output_port = output_port-0.2*(2630-12);			// port motor max at 40%
@@ -454,14 +429,14 @@ void *navigation(void* arg)
 							printf("Starboard PWM Output1: %f\n", output_starboard);
 						}
 
-						output_port = 2106.4 - (output_starboard-2718)/(4905-2718)*(2630-12);	// port motor output = base 20% minus percentage that starboard motor increased by
+						output_port = 2106.4 - (output_starboard-2718)/(4905-2718)*(2630-12); // port motor output = base 20% minus percentage that starboard motor increased by
 						if(output_port>(2630-(0.1*(2630-12))))
 						{
 							output_port = 2630-(0.1*(2630-12));		// set port motor output to no less than 10%
 						}
 
 						output_starboard = output_starboard+0.2*(4905-2718);	// starboard motor max at 40%
-						pwmWrite(PIN_BASE+motor_channels[1], output_starboard);	//	starboard motor output = base 20% + yaw control output
+						pwmWrite(PIN_BASE+motor_channels[1], output_starboard); //	starboard motor output = base 20% + yaw control output
 						pwmWrite(PIN_BASE+motor_channels[0], output_port);				// port motor at base 20%
 					}
 
@@ -525,8 +500,8 @@ int init_controller()
 	sstate.r[1] = 0;		// initialize last value of roll rate
 	sstate.depth[0] = 0;	// initialize current depth
 	sstate.depth[1] = 0;	// initialize last value of depth
-	sstate.fdepth[0] = 0;	// initialize filtered depth estimate
-	sstate.fdepth[1] = 0;	// initialize filtered depth estimate
+	sstate.fdepth[0] = 0; // initialize filtered depth estimate
+	sstate.fdepth[1] = 0; // initialize filtered depth estimate
 	sstate.speed = 0;		// initialize speed
 	return 1;
 }
