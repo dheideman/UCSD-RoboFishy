@@ -3,6 +3,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Libraries.h"
+// Multithreading 
+#include <pthread.h>
+#include <sched.h>
+#include <unistd.h>
 
 // Sampling Values //
 #define SAMPLE_RATE 200 // sample rate of main control loop (Hz)
@@ -139,7 +143,10 @@ float mix_matrix[4][4] = \
 ///////////////////////////////// Declare threads /////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-PI_THREAD (navigation_thread); 		// thread for running the control system (200 Hz)
+//PI_THREAD (navigation_thread); 		// thread for running the control system (200 Hz)
+
+// Thread attributes for different priorities
+pthread_attr_t tattrlow, tattrmed, tattrhigh;
 
 ///////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// Declare functions ////////////////////////////
@@ -182,10 +189,51 @@ int main()
 	{
 		printf ("\nFailed to start trajectory thread\n");
 	}*/
-	if (piThreadCreate (navigation_thread) != 0)
-	{
-		printf ("\nFailed to start navigation thread\n");
-	}
+  // Initialize scheduling parameters, priorities
+  sched_param param;
+  int policy, maxpriority;
+      
+  // Initialize priorities
+  pthread_attr_init(&tattrlow);
+  pthread_attr_init(&tattrmed);
+  pthread_attr_init(&tattrhigh);
+             
+  // Get max priority
+  pthread_attr_getschedpolicy(&tattrlow, &policy);
+  maxpriority = sched_get_priority_max(policy);
+                   
+  // Extract scheduling parameter
+  pthread_attr_getschedparam (&tattrlow, &param);
+                       
+  // Set up low priority
+  param.sched_priority = maxpriority/4;
+  pthread_attr_setschedparam (&tattrlow, &param);
+                             
+  // Set up medium priority
+  param.sched_priority = maxpriority/2;
+  pthread_attr_setschedparam (&tattrmed, &param);
+                                
+  // Set up high priority
+  param.sched_priority = maxpriority-1;
+  pthread_attr_setschedparam (&tattrhigh, &param);
+                                         
+  // Thread handles
+  pthread_t navigationThread;
+                                              
+  // Create threads using modified attributes
+  pthread_create (&navigationThread, &tattrhigh, navigation, NULL);
+                                                  
+                                                  
+                                                  
+  // Destroy the thread attributes
+  pthread_attr_destroy(&tattrlow);
+  pthread_attr_destroy(&tattrmed);
+  pthread_attr_destroy(&tattrhigh);
+  	
+ // if (piThreadCreate (navigation_thread) != 0)
+	//{
+		//printf ("\nFailed to start navigation thread\n");
+	//}
 	/*if (piThreadCreate (logging_thread) != 0)
 	{
 		printf ("\nFailed to start logging thread\n");
@@ -269,8 +317,8 @@ PI_THREAD (depth_thread)
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////// Navigation Thread for Main Control Loop ///////////////////
 ///////////////////////////////////////////////////////////////////////////////
-
-PI_THREAD (navigation_thread)
+void *navigation(void* arg)
+//PI_THREAD (navigation_thread)
 {
 	static float u[4];	// normalized roll, pitch, yaw, throttle, components
 	initialize_motors(motor_channels, HERTZ);

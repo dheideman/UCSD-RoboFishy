@@ -75,7 +75,7 @@ int main(int argc, char** argv)
   wiringPiSetup();
   pinMode(LASERPIN, OUTPUT);  
   // Open windows on your monitor
-  namedWindow( SOURCE_WINDOW, CV_WINDOW_AUTOSIZE ); // How Do we know which Images? 
+  namedWindow( SOURCE_WINDOW, CV_WINDOW_AUTOSIZE );  
   
   // Create trackbars for white balancing
 //   createTrackbar( " Red: ", SOURCE_WINDOW, &redbalance, 100, whiteBalanceCallback );
@@ -115,7 +115,7 @@ int main(int argc, char** argv)
   pthread_create (&cameraThread, &tattr, takePictures, NULL);
   
   
-  // Pause for 2 seconds to let everything initialize
+  // Pause for 4 seconds to let everything initialize
   sleep(4);
 
   pthread_t rangeThread;
@@ -132,12 +132,13 @@ int main(int argc, char** argv)
   rangeparam.sched_priority = sched_get_priority_max(SCHED_RR)/2;
   // Set attributes to modified parameters
   pthread_attr_setschedparam (&rangetattr, &rangeparam);
-
+  // Create the RangeFinder thread
   pthread_create (&rangeThread, &rangetattr, rangeFinder, NULL);
   
  
   // Announce that we're done initializing
   cout << "Done Initializing." << endl;
+  // Wait a second to get the rangefinder thread running
   sleep(4); 
   // Set mode to RUNNING
   substate.mode = RUNNING;
