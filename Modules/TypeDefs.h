@@ -53,4 +53,12 @@ typedef struct sub_images_t
   pthread_mutex_t darkframelock;     // Mutex lock for darkframe
 } sub_images_t;
 
+
+//////////////////////
+// Global Variables //
+//////////////////////
+
+// Global State Variable
+sub_state_t substate;       // Needs to be moved out somewhere sometime soon.
+
 #endif

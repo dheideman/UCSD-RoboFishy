@@ -15,9 +15,6 @@ using namespace std;
 //////////////////////////// Global Variables //////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-// Global State Variable
-sub_state_t substate;       // Needs to be moved out somewhere sometime soon.
-
 // Global Variables
 int redbalance = 20;
 int bluebalance = 20;
