@@ -72,7 +72,7 @@ calib_t init_ms5837(void)
 	Py_Initialize();
 	calib_t calib; // create struct to hold calibration data
 
-	//create pointers to python object
+	// create pointers to python object
 	PyObject *pName, *pModule, *pDict, *pFunc, *pValue;
 	pName = PyString_FromString("MS5837"); // input name of python source file
 	PyRun_SimpleString("import sys");

@@ -100,12 +100,29 @@ typedef struct system_state_t
 //////////////////////////// Global Variables /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-setpoint_t setpoint;				// holds the setpoint data structure with current setpoints
-system_state_t sstate;				// holds the system state structure with current system state
-bno055_t bno055;					// holds the latest data values from the BNO055
-calib_t calib;						// holds the calibration values for the MS5837 pressure sensor
-ms5837_t ms5837;					// holds the latest pressure value from the MS5837 pressure sensor
-ds18b20_t ds18b20;					// holds the latest temperature value from the DS18B20 temperature sensor
+// holds the setpoint data structure with current setpoints
+setpoint_t setpoint;
+
+// holds the system state structure with current system statesystem_state_t sstate;
+system_state_t sstate;
+
+// holds the latest data values from the BNO055
+bno055_t bno055;
+
+// holds the calibration values for the MS5837 pressure sensor
+calib_t pressure_calib;
+
+// holds the latest pressure value from the MS5837 pressure sensor
+ms5837_t ms5837;
+
+// holds the latest temperature value from the DS18B20 temperature sensor
+ds18b20_t ds18b20;
+
+// holds the constants and latest errors of the yaw pid controller
+pid_data_t yaw_pid;
+
+// holds the constants and latest errors of the depth pid controller
+pid_data_t depth_pid;
 
 int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4}; // motor channels
 
@@ -116,15 +133,14 @@ pthread_attr_t tattrlow, tattrmed, tattrhigh;
 ///////////////////////////////// Declare threads /////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-void *navigation(void* arg)
+void *navigation(void* arg);
+void *depth_thread(void* arg);
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// Declare functions ////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-// Controller zeroer
-int init_controller();
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// Main Function ///////////////////////////////
@@ -174,12 +190,15 @@ int main()
 	// Set up high priority
 	param.sched_priority = maxpriority-1;
 	pthread_attr_setschedparam (&tattrhigh, &param);
-
+  
+  
 	// Thread handles
 	pthread_t navigationThread;
+	pthread_t depthThread;
 
 	// Create threads using modified attributes
-	pthread_create (&navigationThread, &tattrhigh, navigation, NULL);
+	pthread_create (&navigationThread, &tattrmed, navigation, NULL);
+	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 
 
 
@@ -195,6 +214,17 @@ int main()
 	}
 	cleanup_auv();
 	return 0;
+}
+
+/******************************************************************************
+* Depth Thread
+*
+* For Recording Depth & Determining If AUV is in Water or Not
+******************************************************************************/
+void *depth_thread(void* arg)
+{
+	pressure_calib = init_ms5837();
+	sleep(0.001);
 }
 
 
@@ -219,32 +249,21 @@ void *navigation(void* arg)
 		//pwmWrite (PIN_BASE+motor_channels[0], 2106.4);	// set motor to 20%
 		//pwmWrite (PIN_BASE+motor_channels[1], 3819.6);	// set motor to 20%
 
-		// read IMU values into sstate
+		// read IMU values
 		bno055 = bno055_read();
-		//float new_yaw = bno055.yaw+sstate.num_yaw_spins*360;
-		sstate.yaw[0] = bno055.yaw;
-		sstate.roll = bno055.pitch; // intentionally reversed
-		sstate.pitch[0] = bno055.roll; // intentionally reversed
-		sstate.p[0] = bno055.p;
-		sstate.q[0] = bno055.q;
-		sstate.r[0] = bno055.r;
-		sstate.sys= bno055.sys;
-		sstate.gyro = bno055.gyro;
-		sstate.accel = bno055.accel;
-		sstate.mag = bno055.mag;
-		
+
 		// Write captured values to screen
 		printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
-					 sstate.yaw[0], bno055.pitch, bno055.roll,
+					 bno055.yaw, bno055.pitch, bno055.roll,
 					 bno055.p, bno055.q, bno055.r,
 					 bno055.sys, bno055.gyro, bno055.accel,
 					 bno055.mag);
 		//delay(1000);		// wait 1 sec until next read of IMU values
 		//delay(100);		// wait 0.1 sec until next read of IMU values
-		
-		
+
+
 		// Sanity test: Check if yaw control works
-		
+
 					// setpoints //
 					setpoint.yaw = 0;
 
@@ -327,13 +346,6 @@ void *navigation(void* arg)
 					printf("Port PWM Output2: %f Starboard PWM Output2: %f\n",
 						output_port, output_starboard);
 
-					// set old values to current values //
-					sstate.yaw[1] = sstate.yaw[0];
-					sstate.pitch[1] = sstate.pitch[0];
-					sstate.p[1] = sstate.p[0];
-					sstate.q[1] = sstate.q[0];
-					sstate.r[1] = sstate.r[0];
-
 					delay(250);		// wait 0.25 sec until next read of IMU values
 
 					// sleep for 5 ms //
@@ -343,62 +355,6 @@ void *navigation(void* arg)
 	}
 	return 0;
 }
-
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-/////////////////////// Logging Thread for Recording Data /////////////////////
-///////////////////////////////////////////////////////////////////////////////
-/*
-PI_THREAD (logging_thread)
-{
-	while(get_state()!=EXITING){
-		FILE *fd = fopen("log.txt", "a");
-		char buffer[100] = {0};
-		// add logging values to the next line
-		sprintf(buffer, "%f %f %f %f %i %i %i %i %f %f %f %f\n",sstate.roll, sstate.pitch[0], sstate.yaw[0], sstate.depth[0],sstate.x[0],
-		sstate.y[0], sstate.radius[0], setpoint.x - sstate.x[0], sstate.esc_out[0], sstate.esc_out[1], sstate.esc_out[2], sstate.esc_out[3]);
-		fputs(buffer, fd);
-		fclose(fd);
-		//sleep for 100 ms
-
-		usleep(100000);
-	}
-	return 0;
-}
-*/
-/******************************************************************************
- * int initController()
- *
- * Sets all sstate struct values to zero
- *****************************************************************************/
-int init_controller()
-{
-	sstate.yaw[0] = 0;		// initialize current yaw angle
-	sstate.yaw[1] = 0;		// initialize last value of yaw angle
-	sstate.pitch[0] = 0;	// initialize current pitch angle
-	sstate.pitch[1] = 0;	// initialize last value of pitch angle
-	sstate.r[0] = 0;		// initialize current roll rate
-	sstate.r[1] = 0;		// initialize last value of roll rate
-	sstate.depth[0] = 0;	// initialize current depth
-	sstate.depth[1] = 0;	// initialize last value of depth
-	sstate.fdepth[0] = 0; // initialize filtered depth estimate
-	sstate.fdepth[1] = 0; // initialize filtered depth estimate
-	sstate.speed = 0;		// initialize speed
-	return 1;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-///// Depth Thread for Recording Depth & Determining If AUV is in Water or Not
-///////////////////////////////////////////////////////////////////////////////
-/*
-PI_THREAD (depth_thread)
-{
-
-}
-*/
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -451,3 +407,25 @@ PI_THREAD (depth_thread)
 						}
 					}*/
 //}
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////// Logging Thread for Recording Data /////////////////////
+///////////////////////////////////////////////////////////////////////////////
+/*
+PI_THREAD (logging_thread)
+{
+	while(get_state()!=EXITING){
+		FILE *fd = fopen("log.txt", "a");
+		char buffer[100] = {0};
+		// add logging values to the next line
+		sprintf(buffer, "%f %f %f %f %i %i %i %i %f %f %f %f\n",sstate.roll, sstate.pitch[0], sstate.yaw[0], sstate.depth[0],sstate.x[0],
+		sstate.y[0], sstate.radius[0], setpoint.x - sstate.x[0], sstate.esc_out[0], sstate.esc_out[1], sstate.esc_out[2], sstate.esc_out[3]);
+		fputs(buffer, fd);
+		fclose(fd);
+		//sleep for 100 ms
+
+		usleep(100000);
+	}
+	return 0;
+}
+*/
