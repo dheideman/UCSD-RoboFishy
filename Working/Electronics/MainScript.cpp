@@ -120,8 +120,8 @@ typedef struct system_state_t
 //////////////////////////// Global Variables /////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
 
-drive_mode_t drive_mode; 			// holds the current drive mode
-loop_mode_t loop_mode;				// holds the current loop mode
+//drive_mode_t drive_mode; 			// holds the current drive mode
+//loop_mode_t loop_mode;				// holds the current loop mode
 cont_mode_t cont_mode; 				// holds the current controller mode
 setpoint_t setpoint; 				// holds the setpoint data structure with current setpoints
 system_state_t sstate; 				// holds the system state structure with current system state
@@ -171,8 +171,8 @@ int main()
 	}
 	printf("\nAll components are initializated\n");
 	set_state(UNINITIALIZED);
-	drive_mode = DRIVE_OFF;
-	cont_mode = NAVIGATION;
+	//drive_mode = DRIVE_OFF;
+	//cont_mode = NAVIGATION;
 	//loop_mode = OUTER;
 	loop_mode = INNER; // use this for yaw control and no depth control
 
