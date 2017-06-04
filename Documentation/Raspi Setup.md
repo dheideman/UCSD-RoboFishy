@@ -182,11 +182,21 @@ make
 sudo make install
 ```
 
+Raspberry Pi Camera Module
+------
+If you are using a Raspberry Pi Camera Module, you will need to enable it.  Run
+```
+sudo raspi-config
+```
+and select "Interfacing Options", then select the first menu item, "Enable Camera".
+
+This will require a reboot of the Pi.
+
 
 V4L2 Driver for Raspberry Pi
 ------
 
-Someone said on the internet:
+For those using a Raspberry Pi Camera Module, someone said on the internet:
 
 Using V4L2 driver for raspberry camera `sudo modprobe bcm2835-v4l2`, you could access it like USB camera.
 
