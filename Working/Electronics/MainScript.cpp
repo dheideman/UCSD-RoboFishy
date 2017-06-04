@@ -123,13 +123,27 @@ typedef struct system_state_t
 
 //drive_mode_t drive_mode;			// holds the current drive mode
 //loop_mode_t loop_mode;				// holds the current loop mode
-cont_mode_t cont_mode;				// holds the current controller mode
-setpoint_t setpoint;				// holds the setpoint data structure with current setpoints
-system_state_t sstate;				// holds the system state structure with current system state
-bno055_t bno055;					// holds the latest data values from the BNO055
-calib_t calib;						// holds the calibration values for the MS5837 pressure sensor
-ms5837_t ms5837;					// holds the latest pressure value from the MS5837 pressure sensor
-ds18b20_t ds18b20;					// holds the latest temperature value from the DS18B20 temperature sensor
+
+// holds the current controller mode
+cont_mode_t cont_mode;
+
+// holds the setpoint data structure with current setpoints
+setpoint_t setpoint;
+
+// holds the system state structure with current system statesystem_state_t sstate;
+system_state_t sstate;
+
+// holds the latest data values from the BNO055
+bno055_t bno055;
+
+// holds the calibration values for the MS5837 pressure sensor
+calib_t pressure_calib;
+
+// holds the latest pressure value from the MS5837 pressure sensor
+ms5837_t ms5837;
+
+// holds the latest temperature value from the DS18B20 temperature sensor
+ds18b20_t ds18b20;
 
 int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4}; // motor channels
 float mix_matrix[4][4] = \
@@ -226,16 +240,16 @@ int main()
 	return 0;
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-///// Depth Thread for Recording Depth & Determining If AUV is in Water or Not
-///////////////////////////////////////////////////////////////////////////////
-/*
+/******************************************************************************
+* Depth Thread
+*
+* For Recording Depth & Determining If AUV is in Water or Not
+******************************************************************************/
 PI_THREAD (depth_thread)
 {
-
+	calib = init_ms5837();
+	sleep(0.001);
 }
-*/
 
 
 ///////////////////////////////////////////////////////////////////////////////
