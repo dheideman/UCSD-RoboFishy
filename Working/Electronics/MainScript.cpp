@@ -57,23 +57,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////// Data Structures ////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-/* Testing if QUAFFLE code is necessary
-typedef enum drive_mode_t
-{
-	DRIVE_OFF,
-	DRIVE_ON,
-}drive_mode_t; // contains the drive modes
-
-typedef enum loop_mode_t
-{
-	INNER,
-	OUTER,
-}loop_mode_t; // contains which loop the code is in
-*/
-typedef enum cont_mode_t
-{
-	NAVIGATION,
-}cont_mode_t; // contains the controller mode
 
 typedef struct setpoint_t
 {
@@ -101,14 +84,10 @@ typedef struct system_state_t
 	float r[2];					// first derivative of yaw (rad/s)
 	float ddepth;				// first derivative of depth (m/s)
 
-	float sum_error_pitch;		// sum of past pitch errors
-	float sum_error_yaw;		// sum of past yaw errors
-	float sum_error_depth;		// sum of past pitch errors
-
-	int sys;					// system calibrations status (0=uncalibrated, 3=fully calibrated)
-	int gyro;					// gyro calibrations status (0=uncalibrated, 3=fully calibrated)
-	int accel;					// accelerometer calibrations status (0=uncalibrated, 3=fully calibrated)
-	int mag;					// magnetometer calibrations status (0=uncalibrated, 3=fully calibrated)
+	int sys;		// system calibrations status (0=uncalibrated, 3=fully calibrated)
+	int gyro;		// gyro calibrations status (0=uncalibrated, 3=fully calibrated)
+	int accel;	// accelerometer calibrations status (0=uncalibrated, 3=fully calibrated)
+	int mag;		// magnetometer calibrations status (0=uncalibrated, 3=fully calibrated)
 
 	float control_u[4];			// control outputs: depth,roll,pitch,yaw
 	float esc_out;				// control output to motors
@@ -121,9 +100,6 @@ typedef struct system_state_t
 //////////////////////////// Global Variables /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-//drive_mode_t drive_mode;			// holds the current drive mode
-//loop_mode_t loop_mode;				// holds the current loop mode
-cont_mode_t cont_mode;				// holds the current controller mode
 setpoint_t setpoint;				// holds the setpoint data structure with current setpoints
 system_state_t sstate;				// holds the system state structure with current system state
 bno055_t bno055;					// holds the latest data values from the BNO055
@@ -132,29 +108,23 @@ ms5837_t ms5837;					// holds the latest pressure value from the MS5837 pressure
 ds18b20_t ds18b20;					// holds the latest temperature value from the DS18B20 temperature sensor
 
 int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4}; // motor channels
-float mix_matrix[4][4] = \
-			 {{1, -1, 1,-1}, // Roll
-			{ -1, 1,1,-1}, // Pitch
-			{1, -1,-1, -1}, // Yaw
-			{ 1, 1, 1, 1}}; // Thrust
-
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// Declare threads /////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-//PI_THREAD (navigation_thread);		// thread for running the control system (200 Hz)
 
 // Thread attributes for different priorities
 pthread_attr_t tattrlow, tattrmed, tattrhigh;
 
 ///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////// Declare threads /////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+void *navigation(void* arg)
+
+
+///////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// Declare functions ////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-int init_controller();	// initialize all values to 0
-// combines control inputs into effective control inputs
-int mix_controls(float r, float p, float y, float t, float* esc, int rotors);
+// Controller zeroer
+int init_controller();
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// Main Function ///////////////////////////////
@@ -177,7 +147,7 @@ int main()
 	set_state(UNINITIALIZED);
 
 
-
+  // Initialize threads
 	sched_param param;
 	int policy, maxpriority;
 
@@ -217,7 +187,8 @@ int main()
 	pthread_attr_destroy(&tattrlow);
 	pthread_attr_destroy(&tattrmed);
 	pthread_attr_destroy(&tattrhigh);
-
+  
+  // Run main while loop, wait until it's time to stop
 	while(get_state()!=EXITING)
 	{
 		usleep(100000);
@@ -226,68 +197,6 @@ int main()
 	return 0;
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-///// Depth Thread for Recording Depth & Determining If AUV is in Water or Not
-///////////////////////////////////////////////////////////////////////////////
-/*
-PI_THREAD (depth_thread)
-{
-
-}
-*/
-
-
-///////////////////////////////////////////////////////////////////////////////
-//////////////////////////////// Safety Thread ////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-/*PI_THREAD (safety_thread)
-{
-	// read depth values from MS5837 pressure sensor //
-	while(get_state()!=EXITING)
-	{
-		// get pressure value //
-		calib = init_ms5837();
-		ms5837 = ms5837_read(calib);
-		//sstate.depth[0] = (ms5837.pressure-1013)*10.197-88.8;
-		sstate.depth[0] = (ms5837.pressure*UNITS_KPA-101.325)/
-			(DENSITY_FRESHWATER*GRAVITY)*0.000001;		// current depth in mm
-		printf("%f\n", sstate.depth[0]);
-
-		// check if depth is above start threshold //
-		//sstate.fdepth[0] = A1*(sstate.depth[0]+sstate.depth[1])+A2*sstate.fdepth[1];
-		//if(sstate.fdepth[0]>DEPTH_START)
-		if(sstate.depth[0]<DEPTH_START)
-		{
-			drive_mode = DRIVE_ON;
-			printf("%s\n", "DRIVE_ON");
-		}
-		else
-		{
-			drive_mode = DRIVE_OFF;
-			printf("%s\n", "DRIVE_OFF");
-		}
-
-		// set current depth values as old values //
-		sstate.depth[1] = sstate.depth[0];
-		sstate.fdepth[1] = sstate.fdepth[0];
-
-		//sleep for 50 ms //
-		usleep(50000);
-	}
-	return 0;
-
-	// read temperature values from DS18B20 temperature sensor //
-					//ds18b20 = ds18b20_read(); // temperature in deg C
-					//printf("Temperature: %f", ds18b20.temperature);
-					/*if(ds18b20.temperature>60)
-					{
-						for( i=0; i<4; i++ )
-						{
-							pwmWrite(PIN_BASE+i, 2674); // turn motors off if temperature gets too high
-						}
-					}*/
-//}
 
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////// Navigation Thread for Main Control Loop ///////////////////
@@ -479,3 +388,66 @@ int init_controller()
 	sstate.speed = 0;		// initialize speed
 	return 1;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+///// Depth Thread for Recording Depth & Determining If AUV is in Water or Not
+///////////////////////////////////////////////////////////////////////////////
+/*
+PI_THREAD (depth_thread)
+{
+
+}
+*/
+
+
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////// Safety Thread ////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+/*PI_THREAD (safety_thread)
+{
+	// read depth values from MS5837 pressure sensor //
+	while(get_state()!=EXITING)
+	{
+		// get pressure value //
+		calib = init_ms5837();
+		ms5837 = ms5837_read(calib);
+		//sstate.depth[0] = (ms5837.pressure-1013)*10.197-88.8;
+		sstate.depth[0] = (ms5837.pressure*UNITS_KPA-101.325)/
+			(DENSITY_FRESHWATER*GRAVITY)*0.000001;		// current depth in mm
+		printf("%f\n", sstate.depth[0]);
+
+		// check if depth is above start threshold //
+		//sstate.fdepth[0] = A1*(sstate.depth[0]+sstate.depth[1])+A2*sstate.fdepth[1];
+		//if(sstate.fdepth[0]>DEPTH_START)
+		if(sstate.depth[0]<DEPTH_START)
+		{
+			drive_mode = DRIVE_ON;
+			printf("%s\n", "DRIVE_ON");
+		}
+		else
+		{
+			drive_mode = DRIVE_OFF;
+			printf("%s\n", "DRIVE_OFF");
+		}
+
+		// set current depth values as old values //
+		sstate.depth[1] = sstate.depth[0];
+		sstate.fdepth[1] = sstate.fdepth[0];
+
+		//sleep for 50 ms //
+		usleep(50000);
+	}
+	return 0;
+
+	// read temperature values from DS18B20 temperature sensor //
+					//ds18b20 = ds18b20_read(); // temperature in deg C
+					//printf("Temperature: %f", ds18b20.temperature);
+					/*if(ds18b20.temperature>60)
+					{
+						for( i=0; i<4; i++ )
+						{
+							pwmWrite(PIN_BASE+i, 2674); // turn motors off if temperature gets too high
+						}
+					}*/
+//}
