@@ -212,7 +212,7 @@ logger = logging.getLogger(__name__)
 
 class BNO055(object):
 
-    def __init__(self, rst=18, address=BNO055_ADDRESS_A, i2c=None, gpio=None,
+    def __init__(self, rst=None, address=BNO055_ADDRESS_A, i2c=None, gpio=None,
                  serial_port=None, serial_timeout_sec=5, **kwargs):
         # If reset pin is provided save it and a reference to provided GPIO
         # bus (or the default system GPIO bus if none is provided).
@@ -244,7 +244,7 @@ class BNO055(object):
             # Save a reference to the I2C device instance for later communication.
             self._i2c_device = i2c.get_i2c_device(address, **kwargs)
 
-    def _serial_send(self, command, ack=True, max_attempts=5):
+    def _serial_send(self, command, ack=True, max_attempts=5):#max_attempts=5):
         # Send a serial command and automatically handle if it needs to be resent
         # because of a bus error.  If ack is True then an ackowledgement is
         # expected and only up to the maximum specified attempts will be made
