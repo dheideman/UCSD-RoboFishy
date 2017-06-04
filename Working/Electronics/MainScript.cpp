@@ -126,7 +126,7 @@ bno055_t bno055; 					// holds the latest data values from the BNO055
 calib_t calib; 						// holds the calibration values for the MS5837 pressure sensor
 ms5837_t ms5837; 					// holds the latest pressure value from the MS5837 pressure sensor
 ds18b20_t ds18b20;					// holds the latest temperature value from the DS18B20 temperature sensor
-int i; 								//counting integer
+
 int motor_channels[]  = {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4}; // motor channels 
 float mix_matrix[4][4] = \
 		   {{1, -1, 1,-1}, // Roll
@@ -284,8 +284,8 @@ PI_THREAD (navigation_thread)
 	while(get_state()!=EXITING)
 	{
 		// set motors to constant PWM output for straight line //
-		pwmWrite (PIN_BASE+motor_channels[0], 2106.4);	// set motor to 20%
-		pwmWrite (PIN_BASE+motor_channels[1], 3819.6);	// set motor to 20%
+		//pwmWrite (PIN_BASE+motor_channels[0], 2106.4);	// set motor to 20%
+		//pwmWrite (PIN_BASE+motor_channels[1], 3819.6);	// set motor to 20%
 
 		// read IMU values
 		bno055 = bno055_read();
@@ -462,24 +462,11 @@ PI_THREAD (logging_thread)
 	return 0;
 }
 */
-
-
-
-int mix_controls(float r, float p, float y, float t, float* esc, int rotors)
-{
-	int i = 0;
-	// sum control inputs //
-	for(i=0; i<rotors; i++)
-	{
-		esc[i]=0;						// initialize esc output
-		esc[i]+=r*mix_matrix[0][i];		// roll correction
-		esc[i]+=p*mix_matrix[1][i];		// pitch correction
-		esc[i]+=y*mix_matrix[2][i];		// yaw correction
-		esc[i]+=t*mix_matrix[3][i];		// thrust correction
-	}
-	return 0;
-}
-
+/******************************************************************************
+ * int initController()
+ *
+ * Sets all sstate struct values to zero
+ *****************************************************************************/
 int init_controller()
 {
 	sstate.yaw[0] = 0;		// initialize current yaw angle

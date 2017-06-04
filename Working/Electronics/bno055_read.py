@@ -59,9 +59,9 @@ while not imu_initialized:
     print "Counter: ", counter
     imu_initialized = bno.begin()
     print(imu_initialized)
-    #counter += 1
+    counter += 1
     #print "Counter: ", counter
-    if (time.time() - start_time) > 10:      
+    if (time.time() - start_time) > 10:
         # print failure statement if IMU not intiialized after 10 seconds
         raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')
         break
@@ -72,7 +72,7 @@ while not imu_initialized:
 
 #if not bno.begin():
 #    raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')
-    
+
 
 # Print system status and self test result.
 status, self_test, error = bno.get_system_status()
@@ -97,15 +97,15 @@ while True:
     heading, roll, pitch = bno.read_euler()
 	# Gyroscope data (in degrees per second):
     p,q,r = bno.read_gyroscope()
-    # Read the calibration status, 0=uncalibrated and 3=fully calibrated.	
+    # Read the calibration status, 0=uncalibrated and 3=fully calibrated.
     sys, gyro, accel, mag = bno.get_calibration_status()
     _string = "%f %f %f %f %f %f %i %i %i %i" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
     fifo = open("bno055_fifo.txt", "w")
     #_string = "%f %f %f %f %f %f %i %i %i %i" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
     fifo.write(_string)
     fifo.close()
-    print "%f %f %f %f %f %f %i %i %i %i\n" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
-	
+#    print "%f %f %f %f %f %f %i %i %i %i\n" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
+
     #out, err = cproc.communicate(input)
     # Print everything out.
     #print('Heading={0:0.2F} Roll={1:0.2F} Pitch={2:0.2F}\tSys_cal={3} Gyro_cal={4} Accel_cal={5} Mag_cal={6}'.format(
@@ -127,4 +127,4 @@ while True:
     #x,y,z = bno.read_gravity()
     # Sleep for a second until the next reading.
     #time.sleep(0.001)
-	
+
