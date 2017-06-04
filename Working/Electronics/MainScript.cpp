@@ -159,6 +159,9 @@ int mix_controls(float r, float p, float y, float t, float* esc, int rotors);	//
 
 int main()
 {
+    // Initialize python interpreter
+    Py_Initialize();
+
 	//Set up Pi GPIO pins through wiringPi
 	wiringPiSetupGpio();
 	
