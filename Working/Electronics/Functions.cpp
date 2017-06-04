@@ -36,18 +36,8 @@ int initialize_motors(int channels[4], float freq)
 												//"neutral" or power-off area in order to arm the ESC (long beep); green LED on ESC will light up
 				delay(1000);								
 				active=0;
-				//printf("%i\n",calcTicks(0,HERTZ));
 			}
 		}
-
-	/*
-	for( i = 0; i < 3; i++ )
-	{
-		pwmWrite (PIN_BASE+channels[i], 2631);
-		//pwmWrite (PIN_BASE+channels[i], 1500);
-		//usleep(10000);
-		//sleep(3);
-	}*/
 	//usleep(100000);
 	return fd;
 }
@@ -154,7 +144,13 @@ void start_Py_ms5837(void)
 
 void start_Py_bno055(void)	//	start bno055_read.py code
 {
+	wiringPiSetupGpio();
     char cmd[50];
+    pinMode(17,OUTPUT);		// set pin 17 to OUTPUT
+    digitalWrite(17,LOW);		// set pin LOW
+    delay(2000);			// delay for 2 seconds
+    digitalWrite(17,HIGH);		// set pin HIGH
+    delay(1000);			// delay for 2 seconds
     strcpy(cmd,"python bno055_read.py & exit");
     system(cmd);
     return;
@@ -204,10 +200,10 @@ ds18b20_t ds18b20_read(void)	// read values from ds18b20 temperature sensor
 // Initialization Script: This script runs all of the initialization functions // 
 int scripps_auv_init(void)
 {
-	start_Py_bno055();
-	sleep(10);
-	//start_Py_ms5837();
-	start_Py_ds18b20();
+	start_Py_bno055();			// start IMU
+	sleep(10);			
+	//start_Py_ms5837();		// start pressure sensor
+	start_Py_ds18b20();			// start temperature sensor
 	signal(SIGINT, ctrl_c);	
 	return 0;
 }
