@@ -49,6 +49,14 @@ typedef struct
 	float temperature;
 }ds18b20_t;
 
+//struct for pid controllers (depth and yaw)
+typedef struct 
+{
+	float setpoint;
+	float kp, ki, kd;
+	float perr, ierr, derr;
+};
+
 // Program Flow and State Control
 typedef enum state_t
 {
