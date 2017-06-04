@@ -46,8 +46,8 @@ void *takePictures(void*)
   cap.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);
   
   // Fill images w/ initial images
-  cap.read( brightframe );
-  cap.read( darkframe );
+  cap.read( subimages.brightframe );
+  cap.read( subimages.darkframe );
 
   // Grab all 5 images from the frame buffer in order to clear the buffer
   //printf("%s\n","Before For Loop" );
@@ -60,32 +60,30 @@ void *takePictures(void*)
   while(substate.mode != STOPPED)
   {
     // 'Grab' bright frame from webcam's image buffer
-    //cap.read(brightframe);
     cap.grab();
+    
     // Set exposure now (rather than later)
     picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, DARK_EXPOSURE );
-    digitalWrite(LASERPIN, HIGH);
-    // Retrieve encodes image from grab buffer to 'brightframe' variable
-    cap.retrieve( brightframe );
     
-    //Save the matrix globally
-    subimages.brightframe = brightframe;
-    printf("Brightframe Captured \n");
+    // Turn laser on
+    digitalWrite(LASERPIN, HIGH);
+    
+    // Retrieve encodes image from grab buffer to 'brightframe' variable
+    cap.retrieve( subimages.brightframe );
+    
+  //////
     
     // 'Grab' dark frame from webcam's image buffer
-    //cap.read(darkframe);
     cap.grab();
-
+    
+    // Turn laser off
     digitalWrite(LASERPIN, LOW);
+    
     // Set exposure now (rather than later)
     picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE );
-    // Retrieve encodes image from grab buffer to 'darkframe' variable
-    cap.retrieve( darkframe );
     
-
-    //Save the matrix globally
-    subimages.darkframe = darkframe;
-    printf("Darkframe Captured \n");
+    // Retrieve encodes image from grab buffer to 'darkframe' variable
+    cap.retrieve( subimages.darkframe );
 
     usleep(200000);
   }
