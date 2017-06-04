@@ -1,68 +1,24 @@
 /****************************************************************************
- *PoCRangefinder.cpp
+ * PoCRangefinder.cpp
  *
- * Take images at varying distances from target to calibrate laser stick
+ * Draw what the rangefinder "sees" to the screen
  * - Moved all camera settings and capture into thread
  ******************************************************************************/
 
 #include "PoCRangefinder.h"
 
-
 using namespace cv;
 using namespace std;
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////// Parameters //////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-// Saved image params
-#define IMAGE_PREFIX    "images/image"
-#define IMAGE_EXTENSION ".jpg"
-
-#define BRIGHT_EXPOSURE 100
-#define DARK_EXPOSURE   5
-#define ISO_VALUE       4
-
-// Image Size
-//#define FRAME_WIDTH     3280  // 8 megapixels
-//#define FRAME_HEIGHT    2464  // 8 megapixels
-#define FRAME_WIDTH       1280  // 720 HD
-#define FRAME_HEIGHT      720   // 720 HD
-
-#define LASERPIN      4
-
-// Rangefinder Constants
-#define RANGE_K0          -567.7
-#define RANGE_K1          0.09943
-#define RANGE_K2          -330.0
-
-// Window Names
-#define SOURCE_WINDOW     "Bright Image"
 
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// Global Variables //////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-// Global State Variable
-sub_state_t substate;
-sub_images_t subimages;
-local_images_t localimages;
-
 // Global Variables
-Mat darkframe, brightframe;
-Point p1;
-VideoCapture cap;
 int redbalance = 20;
 int bluebalance = 20;
 int exposure = 5;
-int brightness = 50;
-int contrast = 50;
-int saturation = 50;
-Mat hsvframe;
-
-// V4L2 Global Device Object
-V4L2Control picamctrl;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -99,7 +55,7 @@ void mouseCallback(int event, int x, int y, int flags, void* userdata)
     // print out HSV values (sanity check)
     cout << "H: " << hue << ",\tS:" << sat << ",\tV:" << val << endl;
     
-    Vec3b bgr = darkframe.at<Vec3b>(y, x);
+    Vec3b bgr = localimages.darkframe.at<Vec3b>(y, x);
     int b = bgr.val[0];
     int g = bgr.val[1];
     int r = bgr.val[2];
@@ -108,205 +64,6 @@ void mouseCallback(int event, int x, int y, int flags, void* userdata)
   }
 }
 
-/*******************************************************************************
- * void bcsCallback(int, void*)
- * 
- * Sets brightness, contrast and saturation values (1-100)
- ******************************************************************************/
-void bcsCallback(int, void*)
-{
-  picamctrl.set(V4L2_CID_BRIGHTNESS,brightness);
-  picamctrl.set(V4L2_CID_CONTRAST,contrast);
-  picamctrl.set(V4L2_CID_SATURATION,saturation);
-  // sanity checks: print out brightness, contrast, and saturation values
-  cout << "B: " << picamctrl.get(V4L2_CID_BRIGHTNESS) << "\t";
-  cout << "C: " << picamctrl.get(V4L2_CID_CONTRAST) << "\t";
-  cout << "S: " << picamctrl.get(V4L2_CID_SATURATION) << endl;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////// Threads! ///////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-/*******************************************************************************
- * void *takePictures(void*)
- * 
- * Camera-handling thread: continuously save images as soon as they come in
- ******************************************************************************/
-void *takePictures(void*)
-{
-  // Open the camera
-  cap.open(0);  
-  // opens first video device
-  picamctrl.open("/dev/video0");
-
-  // check to make sure device properly opened
-  if ( !cap.isOpened() )
-  {
-    cerr << "Error opening the camera (OpenCV)" << endl; 
-  }
- 
-  // Set framerate (OpenCV capture property)
-  cap.set(CV_CAP_PROP_FPS,2);
-    
-  // Set camera exposure, white balance, and iso control to manual (driver property)
-  picamctrl.set(V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_MANUAL);
-  picamctrl.set(V4L2_CID_AUTO_N_PRESET_WHITE_BALANCE,V4L2_WHITE_BALANCE_MANUAL);
-  picamctrl.set(V4L2_CID_ISO_SENSITIVITY_AUTO, 0);
-  
-  // Initialize exposure, iso values
-  picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE);
-  picamctrl.set(V4L2_CID_ISO_SENSITIVITY, ISO_VALUE);
-    
-  // Set capture camera size (resolution)
-  cap.set(CV_CAP_PROP_FRAME_WIDTH,FRAME_WIDTH);
-  cap.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);
-  
-  // Fill images w/ initial images
-  cap.read( brightframe );
-  cap.read( darkframe );
-
-  // Grab all 5 images from the frame buffer in order to clear the buffer
-  //printf("%s\n","Before For Loop" );
-  for(int i=0; i<5; i++)
-  {
-    cap.grab();
-  }
-  printf("%s\n","BUFFER CLEARED" );
-  // Loop quickly to pick up images as soon as they are taken
-  while(substate.mode != STOPPED)
-  {
-    // 'Grab' bright frame from webcam's image buffer
-    //cap.read(brightframe);
-    cap.grab();
-    // Set exposure now (rather than later)
-    picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, DARK_EXPOSURE );
-    digitalWrite(LASERPIN, HIGH);
-    // Retrieve encodes image from grab buffer to 'brightframe' variable
-    cap.retrieve( brightframe );
-    
-    //Save the matrix globally
-    subimages.brightframe = brightframe;
-    printf("Brightframe Captured \n");
-    
-    // 'Grab' dark frame from webcam's image buffer
-    //cap.read(darkframe);
-    cap.grab();
-
-    digitalWrite(LASERPIN, LOW);
-    // Set exposure now (rather than later)
-    picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE );
-    // Retrieve encodes image from grab buffer to 'darkframe' variable
-    cap.retrieve( darkframe );
-    
-
-    //Save the matrix globally
-    subimages.darkframe = darkframe;
-    printf("Darkframe Captured \n");
-
-    usleep(200000);
-  }
-    
-  // close camera
-  cap.release();
-  picamctrl.close();
-  
-  // End thread
-  pthread_exit(NULL);
-}
-
-/*******************************************************************************
- * void *rangeFinder(void*)
- * 
- * Calculate range to the bottom and save in a global state variable
- ******************************************************************************/
-void *rangeFinder(void*)
-{
-  int cropwidth = 0.3*FRAME_WIDTH;
-  int cropheight = FRAME_HEIGHT - 1;
-  int cropleft = (FRAME_WIDTH - cropwidth)/2;
-  int croptop = 0;
-  Rect roi(cropleft,croptop,cropwidth,cropheight);
-  // Take a bunch of pictures
-  while(substate.mode != STOPPED) 
-//   for(int i=1; i<=10; i++)
-  { 
-    printf("%s\n","rangeFinder thread" );
-    // Save most recent bright frame to local variables
-    //Mat localbrightframe, localdarkframe;
-    brightframe.copyTo(localimages.brightframe);
-    darkframe(roi).copyTo(localimages.darkframe);
-  cout << "Brightframe size= " << brightframe.size()<< endl;
-  cout << "Darkframe size= " << darkframe.size()<< endl;
-
-    // Convert from BGR to HSV using CV_BGR2HSV conversion
-    //cvtColor(localdarkframe, hsvframe, CV_BGR2HSV);
-    cvtColor(localimages.darkframe, hsvframe, CV_BGR2HSV);
-             
-    // Find laser dot
-    Mat1b mask; // b/w matrix for laser detection
-    
-    // White
-  // inRange(hsvframe, Scalar(0, 0, 40), Scalar(180, 255, 255), mask);
-  
-    // Green
-   // inRange(hsvframe, Scalar(61, 50, 50), Scalar(89, 250, 250), mask);
-   // inRange(hsvframe, Scalar(60, 50, 50), Scalar(89, 255, 255), mask);
-    
-    // Red
-    Mat1b mask1, mask2;
-    inRange(hsvframe, Scalar(1, 50, 50), Scalar(15, 250, 250), mask1);
-    inRange(hsvframe, Scalar(165, 50, 50), Scalar(179, 250, 250), mask2);
-    mask = mask1 | mask2;    
-    
-    // Locate centroid of laser dot
-    Moments m = moments(mask, false);
-    Point p1(m.m10/m.m00+cropleft, m.m01/m.m00);
-    //p1(m.m10/m.m00+cropleft, m.m01/m.m00);
-    
-    // Draw red circle w/ center at centroid on original image
-    //circle( localbrightframe, p1, 10.0, Scalar( 0, 0, 255 ));
-    circle( localimages.brightframe, p1, 10.0, Scalar( 0, 0, 255 ));
-    
-    // Write coordinates in top left corner
-    stringstream coordinates;
-    coordinates << "(" << p1.x << ", " << p1.y << ")";
-    Point org;
-    org.x = 10;
-    org.y = 40;
-    //putText( localbrightframe, coordinates.str(), org, 1, 1, Scalar(0,0,255));
-    putText( localimages.brightframe, coordinates.str(), org, 1, 1, Scalar(0,0,255));
-    
-    // Calculate range
-    stringstream rangestring;
-    if(p1.x !=0)
-    {
-      float range = (RANGE_K0 + RANGE_K1*p1.y) / (RANGE_K2 + p1.y);
-      substate.range = range;
-      cout << "Calculated Range: " << substate.range << endl;
-      rangestring << range << " ft";
-    }
-    else  // If coordinates are (0,0), we haven't detected anything.
-    {
-      rangestring << "------ ft";
-    }
-    
-     // Write range in top left corner
-    Point pnt;
-    pnt.x = 10;
-    pnt.y = 20;
-    putText( localimages.brightframe, rangestring.str(), pnt, 1, 1, Scalar(0,0,255));
-    //putText( brightframeroi, rangestring.str(), pnt, 1, 1, Scalar(0,0,255));
-    
-    // Display image on current open window
-    sleep(1);
-    // imshow( SOURCE_WINDOW, localbrightframe );
-    // imshow( SOURCE_WINDOW, darkframeroi );
-    // imshow( SOURCE_WINDOW, mask );
-   } // end while
-        
-   pthread_exit(NULL);
-}
    
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////// MAIN! //////////////////////////////////////
@@ -318,7 +75,7 @@ int main(int argc, char** argv)
   wiringPiSetup();
   pinMode(LASERPIN, OUTPUT);  
   // Open windows on your monitor
-  namedWindow( SOURCE_WINDOW, CV_WINDOW_AUTOSIZE ); // How Do we know which Images? 
+  namedWindow( SOURCE_WINDOW, CV_WINDOW_AUTOSIZE );  
   
   // Create trackbars for white balancing
 //   createTrackbar( " Red: ", SOURCE_WINDOW, &redbalance, 100, whiteBalanceCallback );
@@ -358,7 +115,7 @@ int main(int argc, char** argv)
   pthread_create (&cameraThread, &tattr, takePictures, NULL);
   
   
-  // Pause for 2 seconds to let everything initialize
+  // Pause for 4 seconds to let everything initialize
   sleep(4);
 
   pthread_t rangeThread;
@@ -375,12 +132,13 @@ int main(int argc, char** argv)
   rangeparam.sched_priority = sched_get_priority_max(SCHED_RR)/2;
   // Set attributes to modified parameters
   pthread_attr_setschedparam (&rangetattr, &rangeparam);
-
+  // Create the RangeFinder thread
   pthread_create (&rangeThread, &rangetattr, rangeFinder, NULL);
   
  
   // Announce that we're done initializing
   cout << "Done Initializing." << endl;
+  // Wait a second to get the rangefinder thread running
   sleep(4); 
   // Set mode to RUNNING
   substate.mode = RUNNING;

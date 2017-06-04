@@ -1,6 +1,6 @@
 # project name 
 # change to match your main c file
-TARGET = V4L2Control
+TARGET = RangeFinder
 
 
 
@@ -18,6 +18,7 @@ RM := rm -f
 
 INSTALL_DIR = /usr/bin/
 
+# compiling command
 $(OBJECTS): %.o : %.cpp
 	@$(TOUCH) $(CC) $(CFLAGS) -c $< -o $(@)
 	@echo "Compiled "$<" successfully!"
