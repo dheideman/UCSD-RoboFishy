@@ -55,7 +55,7 @@ void mouseCallback(int event, int x, int y, int flags, void* userdata)
     // print out HSV values (sanity check)
     cout << "H: " << hue << ",\tS:" << sat << ",\tV:" << val << endl;
     
-    Vec3b bgr = darkframe.at<Vec3b>(y, x);
+    Vec3b bgr = localimages.darkframe.at<Vec3b>(y, x);
     int b = bgr.val[0];
     int g = bgr.val[1];
     int r = bgr.val[2];
