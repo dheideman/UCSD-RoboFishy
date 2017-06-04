@@ -7,6 +7,8 @@
  * 
  ******************************************************************************/
 
+#include "RangeFinder.h"
+
 using namespace cv;
 using namespace std;
 

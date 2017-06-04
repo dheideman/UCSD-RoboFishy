@@ -6,7 +6,9 @@
  * Pull images from camera as soon as they are taken and store them safely
  * 
  ******************************************************************************/
- 
+
+#include "Camera.h"
+
 using namespace cv;
 using namespace std;
  /*******************************************************************************
