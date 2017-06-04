@@ -4,14 +4,6 @@
 ////////////////////////////// PCA9685 FUNCTIONS //////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
 
-// calculate PWM input //
-int calcTicks(float impulseMs, int hertz)
-{
-	float cycleMs = 1000.0f / hertz;									// calculate period
-	//return (int)(MAX_PWM * (0.45*impulseMs+1.64) / cycleMs + 0.5f);		// formula for setting PWM output
-	return (int)(MAX_PWM * (0.45*impulseMs+1.64) / cycleMs + 0.5f);		// formula for setting PWM output
-}
-
 // initialize motors function //
 int initialize_motors(int channels[4], float freq)
 {
@@ -59,14 +51,18 @@ int saturate_number(float* val, float min, float max)
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////
-////////////////////////////// MS5837 FUNCTIONS ///////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
+/***************************************************************************
+ * calib_t init_ms5837
+ * 
+ * Pressure Sensor Initialization
+***************************************************************************/
 
 calib_t init_ms5837(void)
 {
 	Py_Initialize();
 	calib_t calib; // create struct to hold calibration data
+
+	//create pointers to python object
 	PyObject *pName, *pModule, *pDict, *pFunc, *pValue;
 	pName = PyString_FromString("MS5837"); // input name of python source file
 	PyRun_SimpleString("import sys");
@@ -144,7 +140,7 @@ void start_Py_ms5837(void)
 
 void start_Py_bno055(void)	//	start bno055_read.py code
 {
-	wiringPiSetupGpio();
+	
     char cmd[50];
     pinMode(17,OUTPUT);		// set pin 17 to OUTPUT
     digitalWrite(17,LOW);		// set pin LOW
@@ -160,7 +156,9 @@ bno055_t bno055_read(void)	// read values from bno055 IMU
 { 
 	bno055_t bno055;
 	char buf[1000];
-	FILE *fd = fopen( "/home/pi/UCSD-RoboFishy/Working/Electronics/bno055_fifo.txt", "r");
+	FILE *fd = fopen( "bno055_fifo.txt", "r");
+	//FILE *fd = fopen( "/home/pi/UCSD-RoboFishy/Working/Electronics/bno055_fifo.txt", "r");
+
 	fgets(buf,1000,fd);
 	fclose(fd);
 	sscanf(buf,"%f %f %f %f %f %f %i %i %i %i", 
@@ -208,8 +206,6 @@ int scripps_auv_init(void)
 	return 0;
 }
 
-// state variable for loop and thread control //
-enum state_t state = UNINITIALIZED;
 
 // get system state //
 enum state_t get_state()

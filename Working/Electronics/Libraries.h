@@ -1,18 +1,9 @@
-/* Python API: defines a set of functions, macros and variables that provide
-access to most aspects of the Python run-time system
-Note Since Python may define some pre-processor definitions which affect the
-standard headers on some systems, you must include Python.h before any standard
- headers are included. */
-#include <Python.h>
-
-// PWM Driver
-#include <pca9685.h>
-
+#include "pca9685.h"
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <Python.h>
 #include <time.h>
 #include <signal.h>		// capture control-c
 
@@ -41,27 +32,27 @@ typedef struct
 }calib_t;
 
 // struct for holding ms5837 return values
-typedef struct
+typedef struct 
 {
 	//float pressure, temperature;
 	float pressure;
 }ms5837_t;
 
 // struct for holding bno055 return values
-typedef struct
+typedef struct 
 {
 	float yaw, roll, pitch, p, q, r;
 	int sys, gyro, accel, mag;
 }bno055_t;
 
 // struct for holding ds18b20 temperature sensor return values
-typedef struct
+typedef struct 
 {
 	float temperature;
 }ds18b20_t;
 
 // Program Flow and State Control
-typedef enum state_t
+typedef enum state_t 
 {
 	UNINITIALIZED,
 	RUNNING,

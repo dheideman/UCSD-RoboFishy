@@ -71,6 +71,10 @@ typedef enum cont_mode_t
 	NAVIGATION,
 }cont_mode_t;	// contains the controller mode
 
+// state variable for loop and thread control //
+enum state_t state = UNINITIALIZED;
+
+
 typedef struct setpoint_t
 {
 	float roll;			// roll angle (rad)
@@ -139,13 +143,7 @@ float mix_matrix[4][4] = \
 ///////////////////////////////// Declare threads /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
 
-PI_THREAD (trajectory_thread); 		// thread for defining the setpoints (Undetermined rate up to user keep below 2 Hz)
 PI_THREAD (navigation_thread); 		// thread for running the control system (200 Hz)
-PI_THREAD (depth_thread); 			// thread for measuring the distance from the bottom (20 Hz)
-PI_THREAD (safety_thread);			// thread for ensuring AUV doesn't travel past 10m and cutting power if housing gets too hot
-PI_THREAD (vision_thread);			// thread for relative positioning via RaspiCam 
-PI_THREAD (logging_thread); 		// thread for recording data (10 Hz)
-
 
 ///////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// Declare functions ////////////////////////////////
@@ -161,6 +159,9 @@ int mix_controls(float r, float p, float y, float t, float* esc, int rotors);	//
 
 int main()
 {
+	//Set up Pi GPIO pins through wiringPi
+	wiringPiSetupGpio();
+	
 	// Check if AUV is initialized correctly //
 	if(scripps_auv_init()<0)
 	{
