@@ -316,6 +316,17 @@ int cleanup_auv()
 	return 0;
 }
 
+/******************************************************************************
+* int yaw_controller()
+*
+* Takes in readings from IMU and calculates a percentage (-1 to 1)
+******************************************************************************/
+int yaw_controller()
+{
+// read IMU values into sstate
+		bno055 = bno055_read();
+		
+}
 /***************************************************************************
  * int set_motors()
  *
