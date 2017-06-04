@@ -1,4 +1,7 @@
-	#include "Libraries.h"
+#include "Libraries.h"
+
+// state variable for loop and thread control //
+enum state_t state = UNINITIALIZED;
 
 /******************************************************************************
 * PWM Driver - PCA9685
@@ -141,7 +144,7 @@ void start_Py_bno055(void)	//	start bno055_read.py code
 	// clear fifo file
 	FILE* fd = fopen("bno055_read.py", "r");
   PyRun_SimpleFile(fd,"bno055_read.py");
-	nanosleep(100*1000000);
+	//nanosleep(100*1000000);
 	FILE* fifo = fopen("bno055_fifo.txt","r");
 	fclose(fifo);
 

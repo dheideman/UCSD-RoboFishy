@@ -71,9 +71,6 @@ typedef enum cont_mode_t
 	NAVIGATION,
 }cont_mode_t;	// contains the controller mode
 
-// state variable for loop and thread control //
-enum state_t state = UNINITIALIZED;
-
 typedef struct setpoint_t
 {
 	float roll;			// roll angle (rad)
