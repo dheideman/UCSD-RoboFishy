@@ -51,6 +51,7 @@ bno = BNO055.BNO055(serial_port='/dev/ttyAMA0', rst=18)
 #if not bno.begin():
 imu_initialized = False
 print "Initializing IMU..."
+counter = 0;
 start_time = time.time()
 counter = 0
 while not imu_initialized:
@@ -71,6 +72,7 @@ while not imu_initialized:
 
 #if not bno.begin():
 #    raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')
+    
 
 # Print system status and self test result.
 status, self_test, error = bno.get_system_status()

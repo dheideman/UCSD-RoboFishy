@@ -29,6 +29,8 @@ using namespace std;
 #define FRAME_WIDTH       1280  // 720 HD
 #define FRAME_HEIGHT      720   // 720 HD
 
+#define LASERPIN      4
+
 // Rangefinder Constants
 #define RANGE_K0          -567.7
 #define RANGE_K1          0.09943
@@ -179,8 +181,10 @@ void *takePictures(void*)
     cap.grab();
     // Set exposure now (rather than later)
     picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, DARK_EXPOSURE );
+    digitalWrite(LASERPIN, HIGH);
     // Retrieve encodes image from grab buffer to 'brightframe' variable
     cap.retrieve( brightframe );
+    
     //Save the matrix globally
     subimages.brightframe = brightframe;
     printf("Brightframe Captured \n");
@@ -188,10 +192,14 @@ void *takePictures(void*)
     // 'Grab' dark frame from webcam's image buffer
     //cap.read(darkframe);
     cap.grab();
+
+    digitalWrite(LASERPIN, LOW);
     // Set exposure now (rather than later)
     picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE );
     // Retrieve encodes image from grab buffer to 'darkframe' variable
     cap.retrieve( darkframe );
+    
+
     //Save the matrix globally
     subimages.darkframe = darkframe;
     printf("Darkframe Captured \n");
@@ -228,6 +236,8 @@ void *rangeFinder(void*)
     //Mat localbrightframe, localdarkframe;
     brightframe.copyTo(localimages.brightframe);
     darkframe(roi).copyTo(localimages.darkframe);
+  cout << "Brightframe size= " << brightframe.size()<< endl;
+  cout << "Darkframe size= " << darkframe.size()<< endl;
 
     // Convert from BGR to HSV using CV_BGR2HSV conversion
     //cvtColor(localdarkframe, hsvframe, CV_BGR2HSV);
@@ -305,8 +315,8 @@ int main(int argc, char** argv)
 { 
   // We're initializing!
   substate.mode = INITIALIZING;
-  
-    
+  wiringPiSetup();
+  pinMode(LASERPIN, OUTPUT);  
   // Open windows on your monitor
   namedWindow( SOURCE_WINDOW, CV_WINDOW_AUTOSIZE ); // How Do we know which Images? 
   
