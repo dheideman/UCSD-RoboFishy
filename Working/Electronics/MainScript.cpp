@@ -1,16 +1,16 @@
 ///////////////////////////////////////////////////////////////////////////////
-///////////////Main script for the 2017 RoboFishy Scripps AUV//////////////////
+///////////////Main script for the 2017 RoboFishy Scripps AUV //////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Libraries.h"
-// Multithreading 
+// Multithreading
 #include <pthread.h>
 #include <sched.h>
 #include <unistd.h>
 
 // Sampling Values //
 #define SAMPLE_RATE 200 // sample rate of main control loop (Hz)
-#define DT 0.005				// timestep; make sure this is equal to 1/SAMPLE_RATE!
+#define DT 0.005		// timestep; make sure this is equal to 1/SAMPLE_RATE!
 
 // Conversion Factors //
 #define UNITS_KPA 0.1 // converts pressure from mbar to kPa
@@ -77,14 +77,14 @@ typedef enum cont_mode_t
 
 typedef struct setpoint_t
 {
-	float roll;			// roll angle (rad)
+	float roll;				// roll angle (rad)
 	float roll_rate;	// roll rate (rad/s)
-	float pitch;		// pitch angle (rad)
-	float pitch_rate; // pitch rate (rad/s)
-	float yaw;			// yaw angle in (rad)
+	float pitch;			// pitch angle (rad)
+	float pitch_rate;	// pitch rate (rad/s)
+	float yaw;				// yaw angle in (rad)
 	float yaw_rate;		// yaw rate (rad/s)
-	float depth;		// z component in fixed coordinate system
-	float speed;		// speed setpoint
+	float depth;			// z component in fixed coordinate system
+	float speed;			// speed setpoint
 }setpoint_t;
 
 typedef struct system_state_t
@@ -175,49 +175,49 @@ int main()
 	}
 	printf("\nAll components are initializated\n");
 	set_state(UNINITIALIZED);
-	
 
-	
+
+
 	sched_param param;
 	int policy, maxpriority;
-			
+
 	// Initialize priorities
 	pthread_attr_init(&tattrlow);
 	pthread_attr_init(&tattrmed);
 	pthread_attr_init(&tattrhigh);
-						 
+
 	// Get max priority
 	pthread_attr_getschedpolicy(&tattrlow, &policy);
 	maxpriority = sched_get_priority_max(policy);
-									 
+
 	// Extract scheduling parameter
 	pthread_attr_getschedparam (&tattrlow, &param);
-											 
+
 	// Set up low priority
 	param.sched_priority = maxpriority/4;
 	pthread_attr_setschedparam (&tattrlow, &param);
-														 
+
 	// Set up medium priority
 	param.sched_priority = maxpriority/2;
 	pthread_attr_setschedparam (&tattrmed, &param);
-																
+
 	// Set up high priority
 	param.sched_priority = maxpriority-1;
 	pthread_attr_setschedparam (&tattrhigh, &param);
-																				 
+
 	// Thread handles
 	pthread_t navigationThread;
-																							
+
 	// Create threads using modified attributes
 	pthread_create (&navigationThread, &tattrhigh, navigation, NULL);
-																									
-																									
-																									
+
+
+
 	// Destroy the thread attributes
 	pthread_attr_destroy(&tattrlow);
 	pthread_attr_destroy(&tattrmed);
 	pthread_attr_destroy(&tattrhigh);
-	
+
 	while(get_state()!=EXITING)
 	{
 		usleep(100000);
