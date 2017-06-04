@@ -130,6 +130,8 @@ bno055_t bno055;					// holds the latest data values from the BNO055
 calib_t calib;						// holds the calibration values for the MS5837 pressure sensor
 ms5837_t ms5837;					// holds the latest pressure value from the MS5837 pressure sensor
 ds18b20_t ds18b20;					// holds the latest temperature value from the DS18B20 temperature sensor
+pid_data_t yaw_pid;					// holds the constants and latest errors of the yaw pid controller
+pid_data_t depth_pid;				// holds the constants and latest errors of the depth pid controller
 
 int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4}; // motor channels
 float mix_matrix[4][4] = \
