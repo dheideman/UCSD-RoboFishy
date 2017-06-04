@@ -54,14 +54,23 @@ print "Initializing IMU..."
 start_time = time.time()
 counter = 0
 while not imu_initialized:
+    counter += 1
+    print "Counter: ", counter
     imu_initialized = bno.begin()
     print(imu_initialized)
-    counter += 1
-    print(counter)
+    #counter += 1
+    #print "Counter: ", counter
     if (time.time() - start_time) > 10:      
         # print failure statement if IMU not intiialized after 10 seconds
         raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')
         break
+
+#bno.begin()
+#time.sleep(0.002)
+#bno.begin()
+
+#if not bno.begin():
+#    raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')
 
 # Print system status and self test result.
 status, self_test, error = bno.get_system_status()
