@@ -37,6 +37,9 @@
 #include <linux/videodev2.h>
 #include "../../Modules/V4L2Control/V4L2Control.h"
 
+// Camera
+#include "../../Modules/Camera/Camera.h"
+
 
 ///////////////
 // Constants //
@@ -72,8 +75,8 @@ typedef struct local_images_t
 
 // For writing image to screen
 local_images_t localimages;
-Mat darkframe, brightframe;
-Mat hsvframe;
-Point p1;
+cv::Mat darkframe, brightframe;
+cv::Mat hsvframe;
+cv::Point p1;
 
 #endif

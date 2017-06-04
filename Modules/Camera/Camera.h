@@ -70,10 +70,7 @@ void *takePictures(void*);
 //////////////////////
 
 // Image Capture Object
-VideoCapture cap;
-
-// V4L2 Global Device Object
-V4L2Control picamctrl;
+cv::VideoCapture cap;
 
 // Image Storage
 sub_images_t subimages;
