@@ -29,7 +29,7 @@
 typedef struct
 {
 	float C1, C2, C3, C4, C5, C6;
-}calib_t;
+}pressure_calib_t;
 
 // struct for holding ms5837 return values
 typedef struct
@@ -78,8 +78,8 @@ int saturate_number(float* val, float min, float max);
 
 
 // Functions for Reading MS5837 Pressure Sensor
-calib_t init_ms5837(); // initialize ms5837
-ms5837_t ms5837_read(calib_t arg_in); // read values from ms5837
+pressure_calib_t init_ms5837(); // initialize ms5837
+ms5837_t ms5837_read(pressure_calib_t arg_in); // read values from ms5837
 
 // Functions for Reading BNO055 IMU
 void start_Py_bno055(void); // start Python background process
