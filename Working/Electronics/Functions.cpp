@@ -141,14 +141,11 @@ void start_Py_ms5837(void)
 void start_Py_bno055(void)	//	start bno055_read.py code
 {
 	
-    char cmd[50];
-    pinMode(17,OUTPUT);		// set pin 17 to OUTPUT
-    digitalWrite(17,LOW);		// set pin LOW
-    delay(2000);			// delay for 2 seconds
-    digitalWrite(17,HIGH);		// set pin HIGH
-    delay(1000);			// delay for 2 seconds
-    strcpy(cmd,"python bno055_read.py & exit");
-    system(cmd);
+//    char cmd[50];
+//    strcpy(cmd,"python bno055_read.py & exit");
+    FILE* fd = fopen("bno055_read.py", "r");
+    PyRun_SimpleFile(fd,"bno055_read.py");
+//    system(cmd);
     return;
 }
 
