@@ -7,6 +7,9 @@
  * 
  ******************************************************************************/
  
+ #ifndef CAMERA_H
+ #define CAMERA_H
+ 
  // OpenCV
 #include <cv.hpp>
 #include <highgui.h>
@@ -75,3 +78,4 @@ V4L2Control picamctrl;
 // Image Storage
 sub_images_t subimages;
 
+#endif

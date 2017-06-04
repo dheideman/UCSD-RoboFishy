@@ -7,6 +7,9 @@
  * 
  ******************************************************************************/
 
+#ifndef RANGEFINDER_H
+#define RANGEFINDER_H
+
 // OpenCV
 #include <cv.hpp>
 #include <highgui.h>
@@ -73,3 +76,4 @@ Mat darkframe, brightframe;
 Mat hsvframe;
 Point p1;
 
+#endif

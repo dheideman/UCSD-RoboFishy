@@ -5,6 +5,9 @@
  * 
  ******************************************************************************/
 
+#ifndef TYPEDEFS_H
+#define TYPEDEFS_H
+
 #include <cv.hpp>
 
 //////////////////////
@@ -50,3 +53,4 @@ typedef struct sub_images_t
   pthread_mutex_t darkframelock;     // Mutex lock for darkframe
 } sub_images_t;
 
+#endif
