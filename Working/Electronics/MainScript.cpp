@@ -73,14 +73,14 @@ typedef enum cont_mode_t
 
 typedef struct setpoint_t
 {
-	float roll;			// roll angle (rad)
+	float roll;				// roll angle (rad)
 	float roll_rate;	// roll rate (rad/s)
-	float pitch;		// pitch angle (rad)
+	float pitch;			// pitch angle (rad)
 	float pitch_rate;	// pitch rate (rad/s)
-	float yaw;			// yaw angle in (rad)
+	float yaw;				// yaw angle in (rad)
 	float yaw_rate;		// yaw rate (rad/s)
-	float depth;		// z component in fixed coordinate system
-	float speed;		// speed setpoint
+	float depth;			// z component in fixed coordinate system
+	float speed;			// speed setpoint
 }setpoint_t;
 
 typedef struct system_state_t
