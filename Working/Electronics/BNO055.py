@@ -244,7 +244,7 @@ class BNO055(object):
             # Save a reference to the I2C device instance for later communication.
             self._i2c_device = i2c.get_i2c_device(address, **kwargs)
 
-    def _serial_send(self, command, ack=True, max_attempts=5):
+    def _serial_send(self, command, ack=True, max_attempts=5):#max_attempts=5):
         # Send a serial command and automatically handle if it needs to be resent
         # because of a bus error.  If ack is True then an ackowledgement is
         # expected and only up to the maximum specified attempts will be made

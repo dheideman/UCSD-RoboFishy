@@ -1,19 +1,19 @@
-///////////////////////////////////////////////////////////////////////////////////
-///////////////Main script for the 2017 RoboFishy Scripps AUV//////////////////////
-///////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////Main script for the 2017 RoboFishy Scripps AUV//////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 #include "Libraries.h"
 
 // Sampling Values //
 #define SAMPLE_RATE 200 // sample rate of main control loop (Hz)
-#define DT 0.005		// timestep; make sure this is equal to 1/SAMPLE_RATE!
+#define DT 0.005				// timestep; make sure this is equal to 1/SAMPLE_RATE!
 
 // Conversion Factors //
 #define UNITS_KPA 0.1 // converts pressure from mbar to kPa
 
-///////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// Controller Gains ////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////// Controller Gains ////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 // Pitch Controller //
 #define KP_PITCH 0
@@ -32,7 +32,7 @@
 
 // Saturation Constants //
 #define PITCH_SAT 10	// upper limit of pitch controller
-#define YAW_SAT 1		// upper limit of yaw controller
+#define YAW_SAT 1			// upper limit of yaw controller
 #define INT_SAT 10		// upper limit of integral windup
 #define DINT_SAT 10		// upper limit of depth integral windup
 
@@ -50,10 +50,10 @@
 // Depth start value //
 #define DEPTH_START -50 //starting depth (mm)
 
-///////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////// Data Structures ////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
-
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////// Data Structures ////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+/* Testing if QUAFFLE code is necessary
 typedef enum drive_mode_t
 {
 	DRIVE_OFF,
@@ -65,7 +65,7 @@ typedef enum loop_mode_t
 	INNER,
 	OUTER,
 }loop_mode_t;	// contains which loop the code is in
-
+*/
 typedef enum cont_mode_t
 {
 	NAVIGATION,
@@ -86,10 +86,10 @@ typedef struct setpoint_t
 typedef struct system_state_t
 {
 	float roll;					// current roll angle (rad)
-	float pitch[2];				// current pitch angle (rad) 0: current value, 1: last value
+	float pitch[2];			// current pitch angle (rad) 0: current value, 1: last value
 	float yaw[2];				// current yaw angle (rad) 0: current value, 1: last value
-	float depth[2];				// depth estimate (m)
-	float fdepth[2];			// filtered depth estimate (m)
+	float depth[2];			// depth estimate (m)
+	float fdepth[2];		// filtered depth estimate (m)
 	float speed;				// speed (m/s)
 
 	float p[2];					// first derivative of roll (rad/s)
@@ -117,8 +117,8 @@ typedef struct system_state_t
 //////////////////////////// Global Variables /////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
 
-drive_mode_t drive_mode; 			// holds the current drive mode
-loop_mode_t loop_mode;				// holds the current loop mode
+//drive_mode_t drive_mode; 			// holds the current drive mode
+//loop_mode_t loop_mode;				// holds the current loop mode
 cont_mode_t cont_mode; 				// holds the current controller mode
 setpoint_t setpoint; 				// holds the setpoint data structure with current setpoints
 system_state_t sstate; 				// holds the system state structure with current system state
@@ -126,8 +126,8 @@ bno055_t bno055; 					// holds the latest data values from the BNO055
 calib_t calib; 						// holds the calibration values for the MS5837 pressure sensor
 ms5837_t ms5837; 					// holds the latest pressure value from the MS5837 pressure sensor
 ds18b20_t ds18b20;					// holds the latest temperature value from the DS18B20 temperature sensor
-int i; 								//counting integer
-int motor_channels[]  = {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4}; // motor channels 
+
+int motor_channels[]  = {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4}; // motor channels
 float mix_matrix[4][4] = \
 		   {{1, -1, 1,-1}, // Roll
 			{ -1, 1,1,-1}, // Pitch
@@ -139,21 +139,15 @@ float mix_matrix[4][4] = \
 ///////////////////////////////// Declare threads /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
 
-PI_THREAD (trajectory_thread); 		// thread for defining the setpoints (Undetermined rate up to user keep below 2 Hz)
-PI_THREAD (navigation_thread); 		// thread for running the control system (200 Hz) & ensuring AUV doesn't travel more than 10m down
-PI_THREAD (depth_thread); 			// thread for measuring the pressure of the system (20 Hz)
-PI_THREAD (temperature_thread);		// thread for measuring internal temperature of electronics housing
-PI_THREAD (vision_thread);			// thread for relative positioning via RaspiCam 
-PI_THREAD (logging_thread); 		// thread for recording data (10 Hz)
-
+PI_THREAD (navigation_thread); 		// thread for running the control system (200 Hz)
 
 ///////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// Declare functions ////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
 
-int init_controller();															// initialize all values to 0
-int mix_controls(float r, float p, float y, float t, float* esc, int rotors);	// combines control inputs into effective control inputs
-
+int init_controller();	// initialize all values to 0
+// combines control inputs into effective control inputs
+int mix_controls(float r, float p, float y, float t, float* esc, int rotors);
 
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// Main Function ///////////////////////////////////
@@ -161,17 +155,23 @@ int mix_controls(float r, float p, float y, float t, float* esc, int rotors);	//
 
 int main()
 {
+    // Initialize python interpreter
+    Py_Initialize();
+
+	//Set up Pi GPIO pins through wiringPi
+	wiringPiSetupGpio();
+
 	// Check if AUV is initialized correctly //
 	if(scripps_auv_init()<0)
 	{
 		return -1;
 	}
-	printf("\nInitialization complete\n");
+	printf("\nAll components are initializated\n");
 	set_state(UNINITIALIZED);
-	drive_mode = DRIVE_OFF;
-	cont_mode = NAVIGATION;
+	//drive_mode = DRIVE_OFF;
+	//cont_mode = NAVIGATION;
 	//loop_mode = OUTER;
-	loop_mode = INNER; // use this for yaw control and no depth control
+	//loop_mode = INNER; // use this for yaw control and no depth control
 
 	// start all threads w/ error checking //
 	/*if (piThreadCreate (depth_thread) != 0)
@@ -210,6 +210,17 @@ int main()
 /*
 PI_THREAD (depth_thread)
 {
+
+}
+*/
+
+
+///////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////// Safety Thread ////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+/*PI_THREAD (safety_thread)
+{
+	// read depth values from MS5837 pressure sensor //
 	while(get_state()!=EXITING)
 	{
 		// get pressure value //
@@ -221,7 +232,7 @@ PI_THREAD (depth_thread)
 		printf("%f\n", sstate.depth[0]);
 
 		// check if depth is above start threshold //
-		//sstate.fdepth[0] = A1*(sstate.depth[0]+sstate.depth[1])+A2*sstate.fdepth[1]; 
+		//sstate.fdepth[0] = A1*(sstate.depth[0]+sstate.depth[1])+A2*sstate.fdepth[1];
 		//if(sstate.fdepth[0]>DEPTH_START)
 		if(sstate.depth[0]<DEPTH_START)
 		{
@@ -233,38 +244,30 @@ PI_THREAD (depth_thread)
 			drive_mode = DRIVE_OFF;
 			printf("%s\n", "DRIVE_OFF");
 		}
-		
-		// saturation for depth integral windup //
-		sstate.sum_error_depth += setpoint.depth-sstate.depth[0];
-				if(sstate.sum_error_depth>DINT_SAT)
-				{
-					sstate.sum_error_depth=DINT_SAT;
-				}
-				else if(sstate.sum_error_depth<-DINT_SAT)
-				{
-					sstate.sum_error_depth=-DINT_SAT;
-				}
 
-		if(setpoint.speed>0 &&  loop_mode == OUTER)
-		{
-			//setpoint.pitch = KP_DEPTH*(setpoint.depth-sstate.depth[0]) - KD_DEPTH*(sstate.depth[0]-sstate.depth[1])/0.05; // pitch controller
-			setpoint.pitch = KP_DEPTH*(setpoint.depth-sstate.depth[0]) + KI_DEPTH*(sstate.sum_error_depth) + KD_DEPTH*(sstate.depth[0]-sstate.depth[1])/DT; // pitch controller
-		}
-
+		// set current depth values as old values //
 		sstate.depth[1] = sstate.depth[0];
 		sstate.fdepth[1] = sstate.fdepth[0];
-		
+
 		//sleep for 50 ms //
 		usleep(50000);
 	}
 	return 0;
-}
-*/
 
-
+	// read temperature values from DS18B20 temperature sensor //
+					//ds18b20 = ds18b20_read();	// temperature in deg C
+					//printf("Temperature: %f", ds18b20.temperature);
+					/*if(ds18b20.temperature>60)
+					{
+						for( i=0; i<4; i++ )
+						{
+							pwmWrite(PIN_BASE+i, 2674);	// turn motors off if temperature gets too high
+						}
+					}*/
+//}
 
 ///////////////////////////////////////////////////////////////////////////////////
-/////////////////// Navigation Thread for Main Control Loop////////////////////////
+/////////////////// Navigation Thread for Main Control Loop ///////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
 
 PI_THREAD (navigation_thread)
@@ -272,22 +275,23 @@ PI_THREAD (navigation_thread)
 	static float u[4];	// normalized roll, pitch, yaw, throttle, components
 	initialize_motors(motor_channels, HERTZ);
 	//static float new_esc[4];
-	float output_port;		// port motor duty cycle output
-	float output_starboard;	// starboard motor duty cycle output
+	float output_port;		// port motor output
+	float output_starboard;	// starboard motor output
 	printf("\n");
 	init_controller();
-	delay(1000); // Delay is so that the IMU can initialize and run bn055_read.py
+	//delay(1000); // Delay is so that the IMU can initialize and run bn055_read.py
+
 	while(get_state()!=EXITING)
 	{
 		// set motors to constant PWM output for straight line //
-		pwmWrite (PIN_BASE+motor_channels[0], 2106.4);	// set motor to 20%
-		pwmWrite (PIN_BASE+motor_channels[1], 3819.6);	// set motor to 20%
+		//pwmWrite (PIN_BASE+motor_channels[0], 2106.4);	// set motor to 20%
+		//pwmWrite (PIN_BASE+motor_channels[1], 3819.6);	// set motor to 20%
 
 		// read IMU values
 		bno055 = bno055_read();
 		//float new_yaw = bno055.yaw+sstate.num_yaw_spins*360;
-		sstate.yaw[0] = bno055.yaw;		
-		sstate.roll = bno055.pitch; // intentionally reversed 
+		sstate.yaw[0] = bno055.yaw;
+		sstate.roll = bno055.pitch; // intentionally reversed
 		sstate.pitch[0] = bno055.roll; // intentionally reversed
 		sstate.p[0] = bno055.p;
 		sstate.q[0] = bno055.q;
@@ -296,7 +300,7 @@ PI_THREAD (navigation_thread)
 		sstate.gyro = bno055.gyro;
 		sstate.accel = bno055.accel;
 		sstate.mag = bno055.mag;
-		printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ", 
+		printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
 		sstate.yaw[0],bno055.pitch,bno055.roll, bno055.p,bno055.q,bno055.r,
 		bno055.sys,bno055.gyro,bno055.accel,bno055.mag);
 		//delay(1000);		// wait 1 sec until next read of IMU values
@@ -332,7 +336,7 @@ PI_THREAD (navigation_thread)
 					else    // AUV is pointed left
 					{
 						// u[2] is positive
-						u[2] = KP_YAW*(setpoint.yaw-(sstate.yaw[0]-360)); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller	
+						u[2] = KP_YAW*(setpoint.yaw-(sstate.yaw[0]-360)); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
 					}
 
 					// saturate yaw controller //
@@ -376,34 +380,45 @@ PI_THREAD (navigation_thread)
 					if(sstate.yaw[0]>180)	// port motor (CCW)
 					{
 						output_port = -26.18*100*sstate.esc_out+2630;
-						if(output_port<2106.4)	// set motor output at 20% of max for testing purposes
+						if(output_port<(2630-(0.2*(2630-12))))	// set motor output at 20% of max for testing purposes (20% = 2106.4)
 						{
-							output_port = 2106.4;		// for testing purposes
+							output_port = 2630-(0.2*(2630-12));		// for testing purposes
 							printf("Port PWM Output1: %f\n", output_port);
 						}
-						output_starboard = 3819.6-(2630-output_port)/(2630-12)*(4905-2718);	// starboard motor output = base 20% minus percentage that port motor increased by
-						output_port = output_port-523.6;
+
+						output_starboard = 3155.4-(2630-output_port)/(2630-12)*(4905-2718);	// starboard motor output = base 20% minus percentage that port motor increased by
+						if(output_starboard<(2718+0.1*(4905-2718)))
+						{
+							output_starboard =  2718+0.1*(4905-2718);	// set starboard motor output to no less than 10%
+						}
+
+						output_port = output_port-0.2*(2630-12);			// port motor max at 40%
 						pwmWrite(PIN_BASE+motor_channels[0], output_port);	// port motor at base 20% + yaw control output
 						pwmWrite(PIN_BASE+motor_channels[1], output_starboard);				// starboard motor at base 20%
 					}
 					else	// starboard motor (CW)
 					{
 						output_starboard = 13.77*100*-sstate.esc_out+2718;
-						if(output_starboard>3819.6) // set motor output at 20% of max for testing purposes
-						//if(output_starboard>4095)
+						if(output_starboard>(2718+(0.2*(4905-2718)))) // set motor output at 20% of max for testing purposes (20% = 3155.4)
 						{
-							output_starboard = 3819.6;	// for testing purposes
+							output_starboard = 2718+(0.2*(4905-2718));	// for testing purposes
 							//output_starboard = 4095;
 							printf("Starboard PWM Output1: %f\n", output_starboard);
 						}
-						output_port = 2106.4 + (output_starboard-2718)/(4905-2718)*(2630-12);	// port motor output = base 20% minus percentage that starboard motor increased by
-						output_starboard = output_starboard+437.4;
+
+						output_port = 2106.4 - (output_starboard-2718)/(4905-2718)*(2630-12);	// port motor output = base 20% minus percentage that starboard motor increased by
+						if(output_port>(2630-(0.1*(2630-12))))
+						{
+							output_port = 2630-(0.1*(2630-12));		// set port motor output to no less than 10%
+						}
+
+						output_starboard = output_starboard+0.2*(4905-2718);	// starboard motor max at 40%
 						pwmWrite(PIN_BASE+motor_channels[1], output_starboard);	//	starboard motor output = base 20% + yaw control output
 						pwmWrite(PIN_BASE+motor_channels[0], output_port);				// port motor at base 20%
 					}
-					
+
 					// print motor PWM outputs //
-					printf("Port PWM Output2: %f Starboard PWM Output2: %f\n", 
+					printf("Port PWM Output2: %f Starboard PWM Output2: %f\n",
 						output_port, output_starboard);
 
 					// set old values to current values //
@@ -412,25 +427,13 @@ PI_THREAD (navigation_thread)
 					sstate.p[1] = sstate.p[0];
 					sstate.q[1] = sstate.q[0];
 					sstate.r[1] = sstate.r[0];
-					
-					// read temperature values from DS18B20 //
-					//ds18b20 = ds18b20_read();	// temperature in deg C
-					//printf("Temperature: %f", ds18b20.temperature);	
-					if(ds18b20.temperature>60)	
-					{
-						for( i=0; i<4; i++ )
-						{
-							pwmWrite(PIN_BASE+i, 2674);	// turn motors off if temperature gets too high
-						}
-					}
 
-
-					delay(500);		// wait 0.5 sec until next read of IMU values
+					delay(250);		// wait 0.25 sec until next read of IMU values
 
 					// sleep for 5 ms //
-					usleep(5000);
+					//usleep(5000);
 				//}
-		//}	
+		//}
 	}
 	return 0;
 }
@@ -453,30 +456,17 @@ PI_THREAD (logging_thread)
 		fputs(buffer, fd);
 		fclose(fd);
 		//sleep for 100 ms
-		
+
 		usleep(100000);
 	}
 	return 0;
 }
 */
-
-
-
-int mix_controls(float r, float p, float y, float t, float* esc, int rotors)
-{
-	int i = 0;
-	// sum control inputs //
-	for(i=0; i<rotors; i++)
-	{
-		esc[i]=0;						// initialize esc output
-		esc[i]+=r*mix_matrix[0][i];		// roll correction
-		esc[i]+=p*mix_matrix[1][i];		// pitch correction
-		esc[i]+=y*mix_matrix[2][i];		// yaw correction
-		esc[i]+=t*mix_matrix[3][i];		// thrust correction
-	}
-	return 0;
-}
-
+/******************************************************************************
+ * int initController()
+ *
+ * Sets all sstate struct values to zero
+ *****************************************************************************/
 int init_controller()
 {
 	sstate.yaw[0] = 0;		// initialize current yaw angle

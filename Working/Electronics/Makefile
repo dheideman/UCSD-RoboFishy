@@ -8,12 +8,13 @@ TARGET = MainScript
 TOUCH 	 := $(shell touch *)
 CC	:= g++
 LINKER   := g++ -o
-CFLAGS	:= -c -Wall -g -I/usr/include/python2.7 `pkg-config --cflags opencv`
+#CFLAGS	:= -c -Wall -g -I/usr/include/python2.7 `pkg-config --cflags opencv`
+CFLAGS	:= -c -Wall -g -I/usr/include/python2.7
 LFLAGS	:= -lwiringPi -lpython2.7 -I/usr/include/python2.7 -lwiringPiPca9685 -lpthread
 
 SOURCES  := $(wildcard *.cpp)
 INCLUDES := $(wildcard *.h)
-LIBS     = `pkg-config --libs opencv`
+#LIBS     = `pkg-config --libs opencv`
 OBJECTS  := $(SOURCES:$%.cpp=$%.o)
 RM := rm -f
 
@@ -45,5 +46,4 @@ install: $(all)
 	
 clean:
 	@$(RM) $(OBJECTS)
-	@$(RM) $(TARGET)
 	@echo "Cleanup complete!"
