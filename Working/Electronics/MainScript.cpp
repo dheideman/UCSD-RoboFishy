@@ -137,7 +137,7 @@ system_state_t sstate;
 bno055_t bno055;
 
 // holds the calibration values for the MS5837 pressure sensor
-calib_t pressure_calib;
+pressure_calib_t pressure_calib;
 
 // holds the latest pressure value from the MS5837 pressure sensor
 ms5837_t ms5837;
@@ -254,7 +254,7 @@ int main()
 PI_THREAD (depth_thread)
 {
 	pressure_calib = init_ms5837();
-	sleep(0.001);
+	usleep(1);
 }
 
 

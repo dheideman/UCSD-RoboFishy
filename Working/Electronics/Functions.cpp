@@ -62,15 +62,15 @@ int saturate_number(float* val, float min, float max)
 
 
 /***************************************************************************
- * calib_t init_ms5837
+ * pressure_calib_t init_ms5837
  *
  * Description
 ***************************************************************************/
 
-calib_t init_ms5837(void)
+pressure_calib_t init_ms5837(void)
 {
 	Py_Initialize();
-	calib_t calib; // create struct to hold calibration data
+	pressure_calib_t calib; // create struct to hold calibration data
 
 	// create pointers to python object
 	PyObject *pName, *pModule, *pDict, *pFunc, *pValue;
@@ -102,13 +102,13 @@ calib_t init_ms5837(void)
  * Description
 ***************************************************************************/
 
-ms5837_t ms5837_read(calib_t arg_in)	//	read pressure values from MS5837 pressure sensor
+ms5837_t ms5837_read(presssure_calib_t arg_in)	//	read pressure values from MS5837 pressure sensor
 {
 	ms5837_t ms5837;
 
 	Py_Initialize();
 
-	calib_t calib = arg_in; // create struct to hold calibration data
+	presssure_calib_t calib = arg_in; // create struct to hold calibration data
 	PyObject *pName, *pModule, *pDict, *pFunc, *pArgs, *pValue;
 
 	pName = PyString_FromString("MS5837_example"); // input name of python source file
@@ -198,7 +198,7 @@ bno055_t bno055_read(void)	// read values from bno055 IMU
 				 &bno055.q, &bno055.p, &bno055.r,
 				 &bno055.sys,&bno055.gyro,&bno055.accel,
 				 &bno055.mag);
-	
+
 	return bno055;
 }
 
@@ -209,7 +209,7 @@ bno055_t bno055_read(void)	// read values from bno055 IMU
 /***************************************************************************
  * void start_Py_ds18b20
  *
- * Writes temperature values from the DS18B20 temperature sensor into 
+ * Writes temperature values from the DS18B20 temperature sensor into
  * ds18b20_fifo.fifo
 ***************************************************************************/
 
@@ -244,7 +244,7 @@ ds18b20_t ds18b20_read(void)	// read values from ds18b20 temperature sensor
 /***************************************************************************
  * int scripps_auv_init(void)
  *
- * Initializes the IMU, pressure sensor, and temperature sensor 
+ * Initializes the IMU, pressure sensor, and temperature sensor
 ***************************************************************************/
 
 int scripps_auv_init(void)
@@ -272,7 +272,7 @@ state_t get_state()
 /***************************************************************************
  * int set_state(enum state_t new_state)
  *
- * Sets the AUV state 
+ * Sets the AUV state
 ***************************************************************************/
 
 int set_state(enum state_t new_state)
