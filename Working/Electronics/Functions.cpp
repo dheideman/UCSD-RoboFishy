@@ -1,14 +1,13 @@
 	#include "Libraries.h"
 
-///////////////////////////////////////////////////////////////////////////////////
-////////////////////////////// PCA9685 FUNCTIONS //////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
-
+/******************************************************************************
+* PWM Driver - PCA9685
+******************************************************************************/
 // initialize motors function //
 int initialize_motors(int channels[4], float freq)
 {
 	int i;
-	int fd = pca9685Setup(PIN_BASE, PCA9685_ADDR, HERTZ);				// setup PCA9685 board
+	int fd = pca9685Setup(PIN_BASE, PCA9685_ADDR, HERTZ);	// setup PCA9685 board
 	if (fd < 0)
 	{
 		printf("Error in setup\n");
@@ -139,9 +138,15 @@ void start_Py_ms5837(void)
 
 void start_Py_bno055(void)	//	start bno055_read.py code
 {
-    FILE* fd = fopen("bno055_read.py", "r");
-    PyRun_SimpleFile(fd,"bno055_read.py");
-    return;
+	// clear fifo file
+	FILE* fd = fopen("bno055_read.py", "r");
+  PyRun_SimpleFile(fd,"bno055_read.py");
+	nanosleep(100*1000000);
+	FILE* fifo = fopen("bno055_fifo.txt","r");
+	fclose(fifo);
+
+	// check if fifo file has numbers in it
+  return;
 }
 
 bno055_t bno055_read(void)	// read values from bno055 IMU
