@@ -204,7 +204,7 @@ int scripps_auv_init(void)
 
 
 // get system state //
-enum state_t get_state()
+state_t get_state()
 {
 	return state;
 }
