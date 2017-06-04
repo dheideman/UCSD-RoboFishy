@@ -75,7 +75,6 @@ typedef struct local_images_t
 
 // For writing image to screen
 local_images_t localimages;
-cv::Mat darkframe, brightframe;
 cv::Mat hsvframe;
 cv::Point p1;
 

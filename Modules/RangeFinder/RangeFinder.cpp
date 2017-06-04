@@ -31,10 +31,10 @@ void *rangeFinder(void*)
     printf("%s\n","rangeFinder thread" );
     // Save most recent bright frame to local variables
     //Mat localbrightframe, localdarkframe;
-    brightframe.copyTo(localimages.brightframe);
-    darkframe(roi).copyTo(localimages.darkframe);
-  cout << "Brightframe size= " << brightframe.size()<< endl;
-  cout << "Darkframe size= " << darkframe.size()<< endl;
+    subimages.brightframe.copyTo(localimages.brightframe);
+    subimages.darkframe(roi).copyTo(localimages.darkframe);
+  cout << "Brightframe size= " << localimages.brightframe.size()<< endl;
+  cout << "Darkframe size= " << localimages.darkframe.size()<< endl;
 
     // Convert from BGR to HSV using CV_BGR2HSV conversion
     //cvtColor(localdarkframe, hsvframe, CV_BGR2HSV);
