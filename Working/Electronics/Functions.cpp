@@ -10,7 +10,7 @@ enum state_t state = UNINITIALIZED;
 int initialize_motors(int channels[4], float freq)
 {
 	int i;
-	int fd = pca9685Setup(PIN_BASE, PCA9685_ADDR, HERTZ);	// setup PCA9685 board
+	int fd = pca9685Setup(PIN_BASE, PCA9685_ADDR, HERTZ); // setup PCA9685 board
 	if (fd < 0)
 	{
 		printf("Error in setup\n");
@@ -131,7 +131,7 @@ void start_Py_ms5837(void)
 {
 	FILE* fd = fopen("python MS5837_example.py", "r");
 	PyRun_SimpleFile(fd,"python MS5837_example.py");
-  return;
+	return;
 }
 
 
@@ -143,13 +143,13 @@ void start_Py_bno055(void)	//	start bno055_read.py code
 {
 	// clear fifo file
 	FILE* fd = fopen("bno055_read.py", "r");
-  PyRun_SimpleFile(fd,"bno055_read.py");
+	PyRun_SimpleFile(fd,"bno055_read.py");
 	//nanosleep(100*1000000);
 	FILE* fifo = fopen("bno055_fifo.txt","r");
 	fclose(fifo);
 
 	// check if fifo file has numbers in it
-  return;
+	return;
 }
 
 bno055_t bno055_read(void)	// read values from bno055 IMU
@@ -162,10 +162,10 @@ bno055_t bno055_read(void)	// read values from bno055 IMU
 	fgets(buf,1000,fd);
 	fclose(fd);
 	sscanf(buf,"%f %f %f %f %f %f %i %i %i %i",
-	       &bno055.yaw,&bno055.roll,&bno055.pitch,
-	       &bno055.q, &bno055.p, &bno055.r,
-	       &bno055.sys,&bno055.gyro,&bno055.accel,
-	       &bno055.mag);
+				 &bno055.yaw,&bno055.roll,&bno055.pitch,
+				 &bno055.q, &bno055.p, &bno055.r,
+				 &bno055.sys,&bno055.gyro,&bno055.accel,
+				 &bno055.mag);
 	
 	return bno055;
 }
@@ -228,7 +228,7 @@ void ctrl_c(int signo)
 	{
 		set_state(EXITING);
 		printf("\nreceived SIGINT Ctrl-C\n");
- 	}
+	}
 }
 
 // Clean up AUV script: This function stops the motors and closes all the threads //
@@ -236,7 +236,7 @@ int cleanup_auv()
 {
 	set_state(EXITING);
 	usleep(500000); // let final threads clean up
-	int channels[]  = {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4};
+	int channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4};
 	int i;
 	for( i = 0; (i < 4); i = i+1 )
 	{

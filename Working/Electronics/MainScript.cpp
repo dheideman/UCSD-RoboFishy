@@ -332,10 +332,10 @@ void *navigation(void* arg)
 					 bno055.mag);
 		//delay(1000);		// wait 1 sec until next read of IMU values
 		//delay(100);		// wait 0.1 sec until next read of IMU values
-    
-    
-    // Sanity test: Check if yaw control works
-    
+		
+		
+		// Sanity test: Check if yaw control works
+		
 					// setpoints //
 					setpoint.yaw = 0;
 
