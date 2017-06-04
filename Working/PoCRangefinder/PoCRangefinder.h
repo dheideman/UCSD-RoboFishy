@@ -35,6 +35,9 @@
 // RangeFinder
 #include "../../Modules/RangeFinder/RangeFinder.h"
 
+// Camera
+#include "../../Modules/Camera/Camera.h"
+
 
 ///////////////
 // Constants //
