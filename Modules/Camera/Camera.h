@@ -72,6 +72,9 @@ void *takePictures(void*);
 // Image Capture Object
 cv::VideoCapture cap;
 
+// V4L2Control Object
+V4L2Control picamctrl;
+
 // Image Storage
 sub_images_t subimages;
 
