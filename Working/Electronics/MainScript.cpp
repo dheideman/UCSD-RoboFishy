@@ -71,9 +71,6 @@ typedef enum cont_mode_t
 	NAVIGATION,
 }cont_mode_t;	// contains the controller mode
 
-// state variable for loop and thread control //
-enum state_t state = UNINITIALIZED;
-
 typedef struct setpoint_t
 {
 	float roll;			// roll angle (rad)
@@ -174,7 +171,7 @@ int main()
 	//drive_mode = DRIVE_OFF;
 	//cont_mode = NAVIGATION;
 	//loop_mode = OUTER;
-	loop_mode = INNER; // use this for yaw control and no depth control
+	//loop_mode = INNER; // use this for yaw control and no depth control
 
 	// start all threads w/ error checking //
 	/*if (piThreadCreate (depth_thread) != 0)
