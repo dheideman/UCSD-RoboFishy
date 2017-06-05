@@ -60,7 +60,14 @@ typedef enum state_t
 	EXITING
 }state_t;
 
-
+//struct for PID Controllers
+typedef struct pid_data_t
+{
+	float kp, ki, kd;
+	float p_err, i_err, d_err;
+	float setpoint;
+	float oldyaw;
+}pid_data_t;
 
 /******************************************************************************
 *
