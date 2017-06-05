@@ -1,7 +1,7 @@
 /******************************************************************************
 *BNO055.cpp
 *
-*File to run Initialization and reading files on the 
+*File to run Initialization and reading files on the BNO055 IMU
 ******************************************************************************/
 
 #include Mapper.h
