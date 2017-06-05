@@ -14,7 +14,7 @@
 int scripps_auv_init(void)
 {
 	start_Py_bno055();			// start IMU
-	sleep(10);
+	sleep(1);
 	//start_Py_ms5837();		// start pressure sensor
 	start_Py_ds18b20();			// start temperature sensor
 	signal(SIGINT, ctrl_c);		// capture ctrl+c and exit
