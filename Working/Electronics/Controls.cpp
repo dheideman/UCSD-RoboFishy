@@ -8,8 +8,8 @@
 /******************************************************************************
 * float yaw_controller()
 *
-* Takes in readings from IMU and calculates a percentage (-1 to 1) to run 
-* motors at
+* Takes in readings from the IMU and returns a value between -1 and 1 (-100% - 
+* +100%) that the port and starboard thrusters should run at
 ******************************************************************************/
 /*
 float yaw_controller()
@@ -51,7 +51,8 @@ float yaw_controller()
 * float depth_controller(float range)
 *
 * Takes a range-from-bottom reading from the laser range-finder code and 
-* regulates the range-from-bottom of the AUV
+* returns a value between -1 and 1 (-100% - +100%) that the vertical thruster
+* should run at
 ******************************************************************************/
 
 float depth_controller(float range)
@@ -73,4 +74,19 @@ float depth_controller(float range)
 		// shut off vertical thruster //
 		vert_percent = 0;
 	}
+
+	// saturate depth controller //
+	if( vert_percent > DEPTH_SAT )
+	{
+		vert_percent = DEPTH_SAT;
+	}
+	else if( vert_percent < -DEPTH_SAT )
+	{
+		vert_percent = -DEPTH_SAT;
+	}
+
+	// set current depth to be the old depth //
+	depth_pid.old = depth_pid.current;
+
+	return vert_percent;
 }
