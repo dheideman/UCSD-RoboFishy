@@ -6,7 +6,6 @@
 #include <Python.h>
 #include <time.h>
 #include <signal.h>		// capture control-c
-#include "../../Modules/TypeDefs.h"
 
 
 #define PCA9685_ADDR 0x40
@@ -20,6 +19,9 @@
 #define CHANNEL_4 3		// speed
 #define CHANNEL_5 4		// depth
 #define MOTOR_0 2674    // motor output is 0
+
+// Core Module
+#include "../../Modules/Core/Core.h"
 
 
 /***************************************************************************
@@ -53,15 +55,6 @@ typedef struct
 {
 	float temperature;
 }ds18b20_t;
-
-// Program Flow and State Control
-typedef enum state_t
-{
-	UNINITIALIZED,
-	RUNNING,
-	PAUSED,
-	EXITING
-}state_t;
 
 //struct for PID Controllers
 typedef struct pid_data_t
