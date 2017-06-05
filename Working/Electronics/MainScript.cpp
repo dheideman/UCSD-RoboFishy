@@ -338,7 +338,8 @@ float depth_pid.ki = .1;
 					//usleep(5000);
 				//}
 		//}
-	return 0;
+	}
+	pthread_exit(NULL);
 }
 
 
