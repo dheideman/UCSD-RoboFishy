@@ -9,15 +9,14 @@
 /***************************************************************************
  * void start_Py_bno055
  *
- * start bno055_read.py code
+ * Starts bno055_read.py code
 ***************************************************************************/
-
-void start_Py_bno055(void)
+void start_Py_bno055(void)	
 {
 	// clear fifo file
 	FILE* fd = fopen("bno055_read.py", "r");
 	PyRun_SimpleFile(fd,"bno055_read.py");
-	usleep(100000);
+	//nanosleep(100*1000000);
 	FILE* fifo = fopen("bno055_fifo.txt","r");
 	fclose(fifo);
 
@@ -28,12 +27,13 @@ void start_Py_bno055(void)
 /***************************************************************************
  * bno055_t bno055_read
  *
- * read values from bno055 IMU
+ * Reads IMU values from bno055_fifo.txt
 ***************************************************************************/
-
-bno055_t bno055_read(void)
+bno055_t bno055_read(void)	
 {
+	// create struct to hold IMU data //
 	bno055_t bno055;
+
 	char buf[1000];
 	FILE *fd = fopen( "bno055_fifo.txt", "r");
 	//FILE *fd = fopen( "/home/pi/UCSD-RoboFishy/Working/Electronics/bno055_fifo.txt", "r");
