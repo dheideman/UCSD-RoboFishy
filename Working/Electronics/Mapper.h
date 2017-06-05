@@ -4,7 +4,7 @@
 #include <pca9685.h>
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
-#include <stdio.h>
+#include <cstdio>
 #include <stdlib.h>
 #include <Python.h>
 #include <time.h>
@@ -138,10 +138,10 @@ extern pid_data_t yaw_pid;
 extern pid_data_t depth_pid;
 
 // motor channels
-extern int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4}; 
+extern int motor_channels[]; 
 
 // Ignoring sstate
-extern float depth = 0;
+extern float depth;
 
 
 

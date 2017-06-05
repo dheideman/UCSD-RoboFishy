@@ -3,7 +3,7 @@
 *
 *File to run Initialization and reading files on the BNO055 IMU
 ******************************************************************************/
-#include Mapper.h
+#include "Mapper.h"
 
 
 
@@ -23,8 +23,8 @@
 
 void start_Py_ds18b20(void)		//	start temperature_sensor_code.py code
 {
-	FILE* fd = fopen("python temperature_sensor_code.py", "r");
-	PyRun_SimpleFile(fd,"python temperature_sensor_code.py");
+    std::FILE* fd = fopen("temperature_sensor_code.py", "r");
+	PyRun_SimpleFile(fd,"temperature_sensor_code.py");
 	return;
 }
 
@@ -38,7 +38,7 @@ ds18b20_t ds18b20_read(void)	// read values from ds18b20 temperature sensor
 {
 	ds18b20_t ds18b20;
 	char buf[1000];
-	FILE *fd = fopen( "/home/pi/UCSD-RoboFishy/Working/Electronics/ds18b20_fifo.fifo", "r");
+    std::FILE *fd = fopen( "ds18b20_fifo.fifo", "r");
 	fgets(buf,1000,fd);
 	fclose(fd);
 	sscanf(buf,"%f",&ds18b20.temperature);

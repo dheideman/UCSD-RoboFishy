@@ -3,7 +3,7 @@
 *
 *File to run Initialization and reading files on the MS5837 Pressure Sensor
 ******************************************************************************/
-#include Mapper.h
+#include "Mapper.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// MS5837 FUNCTIONS //////////////////////////////
@@ -104,7 +104,7 @@ ms5837_t ms5837_read(pressure_calib_t pressure_calib)
 
 void start_Py_ms5837(void)
 {
-	FILE* fd = fopen("python MS5837_example.py", "r");
+    std::FILE* fd = fopen("python MS5837_example.py", "r");
 	PyRun_SimpleFile(fd,"python MS5837_example.py");
 	return;
 }
