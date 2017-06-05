@@ -325,19 +325,12 @@ int yaw_controller()
 {
 // read IMU values into sstate
 		bno055 = bno055_read();
-		
-}
-/***************************************************************************
- * int set_motors()
- *
- * Cleans up the AUV script, shuts down the motors and closes all threads
-***************************************************************************/
 
-// control output //
-					if(sstate.yaw[0]<180) // AUV is pointed right
+		// control output //
+					if(bno055.yaw<180) // AUV is pointed right
 					{
 						// u[2] is negative
-						u[2] = KP_YAW*(setpoint.yaw-sstate.yaw[0]); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
+						u[2] = KP_YAW*(bno055.yaw-sstate.yaw[0]); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
 					}
 					else		// AUV is pointed left
 					{
@@ -354,6 +347,15 @@ int yaw_controller()
 					{
 						u[2]=-YAW_SAT;
 					}
+		
+}
+/***************************************************************************
+ * int set_motors()
+ *
+ * Cleans up the AUV script, shuts down the motors and closes all threads
+***************************************************************************/
+
+
 
 					// mix controls //
 					printf("u[2]: %f\n", u[2]);
