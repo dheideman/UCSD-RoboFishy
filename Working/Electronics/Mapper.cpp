@@ -307,6 +307,9 @@ void *navigation(void* arg)
  *****************************************************************************/
 void *safety_thread(void* arg)
 {
+	// set up WiringPi for use // (not sure if actually needed)
+	wiringPiSetup();
+
 	// leak detection variables //
 	int leakStatePin = digitalRead(SOSPIN);	// read the input pin
 	int i;									// loop counting integer
@@ -316,7 +319,7 @@ void *safety_thread(void* arg)
 	pinMode(17, OUTPUT);					// set GPIO 17 as an OUTPUT
 	digitalWrite(leakStatePin, HIGH);		// set GPIO 17 as HIGH (VCC)
 
-	while(substate.mode!=STOPPING)
+	while( substate.mode!=STOPPING )
 	{
 		/******************************************************************************
 		 * Depth Protection
