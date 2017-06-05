@@ -184,25 +184,25 @@ float output_port;		// port motor output
 float output_starboard; // starboard motor output
 
 //Initialize old imu data
-float yaw_pid.oldyaw = 0;
+yaw_pid.oldyaw = 0;
 
 //Initialize setpoint for yaw controller
-float yaw_pid.setpoint = 0;
+yaw_pid.setpoint = 0;
 
 //Initialize Error values to be used in yaw controller
-float yaw_pid.p_err = 0;
-float yaw_pid.i_err = 0;
-float yaw_pid.d_err = 0;
+yaw_pid.p_err = 0;
+yaw_pid.i_err = 0;
+yaw_pid.d_err = 0;
 
 //Yaw Controller Constant Initialization
-float yaw_pid.kp = .01;
-float yaw_pid.kd = 1;
-float yaw_pid.ki = .1;
+yaw_pid.kp = .01;
+yaw_pid.kd = 1;
+yaw_pid.ki = .1;
 
 //depth controller constant initialization
-float depth_pid.kp = .01;
-float depth_pid.kd = 1;
-float depth_pid.ki = .1;
+depth_pid.kp = .01;
+depth_pid.kd = 1;
+depth_pid.ki = .1;
 
 	while(get_state()!=EXITING)
 	{
