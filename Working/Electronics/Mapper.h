@@ -70,7 +70,7 @@ typedef enum state_t
 typedef struct pid_data_t
 {
 	float kp, ki, kd;
-	float p_err, i_err, d_err;
+	float err, i_err;
 	float setpoint;
 	float oldyaw;
 }pid_data_t;

@@ -12,13 +12,13 @@
 * motors at
 ******************************************************************************/
 /*
-float yaw_controller()
+float yaw_controller(bno055, yaw_pid)
 {
 	// control output //
 	if( bno055.yaw < 180 ) // AUV is pointed right
 	{
 		// u[2] is negative
-		motor_percent = yaw_pid.kp*(bno055.yaw - yaw_pid.setpoint) 
+		motor_percent = yaw_pid.kp*(yaw_pid.err) 
 			+ yaw_pid.kd*(bno055.r)+ yaw_pid.ki*yaw_pid.i_err; // yaw controller
 	}
 	else		// AUV is pointed left
