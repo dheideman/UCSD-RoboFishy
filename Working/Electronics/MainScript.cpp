@@ -314,7 +314,6 @@ void *navigation(void* arg)
 						output_starboard = output_starboard+0.2*(4905-2718);	// starboard motor max at 40%
 						pwmWrite(PIN_BASE+motor_channels[1], output_starboard); //	starboard motor output = base 20% + yaw control output
 						pwmWrite(PIN_BASE+motor_channels[0], output_port);				// port motor at base 20%
-					}
 
 					// print motor PWM outputs //
 					printf("Port PWM Output2: %f Starboard PWM Output2: %f\n",
