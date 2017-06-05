@@ -1,4 +1,4 @@
-pressure#include "Libraries.h"
+#include "Libraries.h"
 
 // state variable for loop and thread control //
 enum state_t state = UNINITIALIZED;
@@ -310,7 +310,7 @@ int cleanup_auv()
 {
 	set_state(EXITING);
 	usleep(500000); // let final threads clean up
-	int channels[]  = {CHANNEL_1, CHANNEL_2, CHANNEL_3};
+	int channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3};
 	int i;
 	for( i = 0; (i < 3); i = i+1 )
 	{
@@ -329,7 +329,6 @@ int cleanup_auv()
 ******************************************************************************/
 void yaw_controller()
 {
-
 	// control output //
 	if(bno055.yaw<180) // AUV is pointed right
 	{
@@ -365,7 +364,8 @@ void yaw_controller()
 /***************************************************************************
  * int set_motors()
  *
- * Sets the motor outputs for yaw control
+ * Takes in a value from -1 to 1 (-100 to +100%) and sets the motor
+ * outputs accordingly
 ***************************************************************************/
 int set_motors(int motor_num, float speed)
 {
@@ -373,26 +373,26 @@ int set_motors(int motor_num, float speed)
 								// port = 0, starboard = 1, vert = 2
 	float motor_output;			// feeds the necessary PWM to the motor
 	float per_run = 0.2;		// percentage of full PWM to run at
-	float min_per_run = 0.1;	// minimum percentage of full PWM to run at
-	//int range[2] = [2618,2187];		// motor ranges (port = 2618, starboard = 2187)
+	//float min_per_run = 0.1;	// minimum percentage of full PWM to run at
 	int port_range = 2618;		// port motor range
-	int starboard_range = 2187;	// starboard motor range
+	int starboard_range = 2187; // starboard motor range
 
-	// speed = - ----> AUV pointed right (starboard) (2718-4095)
-	// speed = + ----> AUV pointed left (port) (12-2630)
+	// speed = (-) ----> AUV pointed right (starboard) (range: 2718-4095)
+	// speed = (+) ----> AUV pointed left (port) (range: 12-2630)
 
-
-	if( speed > 0 )
+	// Calculate motor output //
+	if( speed < 0 )
 	{
 		motor_output = 2630 - per_run*port_range;				// set motor output
 
 		// saturate motor output at 20% //
-		if(motor_output < (2630-per_run*port_range) )			
+		if( motor_output < (2630-per_run*port_range) )
 		{
 			motor_output = (2630-per_run*port_range);
 		}
+		pwmWrite(motor_num, motor_output);
 	}
-	if( speed < 0 )
+	if( speed > 0 )
 	{
 		motor_output = 2718 + per_run*starboard_range;			// set motor output
 
@@ -404,48 +404,4 @@ int set_motors(int motor_num, float speed)
 	}
 	else
 		motor_output = 2674;	// turn off motor
-
-	// Calculate port motor output //
-	if( speed > 0 ) // port motor (CCW)
-	{
-		port_output = -2617*speed+2630;				// calculate unsaturated port motor output
-
-		if( port_output < (2630-per_run*port_range) )	// set motor output at 20% of max for testing purposes (20% = 2106.4)
-		{
-			port_output = 2630-per_run*port_range;		// for testing purposes
-		}
-		port_output = port_output-per_run*port_range;	// port motor max at 40%
-		pwmWrite(motor_num[0], port_output);			// set port motor output at base 20% + yaw control output
-
-		// Calculate starboard motor output //
-		starboard_output = (2718+per_run*starboard_range)-(2630-port_output) 
-			/ port_range*starboard_range; 				// starboard motor output = base 20% minus percentage that port motor increased by
-		
-		if( starboard_output < (2718+min_per_run*starboard_range) )
-		{
-			starboard_output =	2718+min_per_run*starboard_range; // set starboard motor output to no less than 10%
-		}
-
-		output_port = output_port-0.2*(2630-12);			// port motor max at 40%
-		
-		pwmWrite(motor_output[1], motor_output);				// starboard motor at base 20%
-
-	}
-
-
-	// Calculate starboard motor output //
-	if( speed < 0 ) // starboard motor (CW)
-	{
-		motor_num[1] = 13.77*100*-speed+2718;			// calculate unsaturated starboard motor output
-
-		if( motor_num[1] = 13.77*100*-speed+2718 )
-		{
-			motor_num[1] = 2718+per_run*starboard_range;	// for testing purposes
-		}
-	}
-  
-	// print motor PWM outputs //
-	printf("Port PWM Output2: %f Starboard PWM Output2: %f\n",
-		     output_port, output_starboard);
 }
-
