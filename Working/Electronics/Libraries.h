@@ -17,6 +17,7 @@
 #define CHANNEL_3 2		// yaw
 #define CHANNEL_4 3		// speed
 #define CHANNEL_5 4		// depth
+#define MOTOR_0 2674    // motor output is 0
 
 
 /***************************************************************************

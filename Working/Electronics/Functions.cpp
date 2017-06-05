@@ -3,55 +3,57 @@
 // state variable for loop and thread control //
 enum state_t state = UNINITIALIZED;
 
-/***************************************************************************
- * int initialize_motors
+/******************************************************************************
+ * int initialize_motors(int channels[3], float freq)
  *
- * Description
-***************************************************************************/
-
-// initialize motors function //
-int initialize_motors(int channels[4], float freq)
+ * Initializes the PWM board and the ESCs that run the motors
+******************************************************************************/
+int initialize_motors(int channels[3], float freq)
 {
-	int i;
-	int fd = pca9685Setup(PIN_BASE, PCA9685_ADDR, HERTZ); // setup PCA9685 board
+	// integer specifying motor number //
+	int i;		
+
+	// setup PCA9685 PWM board //
+	int fd = pca9685Setup(PIN_BASE, PCA9685_ADDR, HERTZ); 
 	if (fd < 0)
 	{
 		printf("Error in setup\n");
 		return fd;
 	}
-	pca9685PWMReset(fd);												// reset all output
-	//usleep(10);
 
-	// imported from motor.c test code //
+	// reset all PCA9685 PWM board output //
+	pca9685PWMReset(fd);	
+
+	// set motor outputs to 0 to initialize ESCs //
 	int active=1;
 		while (active)
 		{
 			for( i = 0; i < 3; i++ )
 			{
-				//pwmWrite (PIN_BASE+i, calcTicks(0,HERTZ));
-				pwmWrite (PIN_BASE+i, 2674);	//send input signal that is low enough to reach the
-												//"neutral" or power-off area in order to arm the ESC (long beep); green LED on ESC will light up
+				// send "neutral" signal to arm ESCs //
+				pwmWrite (PIN_BASE+i, 2674);	
 				delay(1000);
 				active=0;
 			}
 		}
-	//usleep(100000);
 	return fd;
 }
 
 /***************************************************************************
- * int saturate_number
+ * int saturate_number(float* val, float min, float max)
  *
- * Description
+ * Generic function for saturating values in a function
 ***************************************************************************/
-
 int saturate_number(float* val, float min, float max)
 {
+	// if "val" is greater than "max", set "val" to "max" //
 	if(*val>max)
 	{
 		*val = max;
 		return 1;
 	}
+
+	// if "val" is less than "min", set "val" to "min" //
 	else if(*val<min)
 	{
 		*val = min;
@@ -60,27 +62,28 @@ int saturate_number(float* val, float min, float max)
 	return 0;
 }
 
-
 /***************************************************************************
  * pressure_calib_t init_ms5837
  *
  * initializes pressure sensor
  *
- * Returns structure of 6 coefficients
+ * Returns structure of 6 calibration coefficients
 ***************************************************************************/
-
 pressure_calib_t init_ms5837(void)
 {
+	// initialize Python interpreter //
 	Py_Initialize();
-	pressure_calib_t pressure_calib; // create struct to hold calibration data
 
-	// create pointers to python object
+	// create struct to hold calibration data //
+	pressure_calib_t pressure_calib; 
+
+	// create pointers to python object //
 	PyObject *pName, *pModule, *pDict, *pFunc, *pValue;
 
-	// input name of python source file
+	// input name of python source file //
 	pName = PyString_FromString("MS5837");
 
-	// stuff
+	// stuff //
 	PyRun_SimpleString("import sys");
 	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/MainScript\")");
 	pModule = PyImport_Import(pName);
@@ -101,6 +104,8 @@ pressure_calib_t init_ms5837(void)
 	Py_DECREF(pModule);
 	Py_DECREF(pName);
 	Py_Finalize();
+
+	// return pressure calibration values //
 	return pressure_calib;
 };
 
@@ -109,16 +114,19 @@ pressure_calib_t init_ms5837(void)
  *
  * Read pressure values from MS5837 pressure sensor
 ***************************************************************************/
-
 ms5837_t ms5837_read(pressure_calib_t pressure_calib)
 {
+	// create struct to hold pressure data //
 	ms5837_t ms5837;
 
+	// initialize Python interpreter //
 	Py_Initialize();
 
+	// create pointers to python object //
 	PyObject *pName, *pModule, *pDict, *pFunc, *pArgs, *pValue;
 
-	pName = PyString_FromString("MS5837_example"); // input name of python source file
+	// input name of python source file //
+	pName = PyString_FromString("MS5837_example"); 
 	PyRun_SimpleString("import sys");
 	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/MainScript\")");
 	pModule = PyImport_Import(pName);
@@ -144,18 +152,22 @@ ms5837_t ms5837_read(pressure_calib_t pressure_calib)
 	Py_DECREF(pModule);
 	Py_DECREF(pName);
 	Py_Finalize();
+
+	// return pressure value //
 	return ms5837;
 };
 
 /***************************************************************************
  * void start_Py_ms5837
  *
- * Description
+ * Starts the pressure-reading Python script
 ***************************************************************************/
-
 void start_Py_ms5837(void)
 {
+	// open MS5837_example.py //
 	FILE* fd = fopen("python MS5837_example.py", "r");
+
+	// read pressure values //
 	PyRun_SimpleFile(fd,"python MS5837_example.py");
 	return;
 }
@@ -170,7 +182,6 @@ void start_Py_ms5837(void)
  *
  * Description
 ***************************************************************************/
-
 void start_Py_bno055(void)	//	start bno055_read.py code
 {
 	// clear fifo file
@@ -370,9 +381,8 @@ int set_motor(int motor_num, float percent_out)
 								// port = 0, starboard = 1, vert = 2
 	float motor_base;			// motor base of 20%
 	float motor_output;			// feeds the necessary PWM to the motor
-	float per_base = 0.2;		// percentage of full PWM to run at
-	float per_run = 0.1;		
-	//float min_per_run = 0.1;	// minimum percentage of full PWM to run at
+	float per_base = 0.2;		// base percentage of full PWM to run at
+	float per_run = 0.1;		// percentage above per_base to run at
 	int port_range = 2618;		// port motor range
 	int starboard_range = 2187; // starboard motor range
 
@@ -415,9 +425,9 @@ int set_motor(int motor_num, float percent_out)
 	}
 	else
 	{
-		motor_output = 2674;	// turn off motor
+		motor_output = 2674;	
 		
-		pwmWrite(motor_num, motor_output);
+		pwmWrite(motor_num, motor_output);		// Set motor to 20% base output //
 	}
 	
 	return 1;
