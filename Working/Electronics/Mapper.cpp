@@ -2,7 +2,7 @@
  *	Main script for the 2017 RoboFishy Scripps AUV
 ******************************************************************************/
 
-#include "Libraries.h"
+#include "Mapper.h"
 // Multithreading
 #include <pthread.h>
 #include <sched.h>
@@ -203,7 +203,7 @@ void *navigation(void* arg)
 	depth_pid.kp = .01;
 	depth_pid.kd = 1;
 	depth_pid.ki = .1;
-	
+
 	// Hard set motor speed
 //	 pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
 	set_motors(PIN_BASE+motor_channels[0], -0.2);
@@ -220,12 +220,12 @@ void *navigation(void* arg)
 	//			 bno055.p, bno055.q, bno055.r,
 	//			 bno055.sys, bno055.gyro, bno055.accel,
 	//			 bno055.mag);
-	
+
 	// Sanity test: Check if yaw control works
 /*
 	//Call yaw controller function
 	yaw_controller();
-	
+
 	//set port motor
 	set_motors(0,port_percent);
 
@@ -233,14 +233,14 @@ void *navigation(void* arg)
 	set_motors(1, starboard_percent);
 
 		*/
-		
+
 		// sleep for 5 ms //
 		usleep(5000);
 	}
-	
+
 	set_motors(PIN_BASE+motor_channels[0], 0);
 	set_motors(PIN_BASE+motor_channels[0], 0);
-	
+
 	pthread_exit(NULL);
 }
 
