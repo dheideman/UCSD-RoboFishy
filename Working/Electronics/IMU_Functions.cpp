@@ -41,7 +41,7 @@ bno055_t bno055_read(void)
 	bno055_t bno055;
 	char buf[1000];
 	FILE *fd = fopen( "imu.fifo", "r");
-	
+
 	fgets(buf,1000,fd);
 	fclose(fd);
 	sscanf(buf,"%f %f %f %f %f %f %i %i %i %i",
