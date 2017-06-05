@@ -326,7 +326,6 @@ void *navigation(void* arg)
 					//usleep(5000);
 				//}
 		//}
-	}
 	return 0;
 }
 
