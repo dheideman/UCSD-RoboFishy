@@ -69,11 +69,39 @@ typedef struct pid_data_t
 	float oldyaw;
 }pid_data_t;
 
-/******************************************************************************
-* create global variables
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// Global Variables /////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+// holds the setpoint data structure with current setpoints
+setpoint_t setpoint;
+
+// holds the system state structure with current system statesystem_state_t sstate;
+system_state_t sstate;
+
+// holds the calibration values for the MS5837 pressure sensor
+pressure_calib_t pressure_calib;
+
+// holds the latest pressure value from the MS5837 pressure sensor
+ms5837_t ms5837;
 
 // create structure for storing IMU data
 bno055_t bno055;
+
+// holds the latest temperature value from the DS18B20 temperature sensor
+ds18b20_t ds18b20;
+
+// holds the constants and latest errors of the yaw pid controller
+pid_data_t yaw_pid;
+
+// holds the constants and latest errors of the depth pid controller
+pid_data_t depth_pid;
+
+int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4}; // motor channels
+
+// Thread attributes for different priorities
+pthread_attr_t tattrlow, tattrmed, tattrhigh;
+
 
 /******************************************************************************
 *
