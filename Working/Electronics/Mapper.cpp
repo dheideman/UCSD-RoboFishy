@@ -351,7 +351,7 @@ void *safety_thread(void* arg)
 		sstate.depth[1] = sstate.depth[0];
 		sstate.fdepth[1] = sstate.fdepth[0];
 	
-		//sleep for 50 ms //
+		// sleep for 50 ms //
 		usleep(50000);
 	
 		/******************************************************************************
