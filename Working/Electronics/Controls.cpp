@@ -64,7 +64,7 @@ float depth_controller(float range)
 	// accumulated range error for integral control //
 	depth_sum_error += range - depth_pid.setpoint;
 
-	if( range > distance )
+	if( range > depth_pid.setpoint )
 	{
 		vert_percent = depth_pid.kp*(range-depth_pid.setpoint) 
 			+ depth_pid.ki*(depth_sum_error) 
