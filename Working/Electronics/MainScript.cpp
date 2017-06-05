@@ -36,7 +36,7 @@
 
 // Saturation Constants //
 #define PITCH_SAT 10	// upper limit of pitch controller
-#define YAW_SAT .1			// upper limit of yaw controller
+#define YAW_SAT 1			// upper limit of yaw controller
 #define INT_SAT 10		// upper limit of integral windup
 #define DINT_SAT 10		// upper limit of depth integral windup
 
@@ -67,9 +67,41 @@ void *depth_thread(void* arg);
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//////////////////////////////// Declare functions ////////////////////////////
+//////////////////////////////// Global Variables /////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+// holds the setpoint data structure with current setpoints
+setpoint_t setpoint;
+
+// holds the system state structure with current system statesystem_state_t sstate;
+system_state_t sstate;
+
+// holds the calibration values for the MS5837 pressure sensor
+pressure_calib_t pressure_calib;
+
+// holds the latest pressure value from the MS5837 pressure sensor
+ms5837_t ms5837;
+
+// create structure for storing IMU data
+bno055_t bno055;
+
+// holds the latest temperature value from the DS18B20 temperature sensor
+ds18b20_t ds18b20;
+
+// holds the constants and latest errors of the yaw pid controller
+pid_data_t yaw_pid;
+
+// holds the constants and latest errors of the depth pid controller
+pid_data_t depth_pid;
+
+// motor channels
+int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4}; 
+
+// Ignoring sstate
+float depth = 0;
+
+// Thread attributes for different priorities
+pthread_attr_t tattrlow, tattrmed, tattrhigh;
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// Main Function ///////////////////////////////
