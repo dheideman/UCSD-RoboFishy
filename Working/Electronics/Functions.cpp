@@ -25,6 +25,3 @@ int set_state(enum state_t new_state)
 	state = new_state;
 	return 0;
 }
-
-
-

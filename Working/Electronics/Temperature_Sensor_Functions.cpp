@@ -38,5 +38,3 @@ ds18b20_t ds18b20_read(void)
 	// return a temperature value //
 	return ds18b20;
 }
-
-

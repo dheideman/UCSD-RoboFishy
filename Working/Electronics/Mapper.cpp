@@ -3,6 +3,7 @@
 ******************************************************************************/
 
 #include "Mapper.h"
+
 // Multithreading
 #include <pthread.h>
 #include <sched.h>
@@ -36,7 +37,7 @@
 
 // Saturation Constants //
 #define PITCH_SAT 10	// upper limit of pitch controller
-#define YAW_SAT 1			// upper limit of yaw controller
+#define YAW_SAT 1		// upper limit of yaw controller
 #define INT_SAT 10		// upper limit of integral windup
 #define DINT_SAT 10		// upper limit of depth integral windup
 
@@ -54,13 +55,13 @@
 // Depth start value //
 #define DEPTH_START -50 //starting depth (mm)
 
-// Stop timer
-#define STOP_TIME		4		// seconds
+// Stop timer //
+#define STOP_TIME 4		// seconds
 
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// Declare threads /////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+/******************************************************************************
+ * Declare Threads
+******************************************************************************/
 
 void *navigation(void* arg);
 void *depth_thread(void* arg);
@@ -98,7 +99,9 @@ pid_data_t yaw_pid;
 pid_data_t depth_pid;
 
 // motor channels
-int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4};
+int motor_channels[] = {CHANNEL_1, CHANNEL_2, CHANNEL_3};
+
+
 
 // Ignoring sstate
 float depth = 0;
@@ -106,9 +109,9 @@ float depth = 0;
 // Thread attributes for different priorities
 pthread_attr_t tattrlow, tattrmed, tattrhigh;
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// Main Function ///////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+/******************************************************************************
+* Main Function
+******************************************************************************/
 
 int main()
 {
@@ -163,8 +166,6 @@ int main()
 	pthread_create (&navigationThread, &tattrmed, navigation, NULL);
 	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 
-
-
 	// Destroy the thread attributes
 	pthread_attr_destroy(&tattrlow);
 	pthread_attr_destroy(&tattrmed);
@@ -182,6 +183,8 @@ int main()
 		// Sleep a little
 		usleep(100000);
 	}
+
+	// Exit cleanly
 	cleanup_auv();
 	return 0;
 }
@@ -206,12 +209,12 @@ void *depth_thread(void* arg){
 		pthread_exit(NULL);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/////////////////// Navigation Thread for Main Control Loop ///////////////////
-///////////////////////////////////////////////////////////////////////////////
+/******************************************************************************
+ * Navigation Thread for Main Control Loop
+ *****************************************************************************/
+
 void *navigation(void* arg)
-//PI_THREAD (navigation_thread)
-{
+
 	static float u[4];	// normalized roll, pitch, yaw, throttle, components
 	initialize_motors(motor_channels, HERTZ);
 	//static float new_esc[4];
@@ -253,11 +256,11 @@ void *navigation(void* arg)
 	bno055 = bno055_read();
 
 	// Write captured values to screen
-	//printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
-	//			 bno055.yaw, bno055.pitch, bno055.roll,
-	//			 bno055.p, bno055.q, bno055.r,
-	//			 bno055.sys, bno055.gyro, bno055.accel,
-	//			 bno055.mag);
+	printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
+				 bno055.yaw, bno055.pitch, bno055.roll,
+				 bno055.p, bno055.q, bno055.r,
+				 bno055.sys, bno055.gyro, bno055.accel,
+				 bno055.mag);
 
 	// Sanity test: Check if yaw control works
 /*
