@@ -144,10 +144,6 @@ extern float depth;
 *
 ******************************************************************************/
 
-// System state
-enum state_t get_state();
-int set_state(enum state_t);
-
 // Functions for setting motor PWM with PCA9685
 int calcTicks(float impulseMs, int hertz);
 int initialize_motors(int channels[4], float freq);

@@ -57,5 +57,5 @@ float yaw_controller()
 
 int range_controller(float range)
 {
-
+    return 0;
 }

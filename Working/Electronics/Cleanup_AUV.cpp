@@ -13,7 +13,7 @@
 int cleanup_auv()
 {
 	// Set state to exiting
-	substate.mode = STOPPING;
+	substate.mode = STOPPED;
 
 	// let 'em know
 	printf("\nExiting Cleanly\n");

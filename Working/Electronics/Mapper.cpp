@@ -1,6 +1,6 @@
-substate.mode/******************************************************************************
+/******************************************************************************
  *	Main script for the 2017 RoboFishy Scripps AUV
-******************************************************************************/
+ *****************************************************************************/
 
 #include "Mapper.h"
 
@@ -71,9 +71,6 @@ void *safety_thread(void* arg);
 //////////////////////////////// Global Variables /////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-// holds the overall state type
-sub_state_t substate;
-
 // holds the setpoint data structure with current setpoints
 setpoint_t setpoint;
 
@@ -105,9 +102,6 @@ int motor_channels[] = {CHANNEL_1, CHANNEL_2, CHANNEL_3};
 
 // Ignoring sstate
 float depth = 0;
-
-// Thread attributes for different priorities
-pthread_attr_t tattrlow, tattrmed, tattrhigh;
 
 /******************************************************************************
 * Main Function
@@ -165,8 +159,8 @@ int main()
 
 	// Create threads using modified attributes
 	pthread_create (&navigationThread, &tattrmed, navigation, NULL);
-	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
-	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
+//	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
+//	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 
 //	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 
@@ -180,11 +174,11 @@ int main()
 	time_t timer = time(NULL);
 
 	// Run main while loop, wait until it's time to stop
-	while(substate.mode != STOPPING)
+	while(substate.mode != STOPPED)
 	{
 		// Check if we've passed the stop time
 		if(difftime(timer,time(NULL)) > STOP_TIME)
-			substate.mode = STOPPING;
+			substate.mode = STOPPED;
 
 		// Sleep a little
 		usleep(100000);
@@ -205,7 +199,7 @@ void *depth_thread(void* arg)
 	// initialize pressure sensor //
 	pressure_calib = init_ms5837();
 
-	while(substate.mode!=STOPPING)
+	while(substate.mode!=STOPPED)
 	{
 		// read pressure sensor by passing calibration structure //
 		ms5837 = ms5837_read(pressure_calib);
@@ -226,7 +220,6 @@ void *depth_thread(void* arg)
 
 void *navigation(void* arg)
 {
-	static float u[4];	// normalized roll, pitch, yaw, throttle, components
 	initialize_motors(motor_channels, HERTZ);
 	//static float new_esc[4];
 	float output_port;		// port motor output
@@ -261,7 +254,7 @@ void *navigation(void* arg)
 	set_motor(0, -0.2);
 	set_motor(1, 0.2);
 
-	while(substate.mode!=STOPPING)
+	while(substate.mode!=STOPPED)
 	{
 	// read IMU values
 	bno055 = bno055_read();
@@ -319,7 +312,7 @@ void *safety_thread(void* arg)
 	pinMode(17, OUTPUT);					// set GPIO 17 as an OUTPUT
 	digitalWrite(leakStatePin, HIGH);		// set GPIO 17 as HIGH (VCC)
 
-	while( substate.mode!=STOPPING )
+	while( substate.mode!=STOPPED )
 	{
 		/******************************************************************************
 		 * Depth Protection
@@ -328,8 +321,8 @@ void *safety_thread(void* arg)
 		 *****************************************************************************/
 
 		// get pressure value //
-		calib = init_ms5837();
-		ms5837 = ms5837_read(calib);
+		pressure_calib = init_ms5837();
+		ms5837 = ms5837_read(pressure_calib);
 		sstate.depth[0] = (ms5837.pressure-1013)*10.197-88.8;
 		//sstate.depth[0] = (ms5837.pressure*UNITS_KPA-101.325)/
 		//	(DENSITY_FRESHWATER*GRAVITY)*0.000001;		// current depth in mm
@@ -346,8 +339,8 @@ void *safety_thread(void* arg)
 		}
 		else
 		{
-			substate.mode = STOPPING;
-			printf("%s\n", "STOPPING");
+			substate.mode = STOPPED;
+			printf("%s\n", "STOPPED");
 		}
 
 		// set current depth values as old values //
@@ -388,21 +381,23 @@ void *safety_thread(void* arg)
 		if( leakStatePin == HIGH )
 		{
 			// tell 'em it's bad //
-			Serial.println("LEAK DETECTED!");
+			printf("LEAK DETECTED!\n");
 			for( i=0; i<3; i++ )
 			{
 				// shut off motors //
 				set_motor(PIN_BASE+i, MOTOR_0);
 			}
-			else if (leakStatePin == LOW)
-			{
-				// tell 'em we're dry //
-				Serial.println("We're dry.");
-			}
+        }
+		else if (leakStatePin == LOW)
+		{
+			// tell 'em we're dry //
+			printf("We're dry.\n");
 		}
 	
 		pthread_exit(NULL);
 	}
+
+    return NULL;
 }
 
 
@@ -414,7 +409,7 @@ void *safety_thread(void* arg)
 /*
 PI_THREAD (logging_thread)
 {
-	while(substate.mode!=STOPPING){
+	while(substate.mode!=STOPPED){
 		FILE *fd = fopen("log.txt", "a");
 		char buffer[100] = {0};
 		// add logging values to the next line
