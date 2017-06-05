@@ -327,7 +327,7 @@ void *navigation(void* arg)
 				//}
 		//}
 	}
-	return 0;
+	pthread_exit(NULL);
 }
 
 
