@@ -244,7 +244,7 @@ void *depth_thread(void* arg){
 
 		usleep(10000);
 	}
-	return;
+    pthread_exit(NULL);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -259,7 +259,6 @@ void *navigation(void* arg)
 	float output_port;		// port motor output
 	float output_starboard; // starboard motor output
 	printf("\n");
-	init_controller();
 	//delay(1000); // Delay is so that the IMU can initialize and run bn055_read.py
 
 	while(get_state()!=EXITING)
@@ -311,50 +310,6 @@ void *navigation(void* arg)
 					// mix controls //
 					printf("u[2]: %f\n", u[2]);
 
-
-					// ESC outputs //
-					sstate.esc_out = u[2];
-					sstate.esc_out[0] = new_esc[0];		// port motor (CCW)
-					sstate.esc_out[1] = new_esc[1];		// starboard motor (CW)
-
-					// print ESC values
-					//printf("ESC1: %f ESC2: %f \n ", sstate.esc_out[0],sstate.esc_out[1]);
-
-					// saturate motor output values //
-					if(sstate.yaw[0]>180) // port motor (CCW)
-					{
-						output_port = -26.18*100*sstate.esc_out+2630;
-						if(output_port<(2630-(0.2*(2630-12))))	// set motor output at 20% of max for testing purposes (20% = 2106.4)
-						{
-							output_port = 2630-(0.2*(2630-12));		// for testing purposes
-							printf("Port PWM Output1: %f\n", output_port);
-						}
-
-						output_starboard = 3155.4-(2630-output_port)/(2630-12)*(4905-2718); // starboard motor output = base 20% minus percentage that port motor increased by
-						if(output_starboard<(2718+0.1*(4905-2718)))
-						{
-							output_starboard =	2718+0.1*(4905-2718); // set starboard motor output to no less than 10%
-						}
-
-						output_port = output_port-0.2*(2630-12);			// port motor max at 40%
-						pwmWrite(PIN_BASE+motor_channels[0], output_port);	// port motor at base 20% + yaw control output
-						pwmWrite(PIN_BASE+motor_channels[1], output_starboard);				// starboard motor at base 20%
-					}
-					else	// starboard motor (CW)
-					{
-						output_starboard = 13.77*100*-sstate.esc_out+2718;
-						if(output_starboard>(2718+(0.2*(4905-2718)))) // set motor output at 20% of max for testing purposes (20% = 3155.4)
-						{
-							output_starboard = 2718+(0.2*(4905-2718));	// for testing purposes
-							//output_starboard = 4095;
-							printf("Starboard PWM Output1: %f\n", output_starboard);
-						}
-
-						output_port = 2106.4 - (output_starboard-2718)/(4905-2718)*(2630-12); // port motor output = base 20% minus percentage that starboard motor increased by
-						if(output_port>(2630-(0.1*(2630-12))))
-						{
-							output_port = 2630-(0.1*(2630-12));		// set port motor output to no less than 10%
-						}
 
 						output_starboard = output_starboard+0.2*(4905-2718);	// starboard motor max at 40%
 						pwmWrite(PIN_BASE+motor_channels[1], output_starboard); //	starboard motor output = base 20% + yaw control output
