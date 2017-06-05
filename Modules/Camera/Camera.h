@@ -27,7 +27,7 @@
 #include <string>
 
 // Global typedefs
-#include "../../Modules/TypeDefs.h"
+#include "../../Modules/core/core.h"
 
 // Multithreading
 #include <pthread.h>

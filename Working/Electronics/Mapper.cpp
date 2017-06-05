@@ -228,63 +228,66 @@ void *navigation(void* arg)
 {
 	static float u[4];	// normalized roll, pitch, yaw, throttle, components
 	initialize_motors(motor_channels, HERTZ);
-	//static float new_esc[4];
+	
 	float output_port;		// port motor output
 	float output_starboard; // starboard motor output
 
-	//Initialize Motor Percent to be returned by yaw_controller
+	// initialize Motor Percent to be returned by yaw_controller //
 	float motor_percent;
 
-	//Initialize old imu data
+	// initialize old imu data //
 	yaw_pid.oldyaw = 0;
 
-	//Initialize setpoint for yaw controller
+	// initialize setpoint for yaw_controller //
 	yaw_pid.setpoint = 0;
 
-	//Initialize Error values to be used in yaw controller
+	// initialize error values to be used in yaw_controller //
 	yaw_pid.p_err = 0;
 	yaw_pid.i_err = 0;
 	yaw_pid.d_err = 0;
 
-	//Yaw Controller Constant Initialization
+	// yaw_controller constant initialization ///
 	yaw_pid.kp = 0.01;
-	yaw_pid.kd = 1;
-	yaw_pid.ki = 0.1;
+	yaw_pid.kd = 0;
+	yaw_pid.ki = 0;
 
-	//depth controller constant initialization
+	// range-from-bottom setpoint //
+	depth_pid.setpoint = 2;	// meters
+
+	// depth controller constant initialization
 	depth_pid.kp = 0.01;
-	depth_pid.kd = 1;
-	depth_pid.ki = 0.1;
+	depth_pid.kd = 0;
+	depth_pid.ki = 0;
 
-	// Hard set motor speed
-//	 pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
+	// hard set motor speed //
+	// pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
 	set_motor(0, -0.2);
 	set_motor(1, 0.2);
 
 	while(substate.mode!=STOPPING)
 	{
-	// read IMU values
-	bno055 = bno055_read();
+		// read IMU values
+		bno055 = bno055_read();
 
-	// Write captured values to screen
-	/*
-    printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
-				 bno055.yaw, bno055.pitch, bno055.roll,
-				 bno055.p, bno055.q, bno055.r,
-				 bno055.sys, bno055.gyro, bno055.accel,
-				 bno055.mag);
-    */
+		// Write captured values to screen
+		/*
+	    printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
+					 bno055.yaw, bno055.pitch, bno055.roll,
+					 bno055.p, bno055.q, bno055.r,
+					 bno055.sys, bno055.gyro, bno055.accel,
+					 bno055.mag);
+	    */
 
-	// Sanity test: Check if yaw control works
-/*
-	//Call yaw controller function
-	yaw_controller();
+		// Sanity test: Check if yaw control works
+		/*
+		//Call yaw controller function
+		yaw_controller();
 
-	//set port motor
-	set_motors(0,motor_percent);
+		//set port motor
+		set_motors(0,motor_percent);
 
-	//set starboard motor
-	set_motors(1, motor_percent);
+		//set starboard motor
+		set_motors(1, motor_percent);
 
 		*/
 
