@@ -4,7 +4,7 @@ substate.mode/******************************************************************
 
 #include "Mapper.h"
 
-// Multithreading
+// Multithreading //
 #include <pthread.h>
 #include <sched.h>
 #include <unistd.h>
@@ -32,6 +32,7 @@ substate.mode/******************************************************************
 
 // Saturation Constants //
 #define YAW_SAT 1		// upper limit of yaw controller
+#define DEPTH_SAT 1		// upper limit of depth controller
 #define INT_SAT 10		// upper limit of integral windup
 #define DINT_SAT 10		// upper limit of depth integral windup
 
@@ -51,9 +52,6 @@ substate.mode/******************************************************************
 
 // Stop Timer //
 #define STOP_TIME 4		// seconds
-
-// Motor Stop PWM  Value //
-#define MOTOR_0 2674    // motor output is 0
 
 // SOS Leak Sensor Pin //
 #define SOSPIN 27		// connected to GPIO 27
