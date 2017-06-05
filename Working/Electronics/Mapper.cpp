@@ -58,7 +58,6 @@
 // Stop timer //
 #define STOP_TIME 4		// seconds
 
-using namespace std;
 
 /******************************************************************************
  * Declare Threads
@@ -71,6 +70,9 @@ void *depth_thread(void* arg);
 ///////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// Global Variables /////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+// holds the overall state type
+sub_state_t substate;
 
 // holds the setpoint data structure with current setpoints
 setpoint_t setpoint;
@@ -113,9 +115,9 @@ pthread_attr_t tattrlow, tattrmed, tattrhigh;
 
 int main()
 {
-    // Initialize python interpreter
+		// Initialize python interpreter
 	Py_Initialize();
-    
+
 	//Set up Pi GPIO pins through wiringPi
 	wiringPiSetupGpio();
 
@@ -162,7 +164,7 @@ int main()
 
 	// Create threads using modified attributes
 	pthread_create (&navigationThread, &tattrmed, navigation, NULL);
-//	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
+	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 
 	// Destroy the thread attributes
 	pthread_attr_destroy(&tattrlow);
@@ -175,13 +177,14 @@ int main()
 	// Run main while loop, wait until it's time to stop
 	while(get_state()!=EXITING)
 	{
-        printf("Main Loop\n");
 		// Check if we've passed the stop time
 		if(difftime(timer,time(NULL)) > STOP_TIME) set_state(EXITING);
 
 		// Sleep a little
 		usleep(100000);
 	}
+
+	// Exit cleanly
 	cleanup_auv();
 	return 0;
 }
@@ -194,18 +197,16 @@ int main()
 void *depth_thread(void* arg){
 	// Initialize pressure sensor
 	pressure_calib = init_ms5837();
-    
-    printf("Running depth_thread\n");
 
 	while(get_state()!=EXITING){
-        // Read pressure sensor by passing calibration structure
+		// Read pressure sensor by passing calibration structure
 		ms5837 = ms5837_read(pressure_calib);
 		// calculate depth (no idea what's up with the function)
 		depth = (ms5837.pressure-1013)*10.197-88.8;
 
 		usleep(10000);
 	}
-	pthread_exit(NULL);
+		pthread_exit(NULL);
 }
 
 /******************************************************************************
@@ -213,12 +214,10 @@ void *depth_thread(void* arg){
  *****************************************************************************/
 
 void *navigation(void* arg)
-{
-    printf("Running navigation\n");
-    initialize_motors(motor_channels, HERTZ);
-	
-    printf("Motors set\n");
 
+	static float u[4];	// normalized roll, pitch, yaw, throttle, components
+	initialize_motors(motor_channels, HERTZ);
+	//static float new_esc[4];
 	float output_port;		// port motor output
 	float output_starboard; // starboard motor output
 
@@ -248,11 +247,8 @@ void *navigation(void* arg)
 
 	// Hard set motor speed
 //	 pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
-	printf("Setting motor speeds...   NOW\n");
-    set_motor(PIN_BASE+0, -0.2);
-	set_motor(PIN_BASE+1, 0.2);
-
-    printf("Motor speeds set.\n");
+	set_motors(PIN_BASE+motor_channels[0], -0.2);
+	set_motors(PIN_BASE+motor_channels[0], 0.2);
 
 	while(get_state()!=EXITING)
 	{
@@ -260,11 +256,11 @@ void *navigation(void* arg)
 	bno055 = bno055_read();
 
 	// Write captured values to screen
-	//printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
-	//			 bno055.yaw, bno055.pitch, bno055.roll,
-	//			 bno055.p, bno055.q, bno055.r,
-	//			 bno055.sys, bno055.gyro, bno055.accel,
-	//			 bno055.mag);
+	printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
+				 bno055.yaw, bno055.pitch, bno055.roll,
+				 bno055.p, bno055.q, bno055.r,
+				 bno055.sys, bno055.gyro, bno055.accel,
+				 bno055.mag);
 
 	// Sanity test: Check if yaw control works
 /*
@@ -282,10 +278,9 @@ void *navigation(void* arg)
 		// sleep for 5 ms //
 		usleep(5000);
 	}
-    
-    printf("Shutting down motors\n");
-	set_motor(PIN_BASE+0, 0);
-	set_motor(PIN_BASE+1, 0);
+
+	set_motors(PIN_BASE+motor_channels[0], 0);
+	set_motors(PIN_BASE+motor_channels[0], 0);
 
 	pthread_exit(NULL);
 }
@@ -333,7 +328,7 @@ void *navigation(void* arg)
 	// read temperature values from DS18B20 temperature sensor //
 					//ds18b20 = ds18b20_read(); // temperature in deg C
 					//printf("Temperature: %f", ds18b20.temperature);
-					if(ds18b20.temperature>60)
+					/*if(ds18b20.temperature>60)
 					{
 						for( i=0; i<4; i++ )
 						{

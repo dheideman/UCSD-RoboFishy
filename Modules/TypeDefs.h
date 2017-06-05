@@ -59,6 +59,6 @@ typedef struct sub_images_t
 //////////////////////
 
 // Global State Variable
-// sub_state_t substate;       // Needs to be moved out somewhere sometime soon.
+//sub_state_t substate;       // Needs to be moved out somewhere sometime soon.
 
 #endif
