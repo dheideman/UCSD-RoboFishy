@@ -26,7 +26,7 @@ float yaw_controller(bno055, yaw_pid)
 	else		// AUV is pointed left
 	{
 		// u[2] is positive
-		motor_percent = yaw_pid.kp*(yaw_pid.setpoint-(bno055.yaw-360)) 
+		motor_percent = yaw_pid.kp*(yaw_pid.err) 
 			+ yaw_pid.kd*(bno055.r) 
 			+ yaw_pid.ki*yaw_pid.i_err; // yaw controller
 	}
@@ -40,6 +40,7 @@ float yaw_controller(bno055, yaw_pid)
 		motor_percent = -YAW_SAT;
 	}
 
+	yaw_pid.i_err += yaw_pid.err*DT;
 	// set current yaw to be the old yaw //
 	yaw_pid.oldyaw = bno055.yaw;
 
@@ -64,7 +65,7 @@ float depth_controller(float range)
 	// accumulated range error for integral control //
 	depth_sum_error += range - depth_pid.setpoint;
 
-	if( range > distance )
+	if( range > depth_pid.setpoint )
 	{
 		vert_percent = depth_pid.kp*(range-depth_pid.setpoint) 
 			+ depth_pid.ki*(depth_sum_error) 
