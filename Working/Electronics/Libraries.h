@@ -1,7 +1,7 @@
 #include <pca9685.h>	 // PWM board library
 #include <wiringPi.h>	 // GPIO access library for the RasPi
 #include <wiringPiI2C.h> // I2c access library for the RasPi
-#include <stdio.h>
+#include <stdio.h>		 // 
 #include <stdlib.h>
 #include <Python.h>
 #include <time.h>
@@ -17,7 +17,7 @@
 #define CHANNEL_3 2		// yaw
 #define CHANNEL_4 3		// speed
 #define CHANNEL_5 4		// depth
-#define MOTOR_0 2674    // value for 0 motor output
+//#define MOTOR_0 2674    // value for 0 motor output
 
 
 /******************************************************************************

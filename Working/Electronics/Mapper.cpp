@@ -36,7 +36,7 @@
 
 // Saturation Constants //
 #define PITCH_SAT 10	// upper limit of pitch controller
-#define YAW_SAT 1			// upper limit of yaw controller
+#define YAW_SAT 1		// upper limit of yaw controller
 #define INT_SAT 10		// upper limit of integral windup
 #define DINT_SAT 10		// upper limit of depth integral windup
 
@@ -54,13 +54,13 @@
 // Depth start value //
 #define DEPTH_START -50 //starting depth (mm)
 
-// Stop timer
-#define STOP_TIME		4		// seconds
+// Stop timer //
+#define STOP_TIME 4		// seconds
 
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// Declare threads /////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+/******************************************************************************
+ * Declare Threads
+******************************************************************************/
 
 void *navigation(void* arg);
 void *depth_thread(void* arg);
@@ -95,7 +95,7 @@ pid_data_t yaw_pid;
 pid_data_t depth_pid;
 
 // motor channels
-int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4};
+int motor_channels[] = {CHANNEL_1, CHANNEL_2, CHANNEL_3};
 
 // Ignoring sstate
 float depth = 0;
