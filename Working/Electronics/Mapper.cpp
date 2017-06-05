@@ -205,9 +205,6 @@ void *depth_thread(void* arg)
 	// initialize pressure sensor //
 	pressure_calib = init_ms5837();
 
-	// start Python code that reads data from the pressure sensor //
-	start_Py_ms5837();
-
 	while(substate.mode!=STOPPING)
 	{
 		// read pressure sensor by passing calibration structure //
