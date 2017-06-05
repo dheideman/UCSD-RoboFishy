@@ -31,7 +31,6 @@ substate.mode/******************************************************************
 #define KD_DEPTH 0
 
 // Saturation Constants //
-//#define PITCH_SAT 10	// upper limit of pitch controller
 #define YAW_SAT 1		// upper limit of yaw controller
 #define INT_SAT 10		// upper limit of integral windup
 #define DINT_SAT 10		// upper limit of depth integral windup
@@ -53,8 +52,11 @@ substate.mode/******************************************************************
 // Stop Timer //
 #define STOP_TIME 4		// seconds
 
+// Motor Stop PWM  Value //
+#define MOTOR_0 2674    // motor output is 0
+
 // SOS Leak Sensor Pin //
-#define SOSPIN 27		// connected to digital pin 27
+#define SOSPIN 27		// connected to GPIO 27
 
 /******************************************************************************
  * Declare Threads
@@ -300,53 +302,98 @@ void *navigation(void* arg)
  *****************************************************************************/
 void *safety_thread(void* arg)
 {
+	// leak detection variables //
+	int leakStatePin = digitalRead(SOSPIN);	// read the input pin
+	int i;									// loop counting integer
+
+	// leak detection pins //
+	pinMode(SOSPIN, INPUT);					// set SOSPIN as an INPUT
+	pinMode(17, OUTPUT);					// set GPIO 17 as an OUTPUT
+	digitalWrite(leakStatePin, HIGH);		// set GPIO 17 as HIGH (VCC)
+
 	while(substate.mode!=STOPPING)
 	{
+		/******************************************************************************
+		 * Depth Protection
+		 *
+		 * Shut down AUV if vehicle travels deeper than 10m
+		 *****************************************************************************/
+
 		// get pressure value //
-		//calib = init_ms5837();
-		//ms5837 = ms5837_read(calib);
-		//sstate.depth[0] = (ms5837.pressure-1013)*10.197-88.8;
+		calib = init_ms5837();
+		ms5837 = ms5837_read(calib);
+		sstate.depth[0] = (ms5837.pressure-1013)*10.197-88.8;
 		//sstate.depth[0] = (ms5837.pressure*UNITS_KPA-101.325)/
 		//	(DENSITY_FRESHWATER*GRAVITY)*0.000001;		// current depth in mm
-		//printf("%f\n", sstate.depth[0]);
+		printf("%f\n", sstate.depth[0]);
 
-		// check if depth is above start threshold //
-		//sstate.fdepth[0] = A1*(sstate.depth[0]+sstate.depth[1])+A2*sstate.fdepth[1];
+		// filtered depth value //
+		sstate.fdepth[0] = A1*(sstate.depth[0]+sstate.depth[1])+A2*sstate.fdepth[1];
+		printf("Current depth is %f\n m", sstate.fdepth[0]/1000);
+		
 		//if(sstate.fdepth[0]>DEPTH_START)
-		/*if(sstate.depth[0]<DEPTH_START)
+		if( sstate.depth[0] < DEPTH_START )
 		{
-			drive_mode = DRIVE_ON;
-			printf("%s\n", "DRIVE_ON");
+			substate.mode = RUNNING;			
 		}
 		else
 		{
-			drive_mode = DRIVE_OFF;
-			printf("%s\n", "DRIVE_OFF");
+			substate.mode = STOPPING;
+			printf("%s\n", "STOPPING");
 		}
 
 		// set current depth values as old values //
 		sstate.depth[1] = sstate.depth[0];
 		sstate.fdepth[1] = sstate.fdepth[0];
-	*/
+	
 		//sleep for 50 ms //
 		usleep(50000);
 	
+		/******************************************************************************
+		 * Temperature Protection
+		 *
+		 * Shut down AUV if housing temperature exceeds 50 deg C
+		 *****************************************************************************/
 
 		// read temperature values from DS18B20 temperature sensor //
-		/*ds18b20 = ds18b20_read(); // temperature in deg C
+		ds18b20 = ds18b20_read(); 	// temperature in deg C
+
+		// let 'em know how hot we are //
 		printf("Temperature: %f", ds18b20.temperature);
-		if(ds18b20.temperature>60)
+
+		// turn motors off if housing temperature gets too high //
+		if( ds18b20.temperature > 50 )
 		{
-			for( i=0; i<4; i++ )
+			for( i=0; i<3; i++ )
 			{
-				pwmWrite(PIN_BASE+i, 2674); // turn motors off if temperature gets too high
+				pwmWrite(PIN_BASE+i, MOTOR_0); 
 			}
-		}*/
+		}
+
+		/******************************************************************************
+		 * Leak Protection
+		 *
+		 * Shut down AUV if a leak is detected
+		 *****************************************************************************/
 
 		// check leak sensor for water intrusion //
-		pinMode();
+		if( leakStatePin == HIGH )
+		{
+			// tell 'em it's bad //
+			Serial.println("LEAK DETECTED!");
+			for( i=0; i<3; i++ )
+			{
+				// shut off motors //
+				set_motor(PIN_BASE+i, MOTOR_0);
+			}
+			else if (leakStatePin == LOW)
+			{
+				// tell 'em we're dry //
+				Serial.println("We're dry.");
+			}
+		}
 
-	pthread_exit(NULL);
+		pthread_exit(NULL);
 	}
 }
 
