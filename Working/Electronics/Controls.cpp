@@ -1,7 +1,7 @@
 /******************************************************************************
 * Controls.cpp
 *
-* Contains the yaw_controller() and range_controller functions
+* Contains the yaw_controller() and depth_controller functions
 ******************************************************************************/
 #include "Mapper.h"
 
@@ -49,13 +49,29 @@ float yaw_controller()
 
 
 /******************************************************************************
-* int range_controller()
+* float depth_controller(float range)
 *
 * Takes a range-from-bottom reading from the laser range-finder code and 
 * regulates the range-from-bottom of the AUV
 ******************************************************************************/
-
-int range_controller(float range)
+/*
+float depth_controller(float range)
 {
+	float vert_percent;		// vertical thruster output in a percentage
 
-}
+
+	if( range > distance )
+	{
+		vert_percent = depth_pid.kp*(range-depth_pid.setpoint) 
+			+ depth_pid.ki*() + depth_pid.kd*((range_current-range_old)/DT); 
+	}
+	else if ( range < distance )
+	{
+		// shut off vertical thruster //
+		vert_percent = 0;
+	}
+	else
+	{
+
+	}
+}*/
