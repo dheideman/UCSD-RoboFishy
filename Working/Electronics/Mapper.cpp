@@ -240,9 +240,9 @@ void *navigation(void* arg)
 	yaw_pid.setpoint = 0;
 
 	// initialize error values to be used in yaw_controller //
-	yaw_pid.p_err = 0;
+	yaw_pid.err = 0;
 	yaw_pid.i_err = 0;
-	yaw_pid.d_err = 0;
+	
 
 	// yaw_controller constant initialization ///
 	yaw_pid.kp = 0.01;
@@ -266,7 +266,14 @@ void *navigation(void* arg)
 	{
 		// read IMU values
 		bno055 = bno055_read();
-
+		if (bno055.yaw < 180)
+		{
+		yaw_pid.err = abs(bno055.yaw - yaw_pid.setpoint);
+		}
+		else
+		{
+		yaw_pid.err =abs(bno055.yaw - (yaw_pid-360));
+		}
 		// Write captured values to screen
 		/*
 	    printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
