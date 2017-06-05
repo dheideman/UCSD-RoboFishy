@@ -4,20 +4,21 @@
 enum state_t state = UNINITIALIZED;
 
 
-
 /***************************************************************************
- * int saturate_number
+ * int saturate_number(float* val, float min, float max)
  *
- * Description
+ * Generic function for saturating values in a function
 ***************************************************************************/
-
 int saturate_number(float* val, float min, float max)
 {
+	// if "val" is greater than "max", set "val" to "max" //
 	if(*val>max)
 	{
 		*val = max;
 		return 1;
 	}
+
+	// if "val" is less than "min", set "val" to "min" //
 	else if(*val<min)
 	{
 		*val = min;
@@ -26,6 +27,205 @@ int saturate_number(float* val, float min, float max)
 	return 0;
 }
 
+<<<<<<< HEAD
+/***************************************************************************
+ * pressure_calib_t init_ms5837
+ *
+ * initializes pressure sensor
+ *
+ * Returns structure of 6 calibration coefficients
+***************************************************************************/
+pressure_calib_t init_ms5837(void)
+{
+	// initialize Python interpreter //
+	Py_Initialize();
+
+	// create struct to hold calibration data //
+	pressure_calib_t pressure_calib; 
+
+	// create pointers to python object //
+	PyObject *pName, *pModule, *pDict, *pFunc, *pValue;
+
+	// input name of python source file //
+	pName = PyString_FromString("MS5837");
+
+	// stuff //
+	PyRun_SimpleString("import sys");
+	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/MainScript\")");
+	pModule = PyImport_Import(pName);
+	pDict = PyModule_GetDict(pModule);
+	pFunc = PyDict_GetItemString(pDict, "init_press");
+	if (PyCallable_Check(pFunc))
+	{
+		pValue = PyObject_CallObject(pFunc, NULL);
+		PyArg_ParseTuple(pValue,"ffffff",
+			&pressure_calib.C1, &pressure_calib.C2, &pressure_calib.C3,
+			&pressure_calib.C4, &pressure_calib.C5, &pressure_calib.C6);
+		Py_DECREF(pValue);
+	}
+	else
+	{
+		PyErr_Print();
+	}
+	Py_DECREF(pModule);
+	Py_DECREF(pName);
+	Py_Finalize();
+
+	// return pressure calibration values //
+	return pressure_calib;
+};
+
+/***************************************************************************
+ * ms5837_t ms5837_read
+ *
+ * Read pressure values from MS5837 pressure sensor
+***************************************************************************/
+ms5837_t ms5837_read(pressure_calib_t pressure_calib)
+{
+	// create struct to hold pressure data //
+	ms5837_t ms5837;
+
+	// initialize Python interpreter //
+	Py_Initialize();
+
+	// create pointers to python object //
+	PyObject *pName, *pModule, *pDict, *pFunc, *pArgs, *pValue;
+
+	// input name of python source file //
+	pName = PyString_FromString("MS5837_example"); 
+	PyRun_SimpleString("import sys");
+	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/MainScript\")");
+	pModule = PyImport_Import(pName);
+	pDict = PyModule_GetDict(pModule);
+	pFunc = PyDict_GetItemString(pDict, "read_press");
+
+	if (PyCallable_Check(pFunc))
+	{
+		pArgs = Py_BuildValue("ffffff", pressure_calib.C1,pressure_calib.C2,pressure_calib.C3,
+			pressure_calib.C4,pressure_calib.C5,pressure_calib.C6);
+
+		pValue = PyObject_CallObject(pFunc, pArgs);
+
+		PyArg_ParseTuple(pValue,"ff", &ms5837.pressure);
+		Py_DECREF(pArgs);
+		Py_DECREF(pValue);
+	}
+	else
+	{
+		PyErr_Print();
+	}
+
+	Py_DECREF(pModule);
+	Py_DECREF(pName);
+	Py_Finalize();
+
+	// return pressure value //
+	return ms5837;
+};
+
+/***************************************************************************
+ * void start_Py_ms5837
+ *
+ * Starts the pressure-reading Python script
+***************************************************************************/
+void start_Py_ms5837(void)
+{
+	// open MS5837_example.py //
+	FILE* fd = fopen("python MS5837_example.py", "r");
+
+	// read pressure values //
+	PyRun_SimpleFile(fd,"python MS5837_example.py");
+	return;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////// BNO055 FUNCTIONS //////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+/***************************************************************************
+ * void start_Py_bno055
+ *
+ * Description
+***************************************************************************/
+void start_Py_bno055(void)	//	start bno055_read.py code
+{
+	// clear fifo file
+	FILE* fd = fopen("bno055_read.py", "r");
+	PyRun_SimpleFile(fd,"bno055_read.py");
+	//nanosleep(100*1000000);
+	FILE* fifo = fopen("bno055_fifo.txt","r");
+	fclose(fifo);
+
+	// check if fifo file has numbers in it
+	return;
+}
+
+/***************************************************************************
+ * bno055_t bno055_read
+ *
+ * Reads IMU values from bno055_fifo.txt
+***************************************************************************/
+
+bno055_t bno055_read(void)	// read values from bno055 IMU
+{
+	bno055_t bno055;
+	char buf[1000];
+	FILE *fd = fopen( "bno055_fifo.txt", "r");
+	//FILE *fd = fopen( "/home/pi/UCSD-RoboFishy/Working/Electronics/bno055_fifo.txt", "r");
+
+	fgets(buf,1000,fd);
+	fclose(fd);
+	sscanf(buf,"%f %f %f %f %f %f %i %i %i %i",
+				 &bno055.yaw,&bno055.roll,&bno055.pitch,
+				 &bno055.q, &bno055.p, &bno055.r,
+				 &bno055.sys,&bno055.gyro,&bno055.accel,
+				 &bno055.mag);
+
+	return bno055;
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////// DS18B20 Functions ////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+
+/***************************************************************************
+ * void start_Py_ds18b20
+ *
+ * Writes temperature values from the DS18B20 temperature sensor into
+ * ds18b20_fifo.fifo
+***************************************************************************/
+
+void start_Py_ds18b20(void)		//	start temperature_sensor_code.py code
+{
+	FILE* fd = fopen("python temperature_sensor_code.py", "r");
+	PyRun_SimpleFile(fd,"python temperature_sensor_code.py");
+	return;
+}
+
+/***************************************************************************
+ * ds18b20_t ds18b20_read(void)
+ *
+ * Reads temperature values from ds18b20_fifo.fifo
+***************************************************************************/
+
+ds18b20_t ds18b20_read(void)	// read values from ds18b20 temperature sensor
+{
+	ds18b20_t ds18b20;
+	char buf[1000];
+	FILE *fd = fopen( "/home/pi/UCSD-RoboFishy/Working/Electronics/ds18b20_fifo.fifo", "r");
+	fgets(buf,1000,fd);
+	fclose(fd);
+	sscanf(buf,"%f",&ds18b20.temperature);
+	return ds18b20;
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////Setup and Shutdown//////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+
+=======
+>>>>>>> 8ecb0821b230186148ea46ac2322e4ba3c2d53dc
 /***************************************************************************
  * int scripps_auv_init(void)
  *
@@ -163,8 +363,9 @@ int set_motors(int motor_num, float speed)
 	int motor_num;				// indicates which motor to write to
 								// port = 0, starboard = 1, vert = 2
 	float motor_output;			// feeds the necessary PWM to the motor
-	float per_run = 0.2;		// percentage of full PWM to run at
-	//float min_per_run = 0.1;	// minimum percentage of full PWM to run at
+	float per_base = 0.2;		// base percentage of full PWM to run at
+	float per_run = 0.1;		// percentage above per_base to run at
+
 	int port_range = 2618;		// port motor range
 	int starboard_range = 2187; // starboard motor range
 
@@ -194,5 +395,11 @@ int set_motors(int motor_num, float speed)
 		}
 	}
 	else
-		motor_output = 2674;	// turn off motor
+	{
+		motor_output = 2674;	
+		
+		pwmWrite(motor_num, motor_output);		// Set motor to 20% base output //
+	}
+	
+	return 1;
 }
