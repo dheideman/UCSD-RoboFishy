@@ -13,7 +13,7 @@
 
 int scripps_auv_init(void)
 {
-	start_Py_bno055();				// start IMU
+	start_Py_bno055();				// start IMU Python script
 	sleep(10);
 	//start_Py_ms5837();			// start pressure sensor
 	start_Py_ds18b20();				// start temperature sensor

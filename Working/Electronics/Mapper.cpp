@@ -20,11 +20,6 @@ substate.mode/******************************************************************
  * Controller Gains
 ******************************************************************************/
 
-/*/ Pitch Controller // Do we need these?
-#define KP_PITCH 0
-#define KI_PITCH 0
-#define KD_PITCH 0
-*/
 // Yaw Controller //
 #define KP_YAW .01
 #define KI_YAW 0
@@ -52,12 +47,14 @@ substate.mode/******************************************************************
 // Acceleration Due to Gravity in m/s^2 //
 #define GRAVITY 9.81
 
-// Depth start value //
-#define DEPTH_START -50 //starting depth (mm)
+// Depth Start Value //
+#define DEPTH_START -50 // starting depth (mm)
 
-// Stop timer //
+// Stop Timer //
 #define STOP_TIME 4		// seconds
 
+// SOS Leak Sensor Pin //
+#define SOSPIN 27		// connected to digital pin 27
 
 /******************************************************************************
  * Declare Threads
@@ -65,6 +62,7 @@ substate.mode/******************************************************************
 
 void *navigation(void* arg);
 void *depth_thread(void* arg);
+void *safety_thread(void* arg);
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -115,7 +113,7 @@ pthread_attr_t tattrlow, tattrmed, tattrhigh;
 
 int main()
 {
-		// Initialize python interpreter
+	// Initialize python interpreter
 	Py_Initialize();
 
 	//Set up Pi GPIO pins through wiringPi
@@ -161,10 +159,12 @@ int main()
 	// Thread handles
 	pthread_t navigationThread;
 	pthread_t depthThread;
+	pthread_t safetyThread;
 
 	// Create threads using modified attributes
 	pthread_create (&navigationThread, &tattrmed, navigation, NULL);
 	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
+	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 
 	// Destroy the thread attributes
 	pthread_attr_destroy(&tattrlow);
@@ -195,11 +195,13 @@ int main()
 *
 * For Recording Depth & Determining If AUV is in Water or Not
 ******************************************************************************/
-void *depth_thread(void* arg){
+void *depth_thread(void* arg)
+{
 	// Initialize pressure sensor
 	pressure_calib = init_ms5837();
 
-	while(substate.mode!=STOPPING){
+	while(substate.mode!=STOPPING)
+	{
 		// Read pressure sensor by passing calibration structure
 		ms5837 = ms5837_read(pressure_calib);
 		// calculate depth (no idea what's up with the function)
@@ -207,15 +209,18 @@ void *depth_thread(void* arg){
 
 		usleep(10000);
 	}
-		pthread_exit(NULL);
+
+	pthread_exit(NULL);
 }
 
 /******************************************************************************
- * Navigation Thread for Main Control Loop
+ * Navigation Thread 
+ *
+ * For yaw control
  *****************************************************************************/
 
 void *navigation(void* arg)
-
+{
 	static float u[4];	// normalized roll, pitch, yaw, throttle, components
 	initialize_motors(motor_channels, HERTZ);
 	//static float new_esc[4];
@@ -237,14 +242,14 @@ void *navigation(void* arg)
 	yaw_pid.d_err = 0;
 
 	//Yaw Controller Constant Initialization
-	yaw_pid.kp = .01;
+	yaw_pid.kp = 0.01;
 	yaw_pid.kd = 1;
-	yaw_pid.ki = .1;
+	yaw_pid.ki = 0.1;
 
 	//depth controller constant initialization
-	depth_pid.kp = .01;
+	depth_pid.kp = 0.01;
 	depth_pid.kd = 1;
-	depth_pid.ki = .1;
+	depth_pid.ki = 0.1;
 
 	// Hard set motor speed
 //	 pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
@@ -287,26 +292,28 @@ void *navigation(void* arg)
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-//////////////////////////////// Safety Thread ////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-/*PI_THREAD (safety_thread)
+/******************************************************************************
+ * Safety Thread 
+ * 
+ * Shuts down AUV if vehicle goes belows 10m, temperature gets too high, or 
+ * water intrusion is detected
+ *****************************************************************************/
+void *safety_thread(void* arg)
 {
-	// read depth values from MS5837 pressure sensor //
 	while(substate.mode!=STOPPING)
 	{
 		// get pressure value //
-		calib = init_ms5837();
-		ms5837 = ms5837_read(calib);
+		//calib = init_ms5837();
+		//ms5837 = ms5837_read(calib);
 		//sstate.depth[0] = (ms5837.pressure-1013)*10.197-88.8;
-		sstate.depth[0] = (ms5837.pressure*UNITS_KPA-101.325)/
-			(DENSITY_FRESHWATER*GRAVITY)*0.000001;		// current depth in mm
-		printf("%f\n", sstate.depth[0]);
+		//sstate.depth[0] = (ms5837.pressure*UNITS_KPA-101.325)/
+		//	(DENSITY_FRESHWATER*GRAVITY)*0.000001;		// current depth in mm
+		//printf("%f\n", sstate.depth[0]);
 
 		// check if depth is above start threshold //
 		//sstate.fdepth[0] = A1*(sstate.depth[0]+sstate.depth[1])+A2*sstate.fdepth[1];
 		//if(sstate.fdepth[0]>DEPTH_START)
-		if(sstate.depth[0]<DEPTH_START)
+		/*if(sstate.depth[0]<DEPTH_START)
 		{
 			drive_mode = DRIVE_ON;
 			printf("%s\n", "DRIVE_ON");
@@ -320,27 +327,35 @@ void *navigation(void* arg)
 		// set current depth values as old values //
 		sstate.depth[1] = sstate.depth[0];
 		sstate.fdepth[1] = sstate.fdepth[0];
-
+	*/
 		//sleep for 50 ms //
 		usleep(50000);
+	
+
+		// read temperature values from DS18B20 temperature sensor //
+		/*ds18b20 = ds18b20_read(); // temperature in deg C
+		printf("Temperature: %f", ds18b20.temperature);
+		if(ds18b20.temperature>60)
+		{
+			for( i=0; i<4; i++ )
+			{
+				pwmWrite(PIN_BASE+i, 2674); // turn motors off if temperature gets too high
+			}
+		}*/
+
+		// check leak sensor for water intrusion //
+		pinMode();
+
+	pthread_exit(NULL);
 	}
-	return 0;
+}
 
-	// read temperature values from DS18B20 temperature sensor //
-					//ds18b20 = ds18b20_read(); // temperature in deg C
-					//printf("Temperature: %f", ds18b20.temperature);
-					/*if(ds18b20.temperature>60)
-					{
-						for( i=0; i<4; i++ )
-						{
-							pwmWrite(PIN_BASE+i, 2674); // turn motors off if temperature gets too high
-						}
-					}*/
-//}
 
-///////////////////////////////////////////////////////////////////////////////
-/////////////////////// Logging Thread for Recording Data /////////////////////
-///////////////////////////////////////////////////////////////////////////////
+/******************************************************************************
+ * Logging Thread 
+ * 
+ * Logs the sensor output data into a file
+ *****************************************************************************/
 /*
 PI_THREAD (logging_thread)
 {
