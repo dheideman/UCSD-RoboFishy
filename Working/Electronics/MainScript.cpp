@@ -111,9 +111,6 @@ setpoint_t setpoint;
 // holds the system state structure with current system statesystem_state_t sstate;
 system_state_t sstate;
 
-// holds the latest data values from the BNO055
-bno055_t bno055;
-
 // holds the calibration values for the MS5837 pressure sensor
 pressure_calib_t pressure_calib;
 

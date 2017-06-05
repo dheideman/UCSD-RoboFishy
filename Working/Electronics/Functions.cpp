@@ -1,4 +1,4 @@
-pressure#include "Libraries.h"
+#include "Libraries.h"
 
 // state variable for loop and thread control //
 enum state_t state = UNINITIALIZED;
@@ -328,8 +328,8 @@ int cleanup_auv()
 * Takes in readings from IMU and calculates a percentage (-1 to 1)
 ******************************************************************************/
 int yaw_controller()
-{
-// read IMU values into sstate
+{	
+	// read IMU values into sstate
 	bno055 = bno055_read();
 
 	// control output //
@@ -390,7 +390,7 @@ int set_motors(int motor_num, float speed)
 		motor_output = 2630 - per_run*port_range;				// set motor output
 
 		// saturate motor output at 20% //
-		if(motor_output < (2630-per_run*port_range) )			
+		if(motor_output < (2630-per_run*port_range) )
 		{
 			motor_output = (2630-per_run*port_range);
 		}
@@ -421,16 +421,16 @@ int set_motors(int motor_num, float speed)
 		pwmWrite(motor_num[0], port_output);			// set port motor output at base 20% + yaw control output
 
 		// Calculate starboard motor output //
-		starboard_output = (2718+per_run*starboard_range)-(2630-port_output) 
+		starboard_output = (2718+per_run*starboard_range)-(2630-port_output)
 			/ port_range*starboard_range; 				// starboard motor output = base 20% minus percentage that port motor increased by
-		
+
 		if( starboard_output < (2718+min_per_run*starboard_range) )
 		{
 			starboard_output =	2718+min_per_run*starboard_range; // set starboard motor output to no less than 10%
 		}
 
 		output_port = output_port-0.2*(2630-12);			// port motor max at 40%
-		
+
 		pwmWrite(motor_output[1], motor_output);				// starboard motor at base 20%
 
 	}
@@ -446,9 +446,8 @@ int set_motors(int motor_num, float speed)
 			motor_num[1] = 2718+per_run*starboard_range;	// for testing purposes
 		}
 	}
-  
+
 	// print motor PWM outputs //
 	printf("Port PWM Output2: %f Starboard PWM Output2: %f\n",
 		     output_port, output_starboard);
 }
-
