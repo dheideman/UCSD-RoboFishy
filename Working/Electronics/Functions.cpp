@@ -391,7 +391,7 @@ int set_motors(int motor_num, float speed)
 		{
 			motor_output = (2630-per_run*port_range);
 		}
-		pwmWrite(motor_num, motor_output);
+		
 	}
 	if( speed > 0 )
 	{
@@ -405,4 +405,7 @@ int set_motors(int motor_num, float speed)
 	}
 	else
 		motor_output = 2674;	// turn off motor
+		
+		pwmWrite(motor_num, motor_output);
+		return 1;
 }

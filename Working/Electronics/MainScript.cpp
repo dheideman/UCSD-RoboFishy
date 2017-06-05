@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Main script for the 2017 RoboFishy Scripps AUV
+ *	Main script for the 2017 RoboFishy Scripps AUV
 ******************************************************************************/
 
 #include "Libraries.h"
@@ -168,7 +168,7 @@ void *depth_thread(void* arg){
 
 		usleep(10000);
 	}
-    pthread_exit(NULL);
+		pthread_exit(NULL);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -177,33 +177,38 @@ void *depth_thread(void* arg){
 void *navigation(void* arg)
 //PI_THREAD (navigation_thread)
 {
-static float u[4];	// normalized roll, pitch, yaw, throttle, components
-initialize_motors(motor_channels, HERTZ);
-//static float new_esc[4];
-float output_port;		// port motor output
-float output_starboard; // starboard motor output
+	static float u[4];	// normalized roll, pitch, yaw, throttle, components
+	initialize_motors(motor_channels, HERTZ);
+	//static float new_esc[4];
+	float output_port;		// port motor output
+	float output_starboard; // starboard motor output
 
-//Initialize old imu data
-yaw_pid.oldyaw = 0;
+	//Initialize old imu data
+	yaw_pid.oldyaw = 0;
 
-//Initialize setpoint for yaw controller
-yaw_pid.setpoint = 0;
+	//Initialize setpoint for yaw controller
+	yaw_pid.setpoint = 0;
 
-//Initialize Error values to be used in yaw controller
-yaw_pid.p_err = 0;
-yaw_pid.i_err = 0;
-yaw_pid.d_err = 0;
+	//Initialize Error values to be used in yaw controller
+	yaw_pid.p_err = 0;
+	yaw_pid.i_err = 0;
+	yaw_pid.d_err = 0;
 
-//Yaw Controller Constant Initialization
-yaw_pid.kp = .01;
-yaw_pid.kd = 1;
-yaw_pid.ki = .1;
+	//Yaw Controller Constant Initialization
+	yaw_pid.kp = .01;
+	yaw_pid.kd = 1;
+	yaw_pid.ki = .1;
 
-//depth controller constant initialization
-depth_pid.kp = .01;
-depth_pid.kd = 1;
-depth_pid.ki = .1;
-
+	//depth controller constant initialization
+	depth_pid.kp = .01;
+	depth_pid.kd = 1;
+	depth_pid.ki = .1;
+	
+	// Hard set motor speed
+//	 pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
+	set_motors(PIN_BASE+motor_channels[0], -0.2);
+	set_motors(PIN_BASE+motor_channels[0], 0.2);
+	
 	while(get_state()!=EXITING)
 	{
 	// read IMU values
@@ -217,7 +222,7 @@ depth_pid.ki = .1;
 	//			 bno055.mag);
 	
 	// Sanity test: Check if yaw control works
-
+/*
 	// setpoints //
 	setpoint.yaw = 0;
 
@@ -258,11 +263,18 @@ depth_pid.ki = .1;
 
 					delay(250);		// wait 0.25 sec until next read of IMU values
 
-					// sleep for 5 ms //
-					//usleep(5000);
+					
 				//}
 		//}
+		*/
+		
+		// sleep for 5 ms //
+		usleep(5000);
 	}
+	
+	set_motors(PIN_BASE+motor_channels[0], 0);
+	set_motors(PIN_BASE+motor_channels[0], 0);
+	
 	pthread_exit(NULL);
 }
 
