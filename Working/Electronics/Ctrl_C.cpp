@@ -14,7 +14,7 @@ void ctrl_c(int signo)
 {
 	if (signo == SIGINT)
 	{
-		set_state(EXITING);
+		substate.mode = STOPPING;
 		printf("\nreceived SIGINT Ctrl-C\n");
 	}
 }

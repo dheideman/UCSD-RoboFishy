@@ -6,6 +6,8 @@
 #include <Python.h>
 #include <time.h>
 #include <signal.h>		// capture control-c
+#include "../../Modules/TypeDefs.h"
+
 
 #define PCA9685_ADDR 0x40
 #define PIN_BASE 300

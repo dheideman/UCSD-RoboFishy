@@ -70,6 +70,9 @@ void *depth_thread(void* arg);
 //////////////////////////////// Global Variables /////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+// holds the overall state type
+sub_state_t substate;
+
 // holds the setpoint data structure with current setpoints
 setpoint_t setpoint;
 
