@@ -54,6 +54,9 @@
 // Depth start value //
 #define DEPTH_START -50 //starting depth (mm)
 
+// Stop timer
+#define STOP_TIME		4		// seconds
+
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////// Data Structures ////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -63,7 +66,7 @@ typedef struct setpoint_t
 	float roll;				// roll angle (rad)
 	float roll_rate;	// roll rate (rad/s)
 	float pitch;			// pitch angle (rad)
-	float pitch_rate;	// pitch rate (rad/s)
+	float pitch_rate; // pitch rate (rad/s)
 	float yaw;				// yaw angle in (rad)
 	float yaw_rate;		// yaw rate (rad/s)
 	float depth;			// z component in fixed coordinate system
@@ -163,7 +166,7 @@ int main()
 	set_state(UNINITIALIZED);
 
 
-  // Initialize threads
+	// Initialize threads
 	sched_param param;
 	int policy, maxpriority;
 
@@ -190,8 +193,8 @@ int main()
 	// Set up high priority
 	param.sched_priority = maxpriority-1;
 	pthread_attr_setschedparam (&tattrhigh, &param);
-  
-  
+	
+	
 	// Thread handles
 	pthread_t navigationThread;
 	pthread_t depthThread;
@@ -206,10 +209,17 @@ int main()
 	pthread_attr_destroy(&tattrlow);
 	pthread_attr_destroy(&tattrmed);
 	pthread_attr_destroy(&tattrhigh);
-  
-  // Run main while loop, wait until it's time to stop
+	
+	// Start timer!
+	time_t timer = time(NULL);
+	
+	// Run main while loop, wait until it's time to stop
 	while(get_state()!=EXITING)
 	{
+		// Check if we've passed the stop time
+		if(difftime(timer,time(NULL)) > STOP_TIME) set_state(EXITING);
+		
+		// Sleep a little
 		usleep(100000);
 	}
 	cleanup_auv();
