@@ -1,4 +1,4 @@
-#include "pca9685.h"
+#include <pca9685.h>
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include <stdio.h>
@@ -19,15 +19,17 @@
 #define CHANNEL_5 4		// depth
 
 
-///////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////// Create Structs ///////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
+/***************************************************************************
+ *
+ * Create Structs
+ *
+***************************************************************************/
 
 // struct for hold ms5837 calibration values
 typedef struct
 {
 	float C1, C2, C3, C4, C5, C6;
-}calib_t;
+}pressure_calib_t;
 
 // struct for holding ms5837 return values
 typedef struct
@@ -49,14 +51,6 @@ typedef struct
 	float temperature;
 }ds18b20_t;
 
-//struct for pid controllers (depth and yaw)
-typedef struct 
-{
-	float setpoint;
-	float kp, ki, kd;
-	float perr, ierr, derr;
-};
-
 // Program Flow and State Control
 typedef enum state_t
 {
@@ -66,11 +60,22 @@ typedef enum state_t
 	EXITING
 }state_t;
 
+//struct for PID Controllers
+typedef struct pid_data_t
+{
+	float kp, ki, kd;
+	float p_err, i_err, d_err;
+	float setpoint;
+	float oldyaw;
+}pid_data_t;
 
-///////////////////////////////////////////////////////////////////////////////////
-////////////////////////////// Function Prototypes ////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
+/******************************************************************************
+*
+* Function Prototypes
+*
+******************************************************************************/
 
+// System state
 enum state_t get_state();
 int set_state(enum state_t);
 
@@ -81,8 +86,8 @@ int saturate_number(float* val, float min, float max);
 
 
 // Functions for Reading MS5837 Pressure Sensor
-calib_t init_ms5837(); // initialize ms5837
-ms5837_t ms5837_read(calib_t arg_in); // read values from ms5837
+pressure_calib_t init_ms5837(); // initialize ms5837
+ms5837_t ms5837_read(pressure_calib_t arg_in); // read values from ms5837
 
 // Functions for Reading BNO055 IMU
 void start_Py_bno055(void); // start Python background process
