@@ -3,55 +3,22 @@
 // state variable for loop and thread control //
 enum state_t state = UNINITIALIZED;
 
-/***************************************************************************
- * int initialize_motors
- *
- * Description
-***************************************************************************/
-
-// initialize motors function //
-int initialize_motors(int channels[4], float freq)
-{
-	int i;
-	int fd = pca9685Setup(PIN_BASE, PCA9685_ADDR, HERTZ); // setup PCA9685 board
-	if (fd < 0)
-	{
-		printf("Error in setup\n");
-		return fd;
-	}
-	pca9685PWMReset(fd);												// reset all output
-	//usleep(10);
-
-	// imported from motor.c test code //
-	int active=1;
-		while (active)
-		{
-			for( i = 0; i < 3; i++ )
-			{
-				//pwmWrite (PIN_BASE+i, calcTicks(0,HERTZ));
-				pwmWrite (PIN_BASE+i, 2674);	//send input signal that is low enough to reach the
-												//"neutral" or power-off area in order to arm the ESC (long beep); green LED on ESC will light up
-				delay(1000);
-				active=0;
-			}
-		}
-	//usleep(100000);
-	return fd;
-}
 
 /***************************************************************************
- * int saturate_number
+ * int saturate_number(float* val, float min, float max)
  *
- * Description
+ * Generic function for saturating values in a function
 ***************************************************************************/
-
 int saturate_number(float* val, float min, float max)
 {
+	// if "val" is greater than "max", set "val" to "max" //
 	if(*val>max)
 	{
 		*val = max;
 		return 1;
 	}
+
+	// if "val" is less than "min", set "val" to "min" //
 	else if(*val<min)
 	{
 		*val = min;
@@ -200,8 +167,9 @@ int set_motors(int motor_num, float speed)
 	int motor_num;				// indicates which motor to write to
 								// port = 0, starboard = 1, vert = 2
 	float motor_output;			// feeds the necessary PWM to the motor
-	float per_run = 0.2;		// percentage of full PWM to run at
-	//float min_per_run = 0.1;	// minimum percentage of full PWM to run at
+	float per_base = 0.2;		// base percentage of full PWM to run at
+	float per_run = 0.1;		// percentage above per_base to run at
+
 	int port_range = 2618;		// port motor range
 	int starboard_range = 2187; // starboard motor range
 
@@ -231,5 +199,11 @@ int set_motors(int motor_num, float speed)
 		}
 	}
 	else
-		motor_output = 2674;	// turn off motor
+	{
+		motor_output = 2674;
+
+		pwmWrite(motor_num, motor_output);		// Set motor to 20% base output //
+	}
+
+	return 1;
 }

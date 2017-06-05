@@ -9,9 +9,8 @@
 /***************************************************************************
  * void start_Py_bno055
  *
- * start bno055_read.py code
+ * Starts bno055_read.py code
 ***************************************************************************/
-
 void start_Py_bno055(void)
 {
 	// clear fifo file
@@ -28,12 +27,13 @@ void start_Py_bno055(void)
 /***************************************************************************
  * bno055_t bno055_read
  *
- * read values from bno055 IMU
+ * Reads IMU values from bno055_fifo.txt
 ***************************************************************************/
-
 bno055_t bno055_read(void)
 {
+	// create struct to hold IMU data //
 	bno055_t bno055;
+
 	char buf[1000];
 	FILE *fd = fopen( "imu.fifo", "r");
 	//FILE *fd = fopen( "/home/pi/UCSD-RoboFishy/Working/Electronics/bno055_fifo.txt", "r");
