@@ -262,10 +262,10 @@ void *navigation(void* arg)
 	yaw_controller();
 
 	//set port motor
-	set_motors(0,port_percent);
+	set_motors(0,motor_percent);
 
 	//set starboard motor
-	set_motors(1, starboard_percent);
+	set_motors(1, motor_percent);
 
 		*/
 
