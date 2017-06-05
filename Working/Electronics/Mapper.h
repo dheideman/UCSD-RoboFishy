@@ -79,8 +79,8 @@ typedef struct setpoint_t
 {
 	float roll;				// roll angle (rad)
 	float roll_rate;	// roll rate (rad/s)
-	float pitch;			// pitch angle (rad)
-	float pitch_rate; // pitch rate (rad/s)
+	//float pitch;			// pitch angle (rad)
+	//float pitch_rate; // pitch rate (rad/s)
 	float yaw;				// yaw angle in (rad)
 	float yaw_rate;		// yaw rate (rad/s)
 	float depth;			// z component in fixed coordinate system
@@ -141,7 +141,11 @@ extern pid_data_t yaw_pid;
 extern pid_data_t depth_pid;
 
 // motor channels
+<<<<<<< HEAD
 extern int motor_channels[]; 
+=======
+extern int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4};
+>>>>>>> 75497e826245b3ef4bba4ac1b42b765f61f037b6
 
 // Ignoring sstate
 extern float depth;

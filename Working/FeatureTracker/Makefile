@@ -1,6 +1,6 @@
 # project name 
 # change to match your main c file
-TARGET = Mapper
+TARGET = FeatureTracker
 
 TOUCH		 := $(shell touch *)
 CC	:= g++
@@ -10,7 +10,7 @@ LFLAGS	:= -lwiringPi -lpython2.7 -I/usr/include/python2.7 -lwiringPiPca9685 -lpt
 
 # Module Selection (add required modules to MODULES)
 MOD_PATH := ../../Modules
-MODULES := Core V4L2Control RangeFinder Camera
+MODULES := Core Odometry
 
 # Local Source Variables
 SOURCES	 := $(wildcard *.cpp)

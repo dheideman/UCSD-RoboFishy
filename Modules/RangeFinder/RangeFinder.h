@@ -11,7 +11,8 @@
 #define RANGEFINDER_H
 
 // OpenCV
-#include <cv.hpp>
+//#include <cv.hpp>
+#include <opencv2/opencv.hpp>
 #include <highgui.h>
 #include <opencv2/imgproc/imgproc.hpp>
 
@@ -25,17 +26,17 @@
 #include <ostream>
 #include <string>
 
-// Global typedefs
-#include "../../Modules/TypeDefs.h"
-
 // Multithreading
 #include <pthread.h>
 #include <sched.h>
 #include <unistd.h>
 
+// Core
+#include "../../Modules/Core/Core.h"
+
 // V4L2
-#include <linux/videodev2.h>
-#include "../../Modules/V4L2Control/V4L2Control.h"
+// #include <linux/videodev2.h>
+// #include "../../Modules/V4L2Control/V4L2Control.h"
 
 // Camera
 #include "../../Modules/Camera/Camera.h"
@@ -51,17 +52,11 @@
 #define RANGE_K2          -330.0
 
 
-/////////////////////////
-// Function Prototypes //
-/////////////////////////
-
-// Threads
-void *rangeFinder(void*);
-
-
 //////////////////////
 // Type Definitions //
 //////////////////////
+
+// Local versions of the images for calculation purposes
 typedef struct local_images_t
 {
   cv::Mat brightframe;   // local version of brightframe
@@ -69,13 +64,24 @@ typedef struct local_images_t
 } local_images_t;
 
 
+/////////////////////////
+// Function Prototypes //
+/////////////////////////
+
+// Threads
+void *rangeFinder(void*);
+
+// Mutex Lock Initializer
+  // Coming soon
+
+
 //////////////////////
 // Global Variables //
 //////////////////////
 
 // For writing image to screen
-local_images_t localimages;
-cv::Mat hsvframe;
-cv::Point p1;
+extern local_images_t localimages;
+extern cv::Mat hsvframe;
+extern cv::Point p1;
 
 #endif

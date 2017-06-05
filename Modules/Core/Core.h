@@ -1,14 +1,24 @@
 /*****************************************************************************
- * TypeDefs.h
+ * Core.h
  *
- * Define global submersible types
+ * Core Module: Defines global submersible types
  * 
  ******************************************************************************/
 
-#ifndef TYPEDEFS_H
-#define TYPEDEFS_H
+#ifndef AUVCORE_H
+#define AUVCORE_H
 
-#include <cv.hpp>
+//#include <cv.hpp>
+#include <opencv2/opencv.hpp>
+
+
+///////////////
+// Constants //
+///////////////
+
+// Math
+#define PI    3.141592653589793
+
 
 //////////////////////
 // Type definitions //
@@ -43,15 +53,16 @@ typedef struct sub_state_t
 //   cv::Mat     imuorientation; // Orientation as determined by IMU
 } sub_state_t;
 
-// Bright and Dark Frame storage struct
-typedef struct sub_images_t
-{
-  cv::Mat brightframe;  // The brighter image (used for mapping)
-  cv::Mat darkframe;    // The darker image (used for range finding)
-  
-  pthread_mutex_t brightframelock;   // Mutex lock for brightframe
-  pthread_mutex_t darkframelock;     // Mutex lock for darkframe
-} sub_images_t;
+
+/////////////////////////
+// Function Prototypes //
+/////////////////////////
+
+// PThread Priority Attributes Initializer
+// void initializeTAttr();
+
+// PThread Priority Attributes Destroyer
+// void destroyTAttr();
 
 
 //////////////////////
@@ -59,6 +70,9 @@ typedef struct sub_images_t
 //////////////////////
 
 // Global State Variable
-//sub_state_t substate;       // Needs to be moved out somewhere sometime soon.
+extern sub_state_t substate;
+
+// Thread attributes for different priorities
+extern pthread_attr_t tattrlow, tattrmed, tattrhigh;
 
 #endif
