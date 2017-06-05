@@ -19,13 +19,13 @@ float yaw_controller()
 	{
 		// u[2] is negative
 		motor_percent = yaw_pid.kp*(bno055.yaw - yaw_pid.setpoint) 
-			+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
+			+ yaw_pid.kd*(bno055.r); // yaw controller
 	}
 	else		// AUV is pointed left
 	{
 		// u[2] is positive
 		motor_percent = yaw_pid.kp*(yaw_pid.setpoint-(bno055.yaw-360)) 
-			+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
+			+ yaw_pid.kd*(bno055.r); // yaw controller
 	}
 	// saturate yaw controller //
 	if( u[2] > YAW_SAT )
