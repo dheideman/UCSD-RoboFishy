@@ -36,7 +36,7 @@
 
 // Saturation Constants //
 #define PITCH_SAT 10	// upper limit of pitch controller
-#define YAW_SAT 1			// upper limit of yaw controller
+#define YAW_SAT .1			// upper limit of yaw controller
 #define INT_SAT 10		// upper limit of integral windup
 #define DINT_SAT 10		// upper limit of depth integral windup
 
@@ -259,6 +259,11 @@ initialize_motors(motor_channels, HERTZ);
 float output_port;		// port motor output
 float output_starboard; // starboard motor output
 
+//Initialize starboard and port motor percents
+float motor_percent = 0;
+float starboard_percent = 0;
+float port_percent = 0;
+
 //Initialize old imu data
 float yaw_pid.oldyaw = 0;
 
@@ -285,60 +290,16 @@ float depth_pid.ki = .1;
 	// read IMU values
 	bno055 = bno055_read();
 
-	// Write captured values to screen
-	//printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
-	//			 bno055.yaw, bno055.pitch, bno055.roll,
-	//			 bno055.p, bno055.q, bno055.r,
-	//			 bno055.sys, bno055.gyro, bno055.accel,
-	//			 bno055.mag);
+	//Call yaw controller function
+	yaw_controller();
+
+	//set port motor
+	set_motors(0,port_percent);
+
+	//set starboard motor
+	set_motors(1, starboard_percent);
+
 	
-	// Sanity test: Check if yaw control works
-
-	// setpoints //
-	setpoint.yaw = 0;
-
-	// control output //
-	if(sstate.yaw[0]<180) // AUV is pointed right
-	{
-		// u[2] is negative
-		u[2] = KP_YAW*(setpoint.yaw-sstate.yaw[0]); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
-	}
-	else		// AUV is pointed left
-	{
-		// u[2] is positive
-		u[2] = KP_YAW*(setpoint.yaw-(sstate.yaw[0]-360)); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
-	}
-
-	// saturate yaw controller //
-	if(u[2]>YAW_SAT)
-	{
-		u[2]=YAW_SAT;
-	}
-	else if(u[2]<-YAW_SAT)
-	{
-		u[2]=-YAW_SAT;
-	}
-
-					// mix controls //
-					printf("u[2]: %f\n", u[2]);
-
-
-						output_starboard = output_starboard+0.2*(4905-2718);	// starboard motor max at 40%
-						pwmWrite(PIN_BASE+motor_channels[1], output_starboard); //	starboard motor output = base 20% + yaw control output
-						pwmWrite(PIN_BASE+motor_channels[0], output_port);				// port motor at base 20%
-					}
-
-					// print motor PWM outputs //
-					printf("Port PWM Output2: %f Starboard PWM Output2: %f\n",
-						output_port, output_starboard);
-
-					delay(250);		// wait 0.25 sec until next read of IMU values
-
-					// sleep for 5 ms //
-					//usleep(5000);
-				//}
-		//}
-	}
 	pthread_exit(NULL);
 }
 
