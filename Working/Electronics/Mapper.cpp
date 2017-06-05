@@ -3,6 +3,7 @@
 ******************************************************************************/
 
 #include "Mapper.h"
+
 // Multithreading
 #include <pthread.h>
 #include <sched.h>
@@ -95,7 +96,7 @@ pid_data_t yaw_pid;
 pid_data_t depth_pid;
 
 // motor channels
-int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4};
+int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3};
 
 // Ignoring sstate
 float depth = 0;
@@ -103,9 +104,9 @@ float depth = 0;
 // Thread attributes for different priorities
 pthread_attr_t tattrlow, tattrmed, tattrhigh;
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// Main Function ///////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+/******************************************************************************
+* Main Function
+******************************************************************************/
 
 int main()
 {
@@ -160,8 +161,6 @@ int main()
 	pthread_create (&navigationThread, &tattrmed, navigation, NULL);
 	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 
-
-
 	// Destroy the thread attributes
 	pthread_attr_destroy(&tattrlow);
 	pthread_attr_destroy(&tattrmed);
@@ -203,12 +202,12 @@ void *depth_thread(void* arg){
 		pthread_exit(NULL);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/////////////////// Navigation Thread for Main Control Loop ///////////////////
-///////////////////////////////////////////////////////////////////////////////
+/******************************************************************************
+ * Navigation Thread for Main Control Loop
+ *****************************************************************************/
+
 void *navigation(void* arg)
-//PI_THREAD (navigation_thread)
-{
+
 	static float u[4];	// normalized roll, pitch, yaw, throttle, components
 	initialize_motors(motor_channels, HERTZ);
 	//static float new_esc[4];
