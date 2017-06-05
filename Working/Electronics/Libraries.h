@@ -158,6 +158,7 @@ int calcTicks(float impulseMs, int hertz);
 int initialize_motors(int channels[4], float freq);
 int saturate_number(float* val, float min, float max);
 
+int set_motors(int motor_num, float speed)
 
 // Functions for Reading MS5837 Pressure Sensor
 pressure_calib_t init_ms5837(); // initialize ms5837
