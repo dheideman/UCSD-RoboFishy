@@ -353,9 +353,6 @@ void yaw_controller()
 	//set current yaw to be the old yaw
 	yaw_pid.oldyaw=bno055.yaw;
 
-	//Set starboard positive and port negativ
-	starboard_percent = motor_percent;
-	port_percent = -motor_percent;
 
 	//set current yaw to be the old yaw
 	yaw_pid.oldyaw=bno055.yaw;
