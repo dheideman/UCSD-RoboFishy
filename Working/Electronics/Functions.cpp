@@ -1,4 +1,4 @@
-#include "Libraries.h"
+pressure#include "Libraries.h"
 
 // state variable for loop and thread control //
 enum state_t state = UNINITIALIZED;
@@ -64,17 +64,23 @@ int saturate_number(float* val, float min, float max)
 /***************************************************************************
  * pressure_calib_t init_ms5837
  *
- * Description
+ * initializes pressure sensor
+ *
+ * Returns structure of 6 coefficients
 ***************************************************************************/
 
 pressure_calib_t init_ms5837(void)
 {
 	Py_Initialize();
-	pressure_calib_t calib; // create struct to hold calibration data
+	pressure_calib_t pressure_calib; // create struct to hold calibration data
 
 	// create pointers to python object
 	PyObject *pName, *pModule, *pDict, *pFunc, *pValue;
-	pName = PyString_FromString("MS5837"); // input name of python source file
+
+	// input name of python source file
+	pName = PyString_FromString("MS5837");
+
+	// stuff
 	PyRun_SimpleString("import sys");
 	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/MainScript\")");
 	pModule = PyImport_Import(pName);
@@ -83,7 +89,9 @@ pressure_calib_t init_ms5837(void)
 	if (PyCallable_Check(pFunc))
 	{
 		pValue = PyObject_CallObject(pFunc, NULL);
-		PyArg_ParseTuple(pValue,"ffffff", &calib.C1, &calib.C2, &calib.C3,&calib.C4, &calib.C5, &calib.C6);
+		PyArg_ParseTuple(pValue,"ffffff",
+			&pressure_calib.C1, &pressure_calib.C2, &pressure_calib.C3,
+			&pressure_calib.C4, &pressure_calib.C5, &pressure_calib.C6);
 		Py_DECREF(pValue);
 	}
 	else
@@ -93,22 +101,21 @@ pressure_calib_t init_ms5837(void)
 	Py_DECREF(pModule);
 	Py_DECREF(pName);
 	Py_Finalize();
-	return calib;
+	return pressure_calib;
 };
 
 /***************************************************************************
  * ms5837_t ms5837_read
  *
- * Description
+ * Read pressure values from MS5837 pressure sensor
 ***************************************************************************/
 
-ms5837_t ms5837_read(presssure_calib_t arg_in)	//	read pressure values from MS5837 pressure sensor
+ms5837_t ms5837_read(pressure_calib_t pressure_calib)
 {
 	ms5837_t ms5837;
 
 	Py_Initialize();
 
-	presssure_calib_t calib = arg_in; // create struct to hold calibration data
 	PyObject *pName, *pModule, *pDict, *pFunc, *pArgs, *pValue;
 
 	pName = PyString_FromString("MS5837_example"); // input name of python source file
@@ -120,12 +127,11 @@ ms5837_t ms5837_read(presssure_calib_t arg_in)	//	read pressure values from MS58
 
 	if (PyCallable_Check(pFunc))
 	{
-
-		pArgs = Py_BuildValue("ffffff", calib.C1,calib.C2,calib.C3,calib.C4,calib.C5,calib.C6);
+		pArgs = Py_BuildValue("ffffff", pressure_calib.C1,pressure_calib.C2,pressure_calib.C3,
+			pressure_calib.C4,pressure_calib.C5,pressure_calib.C6);
 
 		pValue = PyObject_CallObject(pFunc, pArgs);
 
-		//PyArg_ParseTuple(pValue,"ff", &ms5837.temperature, &ms5837.pressure);
 		PyArg_ParseTuple(pValue,"ff", &ms5837.pressure);
 		Py_DECREF(pArgs);
 		Py_DECREF(pValue);
@@ -337,9 +343,8 @@ int yaw_controller()
 		// u[2] is positive
 		motor_percent = yaw_pid.kp*(yaw_pid.setpoint-(bno055.yaw-360)); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
 	}
-
 	// saturate yaw controller //
-	if(motor_percent>YAW_SAT)
+	if(u[2]>YAW_SAT)
 	{
 		motor_percent=YAW_SAT;
 	}
@@ -355,18 +360,143 @@ int yaw_controller()
 	starboard_percent = motor_percent;
 	port_percent = -motor_percent;
 
-	
-		
+	//set current yaw to be the old yaw
+	yaw_pid.oldyaw=bno055.yaw;
+
 	return 0;
 }
 /***************************************************************************
  * int set_motors()
  *
- * Cleans up the AUV script, shuts down the motors and closes all threads
+ * Sets the motor outputs for yaw control
 ***************************************************************************/
+int set_motors(int motor_num, float speed)
+{
+	int motor_num;				// indicates which motor to write to
+								// port = 0, starboard = 1, vert = 2
+	float motor_output;			// feeds the necessary PWM to the motor
+	float per_run = 0.2;		// percentage of full PWM to run at
+	float min_per_run = 0.1;	// minimum percentage of full PWM to run at
+	//int range[2] = [2618,2187];		// motor ranges (port = 2618, starboard = 2187)
+	int port_range = 2618;		// port motor range
+	int starboard_range = 2187;	// starboard motor range
+
+	// speed = - ----> AUV pointed right (starboard) (2718-4095)
+	// speed = + ----> AUV pointed left (port) (12-2630)
+
+
+	if( speed > 0 )
+	{
+		motor_output = 2630 - per_run*port_range;				// set motor output
+
+		// saturate motor output at 20% //
+		if(motor_output < (2630-per_run*port_range) )			
+		{
+			motor_output = (2630-per_run*port_range);
+		}
+	}
+	if( speed < 0 )
+	{
+		motor_output = 2718 + per_run*starboard_range;			// set motor output
+
+		// saturate motor output at 20% //
+		if( motor_output > 2718 + per_run*starboard_range )
+		{
+			motor_output = 2718 + per_run*starboard_range;
+		}
+	}
+	else
+		motor_output = 2674;	// turn off motor
+
+	// Calculate port motor output //
+	if( speed > 0 ) // port motor (CCW)
+	{
+		port_output = -2617*speed+2630;				// calculate unsaturated port motor output
+
+		if( port_output < (2630-per_run*port_range) )	// set motor output at 20% of max for testing purposes (20% = 2106.4)
+		{
+			port_output = 2630-per_run*port_range;		// for testing purposes
+		}
+		port_output = port_output-per_run*port_range;	// port motor max at 40%
+		pwmWrite(motor_num[0], port_output);			// set port motor output at base 20% + yaw control output
+
+		// Calculate starboard motor output //
+		starboard_output = (2718+per_run*starboard_range)-(2630-port_output) 
+			/ port_range*starboard_range; 				// starboard motor output = base 20% minus percentage that port motor increased by
+		
+		if( starboard_output < (2718+min_per_run*starboard_range) )
+		{
+			starboard_output =	2718+min_per_run*starboard_range; // set starboard motor output to no less than 10%
+		}
+
+		output_port = output_port-0.2*(2630-12);			// port motor max at 40%
+		
+		pwmWrite(motor_output[1], motor_output);				// starboard motor at base 20%
+
+	}
+
+
+	// Calculate starboard motor output //
+	if( speed < 0 ) // starboard motor (CW)
+	{
+		motor_num[1] = 13.77*100*-speed+2718;			// calculate unsaturated starboard motor output
+
+		if( motor_num[1] = 13.77*100*-speed+2718 )
+		{
+			motor_num[1] = 2718+per_run*starboard_range;	// for testing purposes
+		}
+	}
 
 
 
+
+	// saturate motor output values //
+	if(sstate.yaw[0]>180) // port motor (CCW)
+	{
+		output_port = -26.18*100*sstate.esc_out+2630;
+		if(output_port<(2630-(0.2*(2630-12))))	// set motor output at 20% of max for testing purposes (20% = 2106.4)
+		{
+			output_port = 2630-(0.2*(2630-12));		// for testing purposes
+			printf("Port PWM Output1: %f\n", output_port);
+		}
+
+		output_starboard = 3155.4-(2630-output_port)/(2630-12)*(4905-2718); // starboard motor output = base 20% minus percentage that port motor increased by
+		if(output_starboard<(2718+0.1*(4905-2718)))
+		{
+			output_starboard =	2718+0.1*(4905-2718); // set starboard motor output to no less than 10%
+		}
+
+		output_port = output_port-0.2*(2630-12);			// port motor max at 40%
+		pwmWrite(PIN_BASE+motor_channels[0], output_port);	// port motor at base 20% + yaw control output
+		pwmWrite(PIN_BASE+motor_channels[1], output_starboard);				// starboard motor at base 20%
+	}
+	else	// starboard motor (CW)
+	{
+		output_starboard = 13.77*100*-sstate.esc_out+2718;
+		if(output_starboard>(2718+(0.2*(4905-2718)))) // set motor output at 20% of max for testing purposes (20% = 3155.4)
+		{
+			output_starboard = 2718+(0.2*(4905-2718));	// for testing purposes
+			//output_starboard = 4095;
+			printf("Starboard PWM Output1: %f\n", output_starboard);
+		}
+
+		output_port = 2106.4 - (output_starboard-2718)/(4905-2718)*(2630-12); // port motor output = base 20% minus percentage that starboard motor increased by
+		if(output_port>(2630-(0.1*(2630-12))))
+		{
+			output_port = 2630-(0.1*(2630-12));		// set port motor output to no less than 10%
+		}
+
+		output_starboard = output_starboard+0.2*(4905-2718);	// starboard motor max at 40%
+		pwmWrite(PIN_BASE+motor_channels[1], output_starboard); //	starboard motor output = base 20% + yaw control output
+		pwmWrite(PIN_BASE+motor_channels[0], output_port);				// port motor at base 20%
+	}
+
+<<<<<<< HEAD
+	// print motor PWM outputs //
+	printf("Port PWM Output2: %f Starboard PWM Output2: %f\n",
+		output_port, output_starboard);
+}
+=======
 					// mix controls //
 					printf("u[2]: %f\n", u[2]);
 					/*if(mix_controls(u[0],u[1],u[2],u[3],&new_esc[0],2)<0)
@@ -438,3 +568,4 @@ int yaw_controller()
 					// print motor PWM outputs //
 					printf("Port PWM Output2: %f Starboard PWM Output2: %f\n",
 						output_port, output_starboard);
+>>>>>>> 1bdb3788dd3f9adab8f437e1877f9bff5aabf8c7
