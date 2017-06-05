@@ -6,13 +6,13 @@
 #include "Mapper.h"
 
 /******************************************************************************
-* int yaw_controller()
+* float yaw_controller()
 *
 * Takes in readings from IMU and calculates a percentage (-1 to 1) to run 
 * motors at
 ******************************************************************************/
 /*
-int yaw_controller()
+float yaw_controller()
 {
 	// control output //
 	if( bno055.yaw < 180 ) // AUV is pointed right
@@ -40,13 +40,9 @@ int yaw_controller()
 	// set current yaw to be the old yaw //
 	yaw_pid.oldyaw = bno055.yaw;
 
-	// set starboard positive and port negative //
-	starboard_percent = motor_percent;
-	port_percent = -motor_percent;
-
 	// set current yaw to be the old yaw //
 	yaw_pid.oldyaw = bno055.yaw;
 
-	return 0;
+	return motor_percent;
 }
 */
