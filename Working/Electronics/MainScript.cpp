@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Main script for the 2017 RoboFishy Scripps AUV
+ *	Main script for the 2017 RoboFishy Scripps AUV
 ******************************************************************************/
 
 #include "Libraries.h"
@@ -36,7 +36,7 @@
 
 // Saturation Constants //
 #define PITCH_SAT 10	// upper limit of pitch controller
-#define YAW_SAT 1			// upper limit of yaw controller
+#define YAW_SAT .1			// upper limit of yaw controller
 #define INT_SAT 10		// upper limit of integral windup
 #define DINT_SAT 10		// upper limit of depth integral windup
 
@@ -168,7 +168,7 @@ void *depth_thread(void* arg){
 
 		usleep(10000);
 	}
-    pthread_exit(NULL);
+		pthread_exit(NULL);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -177,32 +177,37 @@ void *depth_thread(void* arg){
 void *navigation(void* arg)
 //PI_THREAD (navigation_thread)
 {
-static float u[4];	// normalized roll, pitch, yaw, throttle, components
-initialize_motors(motor_channels, HERTZ);
-//static float new_esc[4];
-float output_port;		// port motor output
-float output_starboard; // starboard motor output
+	static float u[4];	// normalized roll, pitch, yaw, throttle, components
+	initialize_motors(motor_channels, HERTZ);
+	//static float new_esc[4];
+	float output_port;		// port motor output
+	float output_starboard; // starboard motor output
 
-//Initialize old imu data
-yaw_pid.oldyaw = 0;
+	//Initialize old imu data
+	yaw_pid.oldyaw = 0;
 
-//Initialize setpoint for yaw controller
-yaw_pid.setpoint = 0;
+	//Initialize setpoint for yaw controller
+	yaw_pid.setpoint = 0;
 
-//Initialize Error values to be used in yaw controller
-yaw_pid.p_err = 0;
-yaw_pid.i_err = 0;
-yaw_pid.d_err = 0;
+	//Initialize Error values to be used in yaw controller
+	yaw_pid.p_err = 0;
+	yaw_pid.i_err = 0;
+	yaw_pid.d_err = 0;
 
-//Yaw Controller Constant Initialization
-yaw_pid.kp = .01;
-yaw_pid.kd = 1;
-yaw_pid.ki = .1;
+	//Yaw Controller Constant Initialization
+	yaw_pid.kp = .01;
+	yaw_pid.kd = 1;
+	yaw_pid.ki = .1;
 
-//depth controller constant initialization
-depth_pid.kp = .01;
-depth_pid.kd = 1;
-depth_pid.ki = .1;
+	//depth controller constant initialization
+	depth_pid.kp = .01;
+	depth_pid.kd = 1;
+	depth_pid.ki = .1;
+	
+	// Hard set motor speed
+//	 pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
+	set_motors(PIN_BASE+motor_channels[0], -0.2);
+	set_motors(PIN_BASE+motor_channels[0], 0.2);
 
 	while(get_state()!=EXITING)
 	{
@@ -217,51 +222,25 @@ depth_pid.ki = .1;
 	//			 bno055.mag);
 	
 	// Sanity test: Check if yaw control works
+/*
+	//Call yaw controller function
+	yaw_controller();
+	
+	//set port motor
+	set_motors(0,port_percent);
 
-	// setpoints //
-	setpoint.yaw = 0;
+	//set starboard motor
+	set_motors(1, starboard_percent);
 
-	// control output //
-	if(sstate.yaw[0]<180) // AUV is pointed right
-	{
-		// u[2] is negative
-		u[2] = KP_YAW*(setpoint.yaw-sstate.yaw[0]); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
+		*/
+		
+		// sleep for 5 ms //
+		usleep(5000);
 	}
-	else		// AUV is pointed left
-	{
-		// u[2] is positive
-		u[2] = KP_YAW*(setpoint.yaw-(sstate.yaw[0]-360)); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
-	}
-
-	// saturate yaw controller //
-	if(u[2]>YAW_SAT)
-	{
-		u[2]=YAW_SAT;
-	}
-	else if(u[2]<-YAW_SAT)
-	{
-		u[2]=-YAW_SAT;
-	}
-
-					// mix controls //
-					printf("u[2]: %f\n", u[2]);
-
-
-						output_starboard = output_starboard+0.2*(4905-2718);	// starboard motor max at 40%
-						pwmWrite(PIN_BASE+motor_channels[1], output_starboard); //	starboard motor output = base 20% + yaw control output
-						pwmWrite(PIN_BASE+motor_channels[0], output_port);				// port motor at base 20%
-
-					// print motor PWM outputs //
-					printf("Port PWM Output2: %f Starboard PWM Output2: %f\n",
-						output_port, output_starboard);
-
-					delay(250);		// wait 0.25 sec until next read of IMU values
-
-					// sleep for 5 ms //
-					//usleep(5000);
-				//}
-		//}
-	}
+	
+	set_motors(PIN_BASE+motor_channels[0], 0);
+	set_motors(PIN_BASE+motor_channels[0], 0);
+	
 	pthread_exit(NULL);
 }
 

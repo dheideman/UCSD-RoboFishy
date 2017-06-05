@@ -327,7 +327,7 @@ int cleanup_auv()
 *
 * Takes in readings from IMU and calculates a percentage (-1 to 1)
 ******************************************************************************/
-int yaw_controller()
+void yaw_controller()
 {
 	// control output //
 	if(bno055.yaw<180) // AUV is pointed right
@@ -341,7 +341,7 @@ int yaw_controller()
 		motor_percent = yaw_pid.kp*(yaw_pid.setpoint-(bno055.yaw-360)); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
 	}
 	// saturate yaw controller //
-	if(u[2]>YAW_SAT)
+	if(motor_percent > YAW_SAT)
 	{
 		motor_percent=YAW_SAT;
 	}
@@ -360,7 +360,6 @@ int yaw_controller()
 	//set current yaw to be the old yaw
 	yaw_pid.oldyaw=bno055.yaw;
 
-	return 0;
 }
 /***************************************************************************
  * int set_motors()
@@ -391,7 +390,7 @@ int set_motors(int motor_num, float speed)
 		{
 			motor_output = (2630-per_run*port_range);
 		}
-		pwmWrite(motor_num, motor_output);
+		
 	}
 	if( speed > 0 )
 	{
@@ -405,4 +404,7 @@ int set_motors(int motor_num, float speed)
 	}
 	else
 		motor_output = 2674;	// turn off motor
+		
+		pwmWrite(motor_num, motor_output);
+		return 1;
 }
