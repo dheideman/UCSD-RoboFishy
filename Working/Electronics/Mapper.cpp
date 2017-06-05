@@ -202,14 +202,14 @@ int main()
 ******************************************************************************/
 void *depth_thread(void* arg)
 {
-	// Initialize pressure sensor
+	// initialize pressure sensor //
 	pressure_calib = init_ms5837();
 
 	while(substate.mode!=STOPPING)
 	{
-		// Read pressure sensor by passing calibration structure
+		// read pressure sensor by passing calibration structure //
 		ms5837 = ms5837_read(pressure_calib);
-		// calculate depth (no idea what's up with the function)
+		// calculate depth (no idea what's up with the function) //
 		depth = (ms5837.pressure-1013)*10.197-88.8;
 
 		usleep(10000);
@@ -307,6 +307,9 @@ void *navigation(void* arg)
  *****************************************************************************/
 void *safety_thread(void* arg)
 {
+	// set up WiringPi for use // (not sure if actually needed)
+	wiringPiSetup();
+
 	// leak detection variables //
 	int leakStatePin = digitalRead(SOSPIN);	// read the input pin
 	int i;									// loop counting integer
@@ -316,7 +319,7 @@ void *safety_thread(void* arg)
 	pinMode(17, OUTPUT);					// set GPIO 17 as an OUTPUT
 	digitalWrite(leakStatePin, HIGH);		// set GPIO 17 as HIGH (VCC)
 
-	while(substate.mode!=STOPPING)
+	while( substate.mode!=STOPPING )
 	{
 		/******************************************************************************
 		 * Depth Protection
@@ -351,7 +354,7 @@ void *safety_thread(void* arg)
 		sstate.depth[1] = sstate.depth[0];
 		sstate.fdepth[1] = sstate.fdepth[0];
 	
-		//sleep for 50 ms //
+		// sleep for 50 ms //
 		usleep(50000);
 	
 		/******************************************************************************

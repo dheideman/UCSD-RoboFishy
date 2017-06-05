@@ -82,7 +82,7 @@ while True:
     pressure = ((((D1 * SENS2) / 2097152) - OFF2) / 8192) / 10.0
 
     # Output data to screen
-    #print "Pressure : %.2f mbar" %pressure
+    print "Pressure : %.2f mbar" %pressure
     #print "Temperature in Celsius : %.2f C" %cTemp
     #print "Temperature in Fahrenheit : %.2f F" %fTemp
 
