@@ -54,24 +54,23 @@ float yaw_controller()
 * Takes a range-from-bottom reading from the laser range-finder code and 
 * regulates the range-from-bottom of the AUV
 ******************************************************************************/
-/*
+
 float depth_controller(float range)
 {
-	float vert_percent;		// vertical thruster output in a percentage
+	float vert_percent;			// vertical thruster output in a percentage
+	float depth_sum_error = 0;	// accumulated range error for integral control
 
+	// accumulated range error for integral control //
+	depth_sum_error += range - depth_pid.setpoint;
 
 	if( range > distance )
 	{
 		vert_percent = depth_pid.kp*(range-depth_pid.setpoint) 
-			+ depth_pid.ki*() + depth_pid.kd*((range_current-range_old)/DT); 
+			+ depth_pid.ki*(depth_sum_error) + depth_pid.kd*((range_current-range_old)/DT); 
 	}
-	else if ( range < distance )
+	else 
 	{
 		// shut off vertical thruster //
 		vert_percent = 0;
 	}
-	else
-	{
-
-	}
-}*/
+}
