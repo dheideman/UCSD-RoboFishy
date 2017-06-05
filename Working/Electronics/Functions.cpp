@@ -99,10 +99,10 @@ pressure_calib_t init_ms5837(void)
 /***************************************************************************
  * ms5837_t ms5837_read
  *
- * Description
+ * Read pressure values from MS5837 pressure sensor
 ***************************************************************************/
 
-ms5837_t ms5837_read(presssure_calib_t arg_in)	//	read pressure values from MS5837 pressure sensor
+ms5837_t ms5837_read(presssure_calib_t arg_in)
 {
 	ms5837_t ms5837;
 
@@ -325,7 +325,7 @@ int yaw_controller()
 {
 // read IMU values into sstate
 		bno055 = bno055_read();
-		
+
 }
 /***************************************************************************
  * int set_motors()
