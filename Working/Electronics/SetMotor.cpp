@@ -1,5 +1,5 @@
 /******************************************************************************
-* SetMotors.cpp
+* SetMotor.cpp
 *
 * Contains the set_motor() function
 ******************************************************************************/
@@ -13,7 +13,6 @@
 ***************************************************************************/
 int set_motor(int motor_num, float speed)
 {
-	int motor_num;				// indicates which motor to write to
 								// port = 0, starboard = 1, vert = 2
 	float motor_output;			// feeds the necessary PWM to the motor
 	float per_base = 0.2;		// base percentage of full PWM to run at
