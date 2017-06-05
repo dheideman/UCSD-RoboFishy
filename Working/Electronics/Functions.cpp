@@ -336,12 +336,12 @@ int yaw_controller()
 	if(bno055.yaw<180) // AUV is pointed right
 	{
 		// u[2] is negative
-		motor_percent = KP_YAW*(bno055.yaw - yaw_pid.setpoint); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
+		motor_percent = yaw_pid.kp*(bno055.yaw - yaw_pid.setpoint); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
 	}
 	else		// AUV is pointed left
 	{
 		// u[2] is positive
-		motor_percent = KP_YAW*(yaw_pid.setpoint-(bno055.yaw-360)); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
+		motor_percent = yaw_pid.kp*(yaw_pid.setpoint-(bno055.yaw-360)); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
 	}
 	// saturate yaw controller //
 	if(u[2]>YAW_SAT)
@@ -353,7 +353,10 @@ int yaw_controller()
 		motor_percent=-YAW_SAT;
 	}
 
-	//Set starboard positive and port negative;
+	//set current yaw to be the old yaw
+	yaw_pid.oldyaw=bno055.yaw;
+
+	//Set starboard positive and port negativ
 	starboard_percent = motor_percent;
 	port_percent = -motor_percent;
 
