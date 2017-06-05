@@ -130,9 +130,12 @@ int cleanup_auv()
 	// let final threads clean up
 	usleep(500000);
 
-	// delete fifo file
-	remove("bno055_fifo.txt")
-	printf("\nbno055_fifo.txt deleted successfully\n");
+	// delete fifo files
+	remove("imu.fifo")
+	printf("\nimu.fifo deleted successfully\n");
+
+	remove("pressure.fifo")
+	printf("\npressure.fifo deleted successfully\n");
 
 	// Set all motors to zero
 	int channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3};

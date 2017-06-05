@@ -18,7 +18,7 @@ void start_Py_bno055(void)
 	FILE* fd = fopen("bno055_read.py", "r");
 	PyRun_SimpleFile(fd,"bno055_read.py");
 	usleep(100000);
-	FILE* fifo = fopen("bno055_fifo.txt","r");
+	FILE* fifo = fopen("imu.fifo","r");
 	fclose(fifo);
 
 	// check if fifo file has numbers in it
@@ -35,7 +35,7 @@ bno055_t bno055_read(void)
 {
 	bno055_t bno055;
 	char buf[1000];
-	FILE *fd = fopen( "bno055_fifo.txt", "r");
+	FILE *fd = fopen( "imu.fifo", "r");
 	//FILE *fd = fopen( "/home/pi/UCSD-RoboFishy/Working/Electronics/bno055_fifo.txt", "r");
 
 	fgets(buf,1000,fd);
