@@ -70,6 +70,12 @@ typedef struct pid_data_t
 }pid_data_t;
 
 /******************************************************************************
+* create global variables
+
+// create structure for storing IMU data
+bno055_t bno055;
+
+/******************************************************************************
 *
 * Function Prototypes
 *
