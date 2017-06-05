@@ -1,3 +1,6 @@
+#ifndef LIBRARIES_H
+#define LIBRARIES_H
+
 #include <pca9685.h>
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
@@ -67,10 +70,6 @@ typedef struct pid_data_t
 
 typedef struct setpoint_t
 {
-	float roll;				// roll angle (rad)
-	float roll_rate;	// roll rate (rad/s)
-	//float pitch;			// pitch angle (rad)
-	//float pitch_rate; // pitch rate (rad/s)
 	float yaw;				// yaw angle in (rad)
 	float yaw_rate;		// yaw rate (rad/s)
 	float depth;			// z component in fixed coordinate system
@@ -174,3 +173,5 @@ int scripps_auv_init(void);
 //// Cleanup and Shutdown
 void ctrl_c(int signo); // signal catcher
 int cleanup_auv();		// call at the very end of main()
+
+#endif

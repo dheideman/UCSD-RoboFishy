@@ -13,13 +13,21 @@
 void start_Py_bno055(void)
 {
 	// clear fifo file //
-	std::FILE* fd = fopen("bno055_read.py", "r");
+    std::FILE* fifo = fopen("imu.fifo","w");
+    fclose(fifo);
+
+    // Start up the Python
+    std::FILE* fd = fopen("bno055_read.py", "r");
 	PyRun_SimpleFile(fd,"bno055_read.py");
-	usleep(100000);
-	std::FILE* fifo = fopen("imu.fifo","r");
+	
+    // Wait 2 seconds to let the python script start up
+    usleep(2000000);
+
+    // Check whether the python script wrote anything
+	fifo = fopen("imu.fifo","r");
+    // insert check here //
 	fclose(fifo);
 
-	// check if fifo file has numbers in it //
 	return;
 }
 
@@ -33,7 +41,7 @@ bno055_t bno055_read(void)
 	bno055_t bno055;
 	char buf[1000];
 	FILE *fd = fopen( "imu.fifo", "r");
-	
+
 	fgets(buf,1000,fd);
 	fclose(fd);
 	sscanf(buf,"%f %f %f %f %f %f %i %i %i %i",
