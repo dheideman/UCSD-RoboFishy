@@ -328,7 +328,7 @@ int cleanup_auv()
 * Takes in readings from IMU and calculates a percentage (-1 to 1)
 ******************************************************************************/
 int yaw_controller()
-{	
+{
 	// control output //
 	if(bno055.yaw<180) // AUV is pointed right
 	{
@@ -365,7 +365,8 @@ int yaw_controller()
 /***************************************************************************
  * int set_motors()
  *
- * Sets the motor outputs for yaw control
+ * Takes in a value from -1 to 1 (-100 to +100%) and sets the motor
+ * outputs accordingly
 ***************************************************************************/
 int set_motors(int motor_num, float speed)
 {
@@ -373,26 +374,26 @@ int set_motors(int motor_num, float speed)
 								// port = 0, starboard = 1, vert = 2
 	float motor_output;			// feeds the necessary PWM to the motor
 	float per_run = 0.2;		// percentage of full PWM to run at
-	float min_per_run = 0.1;	// minimum percentage of full PWM to run at
-	//int range[2] = [2618,2187];		// motor ranges (port = 2618, starboard = 2187)
+	//float min_per_run = 0.1;	// minimum percentage of full PWM to run at
 	int port_range = 2618;		// port motor range
 	int starboard_range = 2187;	// starboard motor range
 
-	// speed = - ----> AUV pointed right (starboard) (2718-4095)
-	// speed = + ----> AUV pointed left (port) (12-2630)
+	// speed = (-) ----> AUV pointed right (starboard) (range: 2718-4095)
+	// speed = (+) ----> AUV pointed left (port) (range: 12-2630)
 
-
-	if( speed > 0 )
+	// Calculate motor output //
+	if( speed < 0 )
 	{
 		motor_output = 2630 - per_run*port_range;				// set motor output
 
 		// saturate motor output at 20% //
-		if(motor_output < (2630-per_run*port_range) )
+		if( motor_output < (2630-per_run*port_range) )
 		{
 			motor_output = (2630-per_run*port_range);
 		}
+		pwmWrite(motor_num, motor_output);
 	}
-	if( speed < 0 )
+	if( speed > 0 )
 	{
 		motor_output = 2718 + per_run*starboard_range;			// set motor output
 
@@ -403,8 +404,9 @@ int set_motors(int motor_num, float speed)
 		}
 	}
 	else
+	{
 		motor_output = 2674;	// turn off motor
-
+  }
 	// Calculate port motor output //
 	if( speed > 0 ) // port motor (CCW)
 	{
