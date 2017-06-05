@@ -1,10 +1,7 @@
-#ifndef LIBRARIES_H
-#define LIBRARIES_H
-
 #include <pca9685.h>
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
-#include <cstdio>
+#include <stdio.h>
 #include <stdlib.h>
 #include <Python.h>
 #include <time.h>
@@ -139,10 +136,10 @@ extern pid_data_t yaw_pid;
 extern pid_data_t depth_pid;
 
 // motor channels
-extern int motor_channels[]; 
+extern int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4}; 
 
 // Ignoring sstate
-extern float depth;
+extern float depth = 0;
 
 
 
@@ -162,7 +159,7 @@ int calcTicks(float impulseMs, int hertz);
 int initialize_motors(int channels[4], float freq);
 int saturate_number(float* val, float min, float max);
 
-int set_motor(int motor_num, float speed);
+int set_motors(int motor_num, float speed);
 
 // Functions for Reading MS5837 Pressure Sensor
 pressure_calib_t init_ms5837(); // initialize ms5837
@@ -182,5 +179,3 @@ int scripps_auv_init(void);
 //// Cleanup and Shutdown
 void ctrl_c(int signo); // signal catcher
 int cleanup_auv();		// call at the very end of main()
-
-#endif

@@ -13,8 +13,8 @@
 ***************************************************************************/
 void start_Py_ds18b20(void)		
 {
-    std::FILE* fd = fopen("temperature_sensor_code.py", "r");
-	PyRun_SimpleFile(fd,"temperature_sensor_code.py");
+	FILE* fd = fopen("python temperature_sensor_code.py", "r");
+	PyRun_SimpleFile(fd,"python temperature_sensor_code.py");
 	return;
 }
 
@@ -30,7 +30,7 @@ ds18b20_t ds18b20_read(void)
 
 	// read temperature values from ds18b20_fifo.fifo //
 	char buf[1000];
-    std::FILE *fd = fopen( "ds18b20_fifo.fifo", "r");
+	FILE *fd = fopen( "/home/pi/UCSD-RoboFishy/Working/Electronics/ds18b20_fifo.fifo", "r");
 	fgets(buf,1000,fd);
 	fclose(fd);
 	sscanf(buf,"%f",&ds18b20.temperature);
@@ -38,5 +38,3 @@ ds18b20_t ds18b20_read(void)
 	// return a temperature value //
 	return ds18b20;
 }
-
-
