@@ -1,3 +1,6 @@
+#ifndef LIBRARIES_H
+#define LIBRARIES_H
+
 #include <pca9685.h>
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
@@ -178,3 +181,5 @@ int scripps_auv_init(void);
 //// Cleanup and Shutdown
 void ctrl_c(int signo); // signal catcher
 int cleanup_auv();		// call at the very end of main()
+
+#endif
