@@ -19,13 +19,15 @@ float yaw_controller()
 	{
 		// u[2] is negative
 		motor_percent = yaw_pid.kp*(bno055.yaw - yaw_pid.setpoint) 
-			+ yaw_pid.kd*(bno055.r)+ yaw_pid.ki*yaw_pid.i_err; // yaw controller
+			+ yaw_pid.kd*(bno055.r)
+			+ yaw_pid.ki*yaw_pid.i_err; // yaw controller
 	}
 	else		// AUV is pointed left
 	{
 		// u[2] is positive
 		motor_percent = yaw_pid.kp*(yaw_pid.setpoint-(bno055.yaw-360)) 
-			+ yaw_pid.kd*(bno055.r) + yaw_pid.ki*yaw_pid.i_err; // yaw controller
+			+ yaw_pid.kd*(bno055.r) 
+			+ yaw_pid.ki*yaw_pid.i_err; // yaw controller
 	}
 	// saturate yaw controller //
 	if( u[2] > YAW_SAT )
@@ -63,7 +65,8 @@ float depth_controller(float range)
 	if( range > distance )
 	{
 		vert_percent = depth_pid.kp*(range-depth_pid.setpoint) 
-			+ depth_pid.ki*(depth_sum_error) + depth_pid.kd*((range_current-range_old)/DT); 
+			+ depth_pid.ki*(depth_sum_error) 
+			+ depth_pid.kd*((range_current-range_old)/DT); 
 	}
 	else 
 	{
