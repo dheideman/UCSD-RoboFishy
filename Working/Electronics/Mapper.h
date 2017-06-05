@@ -20,6 +20,7 @@
 #define CHANNEL_3 2		// yaw
 #define CHANNEL_4 3		// speed
 #define CHANNEL_5 4		// depth
+#define MOTOR_0 2674    // motor output is 0
 
 
 /***************************************************************************
@@ -161,7 +162,7 @@ int calcTicks(float impulseMs, int hertz);
 int initialize_motors(int channels[4], float freq);
 int saturate_number(float* val, float min, float max);
 
-int set_motors(int motor_num, float speed);
+int set_motor(int motor_num, float speed);
 
 // Functions for Reading MS5837 Pressure Sensor
 pressure_calib_t init_ms5837(); // initialize ms5837

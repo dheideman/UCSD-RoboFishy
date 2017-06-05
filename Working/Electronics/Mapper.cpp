@@ -3,6 +3,7 @@
 ******************************************************************************/
 
 #include "Mapper.h"
+
 // Multithreading
 #include <pthread.h>
 #include <sched.h>
@@ -96,7 +97,7 @@ pid_data_t yaw_pid;
 pid_data_t depth_pid;
 
 // motor channels
-int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3}; 
+int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3};
 
 // Ignoring sstate
 float depth = 0;
@@ -104,15 +105,15 @@ float depth = 0;
 // Thread attributes for different priorities
 pthread_attr_t tattrlow, tattrmed, tattrhigh;
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// Main Function ///////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+/******************************************************************************
+* Main Function
+******************************************************************************/
 
 int main()
 {
-		// Initialize python interpreter
+    // Initialize python interpreter
 	Py_Initialize();
-
+    
 	//Set up Pi GPIO pins through wiringPi
 	wiringPiSetupGpio();
 
@@ -161,7 +162,6 @@ int main()
 	pthread_create (&navigationThread, &tattrmed, navigation, NULL);
 //	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 
-
 	// Destroy the thread attributes
 	pthread_attr_destroy(&tattrlow);
 	pthread_attr_destroy(&tattrmed);
@@ -206,18 +206,17 @@ void *depth_thread(void* arg){
 	pthread_exit(NULL);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/////////////////// Navigation Thread for Main Control Loop ///////////////////
-///////////////////////////////////////////////////////////////////////////////
+/******************************************************************************
+ * Navigation Thread for Main Control Loop
+ *****************************************************************************/
+
 void *navigation(void* arg)
-//PI_THREAD (navigation_thread)
 {
     printf("Running navigation\n");
     initialize_motors(motor_channels, HERTZ);
 	
     printf("Motors set\n");
 
-    //static float new_esc[4];
 	float output_port;		// port motor output
 	float output_starboard; // starboard motor output
 
@@ -248,8 +247,8 @@ void *navigation(void* arg)
 	// Hard set motor speed
 //	 pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
 	printf("Setting motor speeds...   NOW\n");
-    set_motors(PIN_BASE+0, -0.2);
-	set_motors(PIN_BASE+1, 0.2);
+    set_motor(PIN_BASE+0, -0.2);
+	set_motor(PIN_BASE+1, 0.2);
 
     printf("Motor speeds set.\n");
 
@@ -283,8 +282,8 @@ void *navigation(void* arg)
 	}
     
     printf("Shutting down motors\n");
-	set_motors(PIN_BASE+0, 0);
-	set_motors(PIN_BASE+1, 0);
+	set_motor(PIN_BASE+0, 0);
+	set_motor(PIN_BASE+1, 0);
 
 	pthread_exit(NULL);
 }

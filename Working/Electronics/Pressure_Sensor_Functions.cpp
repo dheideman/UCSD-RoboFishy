@@ -1,14 +1,9 @@
 /******************************************************************************
-*MS5837.cpp
+* MS5837.cpp
 *
 *File to run Initialization and reading files on the MS5837 Pressure Sensor
 ******************************************************************************/
 #include "Mapper.h"
-
-////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////// MS5837 FUNCTIONS //////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
 
 /***************************************************************************
  * pressure_calib_t init_ms5837
@@ -31,7 +26,7 @@ pressure_calib_t init_ms5837(void)
 
 	// stuff
 	PyRun_SimpleString("import sys");
-	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/MainScript\")");
+	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/Mapper\")");
 	pModule = PyImport_Import(pName);
 	pDict = PyModule_GetDict(pModule);
 	pFunc = PyDict_GetItemString(pDict, "init_press");
@@ -69,7 +64,7 @@ ms5837_t ms5837_read(pressure_calib_t pressure_calib)
 
 	pName = PyString_FromString("MS5837_example"); // input name of python source file
 	PyRun_SimpleString("import sys");
-	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/MainScript\")");
+	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/Mapper\")");
 	pModule = PyImport_Import(pName);
 	pDict = PyModule_GetDict(pModule);
 	pFunc = PyDict_GetItemString(pDict, "read_press");
@@ -99,13 +94,12 @@ ms5837_t ms5837_read(pressure_calib_t pressure_calib)
 /***************************************************************************
  * void start_Py_ms5837
  *
- * Description
+ * Starts pressure reading python program
 ***************************************************************************/
 
 void start_Py_ms5837(void)
 {
-    std::FILE* fd = fopen("python MS5837_example.py", "r");
-	PyRun_SimpleFile(fd,"python MS5837_example.py");
+	FILE* fd = fopen("python pressure_read.py", "r");
+	PyRun_SimpleFile(fd,"python pressure_read.py");
 	return;
 }
-
