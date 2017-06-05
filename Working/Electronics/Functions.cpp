@@ -1,4 +1,4 @@
-#include "Libraries.h"
+#include "Mapper.h"
 
 // state variable for loop and thread control //
 enum state_t state = UNINITIALIZED;
@@ -62,6 +62,7 @@ int saturate_number(float* val, float min, float max)
 	return 0;
 }
 
+<<<<<<< HEAD
 /***************************************************************************
  * pressure_calib_t init_ms5837
  *
@@ -258,6 +259,8 @@ ds18b20_t ds18b20_read(void)	// read values from ds18b20 temperature sensor
 ///////////////////////////////Setup and Shutdown//////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
 
+=======
+>>>>>>> 8ecb0821b230186148ea46ac2322e4ba3c2d53dc
 /***************************************************************************
  * int scripps_auv_init(void)
  *
@@ -319,17 +322,28 @@ void ctrl_c(int signo)
 ***************************************************************************/
 int cleanup_auv()
 {
+	// Set state to exiting
 	set_state(EXITING);
-	usleep(500000); // let final threads clean up
+
+	// let 'em know
+	printf("\nExiting Cleanly\n");
+
+	// let final threads clean up
+	usleep(500000);
+
+	// delete fifo file
+	remove("bno055_fifo.txt")
+	printf("\nbno055_fifo.txt deleted successfully\n");
+
+	// Set all motors to zero
 	int channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3};
 	int i;
 	for( i = 0; (i < 3); i = i+1 )
 	{
-		//pwmWrite (PIN_BASE+channels[i], calcTicks(0, HERTZ));
 		pwmWrite (PIN_BASE+channels[i], 2674);		// set motor outputs to 0
+		// sleep...just cuz
 		usleep(10000);
 	}
-	printf("\nExiting Cleanly\n");
 	return 0;
 }
 
@@ -338,7 +352,7 @@ int cleanup_auv()
 *
 * Takes in readings from IMU and calculates a percentage (-1 to 1)
 ******************************************************************************/
-void yaw_controller()
+int yaw_controller()
 {
 	// control output //
 	if(bno055.yaw<180) // AUV is pointed right
@@ -352,7 +366,7 @@ void yaw_controller()
 		motor_percent = yaw_pid.kp*(yaw_pid.setpoint-(bno055.yaw-360)); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
 	}
 	// saturate yaw controller //
-	if(motor_percent > YAW_SAT)
+	if(u[2]>YAW_SAT)
 	{
 		motor_percent=YAW_SAT;
 	}
@@ -364,64 +378,56 @@ void yaw_controller()
 	//set current yaw to be the old yaw
 	yaw_pid.oldyaw=bno055.yaw;
 
+	//Set starboard positive and port negativ
+	starboard_percent = motor_percent;
+	port_percent = -motor_percent;
 
 	//set current yaw to be the old yaw
 	yaw_pid.oldyaw=bno055.yaw;
 
+	return 0;
 }
 /***************************************************************************
- * void set_motors()
+ * int set_motors()
  *
  * Takes in a value from -1 to 1 (-100 to +100%) and sets the motor
  * outputs accordingly
 ***************************************************************************/
-int set_motor(int motor_num, float percent_out)
+int set_motors(int motor_num, float speed)
 {
 	int motor_num;				// indicates which motor to write to
 								// port = 0, starboard = 1, vert = 2
-	float motor_base;			// motor base of 20%
 	float motor_output;			// feeds the necessary PWM to the motor
 	float per_base = 0.2;		// base percentage of full PWM to run at
 	float per_run = 0.1;		// percentage above per_base to run at
+
 	int port_range = 2618;		// port motor range
 	int starboard_range = 2187; // starboard motor range
 
-	// percent_out = (-) ----> AUV pointed right (starboard) (range: 2718-4095)
-	// percent_out = (+) ----> AUV pointed left (port) (range: 12-2630)
-
+	// speed = (-) ----> AUV pointed right (starboard) (range: 2718-4095)
+	// speed = (+) ----> AUV pointed left (port) (range: 12-2630)
 
 	// Calculate motor output //
-	if( percent_out > 0 )		
+	if( speed < 0 )
 	{
-		// Set motor to 20% base output //
-		motor_base = 2630 - per_base*port_range;				
+		motor_output = 2630 - per_run*port_range;				// set motor output
 
-		// Saturate motor output at minimum 10% //
-		if( (2630 - percent_out*port_range ) < (motor_base - per_run*port_range) )
+		// saturate motor output at 20% //de
+		if( motor_output < (2630-per_run*port_range) )
 		{
-			motor_output = motor_base + per_run*port_range;
-		}
-		else
-		{
-			motor_output = 2630 - percent_out*port_range;
-		}
-		
-	}
-	if( percent_out < 0 )		
-	{
-		// Set motor to 20% base output //
-		motor_base = 2718 + per_base*starboard_range;			
-
-		// Saturate motor output at maximum 30% //
-		if( (2718 - percent_out*starboard_range) > (motor_base + per_run*starboard_range) )
-		{
-			motor_output = motor_base + per_run*starboard_range;
-		}
-		else
-		{
-			motor_output = 2718 - percent_out*starboard_range;
+			motor_output = (2630-per_run*port_range);
 		}
 		pwmWrite(motor_num, motor_output);
+	}
+	if( speed > 0 )
+	{
+		motor_output = 2718 + per_run*starboard_range;			// set motor output
+
+		// saturate motor output at 20% //
+		if( motor_output > 2718 + per_run*starboard_range )
+		{
+			motor_output = 2718 + per_run*starboard_range;
+		}
 	}
 	else
 	{
