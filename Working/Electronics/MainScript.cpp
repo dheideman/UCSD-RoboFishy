@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Main script for the 2017 RoboFishy Scripps AUV
+ *	Main script for the 2017 RoboFishy Scripps AUV
 ******************************************************************************/
 
 #include "Libraries.h"
@@ -57,82 +57,6 @@
 // Stop timer
 #define STOP_TIME		4		// seconds
 
-///////////////////////////////////////////////////////////////////////////////
-////////////////////////////////// Data Structures ////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-typedef struct setpoint_t
-{
-	float roll;				// roll angle (rad)
-	float roll_rate;	// roll rate (rad/s)
-	float pitch;			// pitch angle (rad)
-	float pitch_rate; // pitch rate (rad/s)
-	float yaw;				// yaw angle in (rad)
-	float yaw_rate;		// yaw rate (rad/s)
-	float depth;			// z component in fixed coordinate system
-	float speed;			// speed setpoint
-}setpoint_t;
-
-typedef struct system_state_t
-{
-	float roll;					// current roll angle (rad)
-	float pitch[2];			// current pitch angle (rad) 0: current value, 1: last value
-	float yaw[2];				// current yaw angle (rad) 0: current value, 1: last value
-	float depth[2];			// depth estimate (m)
-	float fdepth[2];		// filtered depth estimate (m)
-	float speed;				// speed (m/s)
-
-	float p[2];					// first derivative of roll (rad/s)
-	float q[2];					// first derivative of pitch (rad/s)
-	float r[2];					// first derivative of yaw (rad/s)
-	float ddepth;				// first derivative of depth (m/s)
-
-	int sys;		// system calibrations status (0=uncalibrated, 3=fully calibrated)
-	int gyro;		// gyro calibrations status (0=uncalibrated, 3=fully calibrated)
-	int accel;	// accelerometer calibrations status (0=uncalibrated, 3=fully calibrated)
-	int mag;		// magnetometer calibrations status (0=uncalibrated, 3=fully calibrated)
-
-	float control_u[4];			// control outputs: depth,roll,pitch,yaw
-	float esc_out;				// control output to motors
-	//float esc_out[4];			// normalized (0-1) outputs to motors
-	int num_yaw_spins;			// remember number of spins around Z-axis
-}system_state_t;
-
-// Ignoring sstate
-float depth = 0;
-
-///////////////////////////////////////////////////////////////////////////////
-//////////////////////////// Global Variables /////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-// holds the setpoint data structure with current setpoints
-setpoint_t setpoint;
-
-// holds the system state structure with current system statesystem_state_t sstate;
-system_state_t sstate;
-
-// holds the latest data values from the BNO055
-bno055_t bno055;
-
-// holds the calibration values for the MS5837 pressure sensor
-pressure_calib_t pressure_calib;
-
-// holds the latest pressure value from the MS5837 pressure sensor
-ms5837_t ms5837;
-
-// holds the latest temperature value from the DS18B20 temperature sensor
-ds18b20_t ds18b20;
-
-// holds the constants and latest errors of the yaw pid controller
-pid_data_t yaw_pid;
-
-// holds the constants and latest errors of the depth pid controller
-pid_data_t depth_pid;
-
-int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4}; // motor channels
-
-// Thread attributes for different priorities
-pthread_attr_t tattrlow, tattrmed, tattrhigh;
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// Declare threads /////////////////////////////
@@ -244,7 +168,7 @@ void *depth_thread(void* arg){
 
 		usleep(10000);
 	}
-    pthread_exit(NULL);
+		pthread_exit(NULL);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -253,32 +177,37 @@ void *depth_thread(void* arg){
 void *navigation(void* arg)
 //PI_THREAD (navigation_thread)
 {
-static float u[4];	// normalized roll, pitch, yaw, throttle, components
-initialize_motors(motor_channels, HERTZ);
-//static float new_esc[4];
-float output_port;		// port motor output
-float output_starboard; // starboard motor output
+	static float u[4];	// normalized roll, pitch, yaw, throttle, components
+	initialize_motors(motor_channels, HERTZ);
+	//static float new_esc[4];
+	float output_port;		// port motor output
+	float output_starboard; // starboard motor output
 
-//Initialize old imu data
-float yaw_pid.oldyaw = 0;
+	//Initialize old imu data
+	yaw_pid.oldyaw = 0;
 
-//Initialize setpoint for yaw controller
-float yaw_pid.setpoint = 0;
+	//Initialize setpoint for yaw controller
+	yaw_pid.setpoint = 0;
 
-//Initialize Error values to be used in yaw controller
-float yaw_pid.p_err = 0;
-float yaw_pid.i_err = 0;
-float yaw_pid.d_err = 0;
+	//Initialize Error values to be used in yaw controller
+	yaw_pid.p_err = 0;
+	yaw_pid.i_err = 0;
+	yaw_pid.d_err = 0;
 
-//Yaw Controller Constant Initialization
-float yaw_pid.kp = .01;
-float yaw_pid.kd = 1;
-float yaw_pid.ki = .1;
+	//Yaw Controller Constant Initialization
+	yaw_pid.kp = .01;
+	yaw_pid.kd = 1;
+	yaw_pid.ki = .1;
 
-//depth controller constant initialization
-float depth_pid.kp = .01;
-float depth_pid.kd = 1;
-float depth_pid.ki = .1;
+	//depth controller constant initialization
+	depth_pid.kp = .01;
+	depth_pid.kd = 1;
+	depth_pid.ki = .1;
+	
+	// Hard set motor speed
+//	 pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
+	set_motors(PIN_BASE+motor_channels[0], -0.2);
+	set_motors(PIN_BASE+motor_channels[0], 0.2);
 
 	while(get_state()!=EXITING)
 	{
@@ -293,52 +222,25 @@ float depth_pid.ki = .1;
 	//			 bno055.mag);
 	
 	// Sanity test: Check if yaw control works
+/*
+	//Call yaw controller function
+	yaw_controller();
+	
+	//set port motor
+	set_motors(0,port_percent);
 
-	// setpoints //
-	setpoint.yaw = 0;
+	//set starboard motor
+	set_motors(1, starboard_percent);
 
-	// control output //
-	if(sstate.yaw[0]<180) // AUV is pointed right
-	{
-		// u[2] is negative
-		u[2] = KP_YAW*(setpoint.yaw-sstate.yaw[0]); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
+		*/
+		
+		// sleep for 5 ms //
+		usleep(5000);
 	}
-	else		// AUV is pointed left
-	{
-		// u[2] is positive
-		u[2] = KP_YAW*(setpoint.yaw-(sstate.yaw[0]-360)); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
-	}
-
-	// saturate yaw controller //
-	if(u[2]>YAW_SAT)
-	{
-		u[2]=YAW_SAT;
-	}
-	else if(u[2]<-YAW_SAT)
-	{
-		u[2]=-YAW_SAT;
-	}
-
-					// mix controls //
-					printf("u[2]: %f\n", u[2]);
-
-
-						output_starboard = output_starboard+0.2*(4905-2718);	// starboard motor max at 40%
-						pwmWrite(PIN_BASE+motor_channels[1], output_starboard); //	starboard motor output = base 20% + yaw control output
-						pwmWrite(PIN_BASE+motor_channels[0], output_port);				// port motor at base 20%
-					}
-
-					// print motor PWM outputs //
-					printf("Port PWM Output2: %f Starboard PWM Output2: %f\n",
-						output_port, output_starboard);
-
-					delay(250);		// wait 0.25 sec until next read of IMU values
-
-					// sleep for 5 ms //
-					//usleep(5000);
-				//}
-		//}
-	}
+	
+	set_motors(PIN_BASE+motor_channels[0], 0);
+	set_motors(PIN_BASE+motor_channels[0], 0);
+	
 	pthread_exit(NULL);
 }
 

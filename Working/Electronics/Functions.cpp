@@ -310,7 +310,7 @@ int cleanup_auv()
 {
 	set_state(EXITING);
 	usleep(500000); // let final threads clean up
-	int channels[]  = {CHANNEL_1, CHANNEL_2, CHANNEL_3};
+	int channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3};
 	int i;
 	for( i = 0; (i < 3); i = i+1 )
 	{
@@ -327,9 +327,8 @@ int cleanup_auv()
 *
 * Takes in readings from IMU and calculates a percentage (-1 to 1)
 ******************************************************************************/
-int yaw_controller()
+void yaw_controller()
 {
-
 	// control output //
 	if(bno055.yaw<180) // AUV is pointed right
 	{
@@ -342,7 +341,7 @@ int yaw_controller()
 		motor_percent = yaw_pid.kp*(yaw_pid.setpoint-(bno055.yaw-360)); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
 	}
 	// saturate yaw controller //
-	if(u[2]>YAW_SAT)
+	if(motor_percent > YAW_SAT)
 	{
 		motor_percent=YAW_SAT;
 	}
@@ -354,19 +353,15 @@ int yaw_controller()
 	//set current yaw to be the old yaw
 	yaw_pid.oldyaw=bno055.yaw;
 
-	//Set starboard positive and port negativ
-	starboard_percent = motor_percent;
-	port_percent = -motor_percent;
 
 	//set current yaw to be the old yaw
 	yaw_pid.oldyaw=bno055.yaw;
 
-	return 0;
 }
 /***************************************************************************
  * void set_motors()
  *
- * Takes in a value from -1 to 1 (-100 to +100%) and sets the motor 
+ * Takes in a value from -1 to 1 (-100 to +100%) and sets the motor
  * outputs accordingly
 ***************************************************************************/
 int set_motor(int motor_num, float percent_out)
@@ -379,7 +374,7 @@ int set_motor(int motor_num, float percent_out)
 	float per_run = 0.1;		
 	//float min_per_run = 0.1;	// minimum percentage of full PWM to run at
 	int port_range = 2618;		// port motor range
-	int starboard_range = 2187;	// starboard motor range
+	int starboard_range = 2187; // starboard motor range
 
 	// percent_out = (-) ----> AUV pointed right (starboard) (range: 2718-4095)
 	// percent_out = (+) ----> AUV pointed left (port) (range: 12-2630)
@@ -400,7 +395,7 @@ int set_motor(int motor_num, float percent_out)
 		{
 			motor_output = 2630 - percent_out*port_range;
 		}
-		pwmWrite(motor_num, motor_output);
+		
 	}
 	if( percent_out < 0 )		
 	{
@@ -420,8 +415,10 @@ int set_motor(int motor_num, float percent_out)
 	}
 	else
 	{
-		motor_output = 2674;									
-		pwmWrite(motor_num, motor_output);						// turn motors off
+		motor_output = 2674;	// turn off motor
+		
+		pwmWrite(motor_num, motor_output);
 	}
-
+	
+	return 1;
 }
