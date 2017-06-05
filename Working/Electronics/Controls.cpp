@@ -1,31 +1,34 @@
 /******************************************************************************
 * Controls.cpp
 *
-* Contains the yaw_controller() and range_controller functions
+* Contains the yaw_controller() and depth_controller functions
 ******************************************************************************/
 #include "Mapper.h"
 
 /******************************************************************************
 * float yaw_controller()
 *
-* Takes in readings from IMU and calculates a percentage (-1 to 1) to run 
-* motors at
+* Takes in readings from the IMU and returns a value between -1 and 1 (-100% - 
+* +100%) that the port and starboard thrusters should run at
 ******************************************************************************/
 /*
-float yaw_controller()
+float yaw_controller(bno055, yaw_pid)
 {
 	// control output //
 	if( bno055.yaw < 180 ) // AUV is pointed right
 	{
 		// u[2] is negative
-		motor_percent = yaw_pid.kp*(bno055.yaw - yaw_pid.setpoint) 
-			+ yaw_pid.kd*(bno055.r); // yaw controller
+
+		motor_percent = yaw_pid.kp*(yaw_pid.err) 
+			+ yaw_pid.kd*(bno055.r)+ yaw_pid.ki*yaw_pid.i_err; // yaw controller
+
 	}
 	else		// AUV is pointed left
 	{
 		// u[2] is positive
 		motor_percent = yaw_pid.kp*(yaw_pid.setpoint-(bno055.yaw-360)) 
-			+ yaw_pid.kd*(bno055.r); // yaw controller
+			+ yaw_pid.kd*(bno055.r) 
+			+ yaw_pid.ki*yaw_pid.i_err; // yaw controller
 	}
 	// saturate yaw controller //
 	if( u[2] > YAW_SAT )
@@ -40,22 +43,51 @@ float yaw_controller()
 	// set current yaw to be the old yaw //
 	yaw_pid.oldyaw = bno055.yaw;
 
-	// set current yaw to be the old yaw //
-	yaw_pid.oldyaw = bno055.yaw;
-
 	return motor_percent;
 }
 */
 
 
 /******************************************************************************
-* int range_controller()
+* float depth_controller(float range)
 *
 * Takes a range-from-bottom reading from the laser range-finder code and 
-* regulates the range-from-bottom of the AUV
+* returns a value between -1 and 1 (-100% - +100%) that the vertical thruster
+* should run at
 ******************************************************************************/
 
-int range_controller(float range)
+float depth_controller(float range)
 {
-    return 0;
+	float vert_percent;			// vertical thruster output in a percentage
+	float depth_sum_error = 0;	// accumulated range error for integral control
+
+	// accumulated range error for integral control //
+	depth_sum_error += range - depth_pid.setpoint;
+
+	if( range > distance )
+	{
+		vert_percent = depth_pid.kp*(range-depth_pid.setpoint) 
+			+ depth_pid.ki*(depth_sum_error) 
+			+ depth_pid.kd*((range_current-range_old)/DT); 
+	}
+	else 
+	{
+		// shut off vertical thruster //
+		vert_percent = 0;
+	}
+
+	// saturate depth controller //
+	if( vert_percent > DEPTH_SAT )
+	{
+		vert_percent = DEPTH_SAT;
+	}
+	else if( vert_percent < -DEPTH_SAT )
+	{
+		vert_percent = -DEPTH_SAT;
+	}
+
+	// set current depth to be the old depth //
+	depth_pid.old = depth_pid.current;
+
+	return vert_percent;
 }

@@ -59,11 +59,12 @@ typedef struct
 	float temperature;
 }ds18b20_t;
 
-//struct for PID Controllers
+
+// struct for PID Controllers
 typedef struct pid_data_t
 {
 	float kp, ki, kd;
-	float p_err, i_err, d_err;
+	float err, i_err;
 	float setpoint;
 	float oldyaw;
 }pid_data_t;
@@ -145,10 +146,8 @@ extern float depth;
 ******************************************************************************/
 
 // Functions for setting motor PWM with PCA9685
-int calcTicks(float impulseMs, int hertz);
 int initialize_motors(int channels[4], float freq);
 int saturate_number(float* val, float min, float max);
-
 int set_motor(int motor_num, float speed);
 
 // Functions for Reading MS5837 Pressure Sensor
@@ -166,7 +165,7 @@ ds18b20_t ds18b20_read(void);	// read values from ds18b20
 // Startup Functions
 int scripps_auv_init(void);
 
-//// Cleanup and Shutdown
+// Cleanup and Shutdown
 void ctrl_c(int signo); // signal catcher
 int cleanup_auv();		// call at the very end of main()
 
