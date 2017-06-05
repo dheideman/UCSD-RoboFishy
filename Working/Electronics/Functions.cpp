@@ -1,4 +1,4 @@
-#include "Libraries.h"
+pressure#include "Libraries.h"
 
 // state variable for loop and thread control //
 enum state_t state = UNINITIALIZED;
@@ -64,17 +64,23 @@ int saturate_number(float* val, float min, float max)
 /***************************************************************************
  * pressure_calib_t init_ms5837
  *
- * Description
+ * initializes pressure sensor
+ *
+ * Returns structure of 6 coefficients
 ***************************************************************************/
 
 pressure_calib_t init_ms5837(void)
 {
 	Py_Initialize();
-	pressure_calib_t calib; // create struct to hold calibration data
+	pressure_calib_t pressure_calib; // create struct to hold calibration data
 
 	// create pointers to python object
 	PyObject *pName, *pModule, *pDict, *pFunc, *pValue;
-	pName = PyString_FromString("MS5837"); // input name of python source file
+
+	// input name of python source file
+	pName = PyString_FromString("MS5837");
+
+	// stuff
 	PyRun_SimpleString("import sys");
 	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/MainScript\")");
 	pModule = PyImport_Import(pName);
@@ -83,7 +89,9 @@ pressure_calib_t init_ms5837(void)
 	if (PyCallable_Check(pFunc))
 	{
 		pValue = PyObject_CallObject(pFunc, NULL);
-		PyArg_ParseTuple(pValue,"ffffff", &calib.C1, &calib.C2, &calib.C3,&calib.C4, &calib.C5, &calib.C6);
+		PyArg_ParseTuple(pValue,"ffffff",
+			&pressure_calib.C1, &pressure_calib.C2, &pressure_calib.C3,
+			&pressure_calib.C4, &pressure_calib.C5, &pressure_calib.C6);
 		Py_DECREF(pValue);
 	}
 	else
@@ -93,22 +101,21 @@ pressure_calib_t init_ms5837(void)
 	Py_DECREF(pModule);
 	Py_DECREF(pName);
 	Py_Finalize();
-	return calib;
+	return pressure_calib;
 };
 
 /***************************************************************************
  * ms5837_t ms5837_read
  *
- * Description
+ * Read pressure values from MS5837 pressure sensor
 ***************************************************************************/
 
-ms5837_t ms5837_read(presssure_calib_t arg_in)	//	read pressure values from MS5837 pressure sensor
+ms5837_t ms5837_read(pressure_calib_t pressure_calib)
 {
 	ms5837_t ms5837;
 
 	Py_Initialize();
 
-	presssure_calib_t calib = arg_in; // create struct to hold calibration data
 	PyObject *pName, *pModule, *pDict, *pFunc, *pArgs, *pValue;
 
 	pName = PyString_FromString("MS5837_example"); // input name of python source file
@@ -120,12 +127,11 @@ ms5837_t ms5837_read(presssure_calib_t arg_in)	//	read pressure values from MS58
 
 	if (PyCallable_Check(pFunc))
 	{
-
-		pArgs = Py_BuildValue("ffffff", calib.C1,calib.C2,calib.C3,calib.C4,calib.C5,calib.C6);
+		pArgs = Py_BuildValue("ffffff", pressure_calib.C1,pressure_calib.C2,pressure_calib.C3,
+			pressure_calib.C4,pressure_calib.C5,pressure_calib.C6);
 
 		pValue = PyObject_CallObject(pFunc, pArgs);
 
-		//PyArg_ParseTuple(pValue,"ff", &ms5837.temperature, &ms5837.pressure);
 		PyArg_ParseTuple(pValue,"ff", &ms5837.pressure);
 		Py_DECREF(pArgs);
 		Py_DECREF(pValue);
@@ -337,9 +343,8 @@ int yaw_controller()
 		// u[2] is positive
 		motor_percent = KP_YAW*(yaw_pid.setpoint-(bno055.yaw-360)); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
 	}
-
 	// saturate yaw controller //
-	if(motor_percent>YAW_SAT)
+	if(u[2]>YAW_SAT)
 	{
 		motor_percent=YAW_SAT;
 	}
@@ -347,16 +352,21 @@ int yaw_controller()
 	{
 		motor_percent=-YAW_SAT;
 	}
+
+	//Set starboard positive and port negative;
+	starboard_percent = motor_percent;
+	port_percent = -motor_percent;
+
+	//set current yaw to be the old yaw
 	yaw_pid.oldyaw=bno055.yaw;
-		
+
+	return 0;
 }
 /***************************************************************************
  * int set_motors()
  *
  * Cleans up the AUV script, shuts down the motors and closes all threads
 ***************************************************************************/
-
-
 
 					// mix controls //
 					printf("u[2]: %f\n", u[2]);

@@ -1,6 +1,6 @@
-///////////////////////////////////////////////////////////////////////////////
-///////////////Main script for the 2017 RoboFishy Scripps AUV //////////////////
-///////////////////////////////////////////////////////////////////////////////
+/******************************************************************************
+ *  Main script for the 2017 RoboFishy Scripps AUV
+******************************************************************************/
 
 #include "Libraries.h"
 // Multithreading
@@ -15,9 +15,9 @@
 // Conversion Factors //
 #define UNITS_KPA 0.1 // converts pressure from mbar to kPa
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// Controller Gains ////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+/******************************************************************************
+ * Controller Gains
+******************************************************************************/
 
 // Pitch Controller //
 #define KP_PITCH 0
@@ -98,6 +98,8 @@ typedef struct system_state_t
 	int num_yaw_spins;			// remember number of spins around Z-axis
 }system_state_t;
 
+// Ignoring sstate
+float depth = 0;
 
 ///////////////////////////////////////////////////////////////////////////////
 //////////////////////////// Global Variables /////////////////////////////////
@@ -193,8 +195,7 @@ int main()
 	// Set up high priority
 	param.sched_priority = maxpriority-1;
 	pthread_attr_setschedparam (&tattrhigh, &param);
-	
-	
+
 	// Thread handles
 	pthread_t navigationThread;
 	pthread_t depthThread;
@@ -209,16 +210,16 @@ int main()
 	pthread_attr_destroy(&tattrlow);
 	pthread_attr_destroy(&tattrmed);
 	pthread_attr_destroy(&tattrhigh);
-	
+
 	// Start timer!
 	time_t timer = time(NULL);
-	
+
 	// Run main while loop, wait until it's time to stop
 	while(get_state()!=EXITING)
 	{
 		// Check if we've passed the stop time
 		if(difftime(timer,time(NULL)) > STOP_TIME) set_state(EXITING);
-		
+
 		// Sleep a little
 		usleep(100000);
 	}
@@ -231,12 +232,20 @@ int main()
 *
 * For Recording Depth & Determining If AUV is in Water or Not
 ******************************************************************************/
-void *depth_thread(void* arg)
-{
+void *depth_thread(void* arg){
+	// Initialize pressure sensor
 	pressure_calib = init_ms5837();
-	usleep(1);
-}
 
+	while(get_state()!=EXITING){
+		// Read pressure sensor by passing calibration structure
+		ms5837 = ms5837_read(pressure_calib);
+		// calculate depth (no idea what's up with the function)
+		depth = (ms5837.pressure-1013)*10.197-88.8;
+
+		usleep(10000);
+	}
+	return;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////// Navigation Thread for Main Control Loop ///////////////////
