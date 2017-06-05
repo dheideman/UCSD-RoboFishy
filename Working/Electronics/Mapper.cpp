@@ -202,14 +202,17 @@ int main()
 ******************************************************************************/
 void *depth_thread(void* arg)
 {
-	// Initialize pressure sensor
+	// initialize pressure sensor //
 	pressure_calib = init_ms5837();
+
+	// start Python code that reads data from the pressure sensor //
+	start_Py_ms5837();
 
 	while(substate.mode!=STOPPING)
 	{
-		// Read pressure sensor by passing calibration structure
+		// read pressure sensor by passing calibration structure //
 		ms5837 = ms5837_read(pressure_calib);
-		// calculate depth (no idea what's up with the function)
+		// calculate depth (no idea what's up with the function) //
 		depth = (ms5837.pressure-1013)*10.197-88.8;
 
 		usleep(10000);

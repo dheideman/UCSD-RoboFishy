@@ -1,7 +1,7 @@
 /******************************************************************************
 * Controls.cpp
 *
-* Contains the yaw_controller() and depth_controller functions
+* Contains the yaw_controller() and range_controller functions
 ******************************************************************************/
 #include "Mapper.h"
 
@@ -53,9 +53,13 @@ int yaw_controller()
 
 
 /******************************************************************************
-* int depth_controller()
+* int range_controller()
 *
-* Takes a depth reading from the laser range-finder code and regulates the
-* depth of the AUV
+* Takes a range-from-bottom reading from the laser range-finder code and 
+* regulates the range-from-bottom of the AUV
 ******************************************************************************/
 
+int range_controller(float range)
+{
+
+}
