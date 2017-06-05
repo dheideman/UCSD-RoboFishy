@@ -12,6 +12,16 @@
 using namespace cv;
 using namespace std;
 
+//////////////////////
+// Global Variables //
+//////////////////////
+
+// For writing image to screen
+local_images_t localimages;
+cv::Mat hsvframe;
+cv::Point p1;
+
+
 /*******************************************************************************
  * void *rangeFinder(void*)
  * 

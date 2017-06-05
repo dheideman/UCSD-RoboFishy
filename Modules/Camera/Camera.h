@@ -6,13 +6,14 @@
  * Pull images from camera as soon as they are taken and store them safely
  * 
  ******************************************************************************/
- 
- #ifndef CAMERA_H
- #define CAMERA_H
- 
- // OpenCV
-#include <cv.hpp>
-#include <highgui.h>
+
+#ifndef CAMERA_H
+#define CAMERA_H
+
+// OpenCV
+//#include <cv.hpp>
+#include <opencv2/opencv.hpp>
+//#include <highgui.h>
 #include <opencv2/imgproc/imgproc.hpp>
 
 // WiringPi
@@ -57,12 +58,30 @@
 #define LASERPIN      4
 
 
+//////////////////////
+// Type Definitions //
+//////////////////////
+
+// Bright and Dark Frame storage struct
+typedef struct sub_images_t
+{
+  cv::Mat brightframe;  // The brighter image (used for mapping)
+  cv::Mat darkframe;    // The darker image (used for range finding)
+  
+  pthread_mutex_t brightframelock;   // Mutex lock for brightframe
+  pthread_mutex_t darkframelock;     // Mutex lock for darkframe
+} sub_images_t;
+
+
 /////////////////////////
 // Function Prototypes //
 /////////////////////////
 
-// Threads
+// Thread
 void *takePictures(void*);
+
+// Mutex Lock Initializer
+int initializeSubImagesLock(sub_images_t *_subimages);
 
 
 //////////////////////
@@ -70,12 +89,12 @@ void *takePictures(void*);
 //////////////////////
 
 // Image Capture Object
-cv::VideoCapture cap;
+extern cv::VideoCapture cap;
 
 // V4L2Control Object
-V4L2Control picamctrl;
+extern V4L2Control picamctrl;
 
 // Image Storage
-sub_images_t subimages;
+extern sub_images_t subimages;
 
 #endif
