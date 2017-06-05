@@ -253,59 +253,71 @@ void *depth_thread(void* arg){
 void *navigation(void* arg)
 //PI_THREAD (navigation_thread)
 {
-	static float u[4];	// normalized roll, pitch, yaw, throttle, components
-	initialize_motors(motor_channels, HERTZ);
-	//static float new_esc[4];
-	float output_port;		// port motor output
-	float output_starboard; // starboard motor output
-	printf("\n");
-	//delay(1000); // Delay is so that the IMU can initialize and run bn055_read.py
+static float u[4];	// normalized roll, pitch, yaw, throttle, components
+initialize_motors(motor_channels, HERTZ);
+//static float new_esc[4];
+float output_port;		// port motor output
+float output_starboard; // starboard motor output
+
+//Initialize old imu data
+float yaw_pid.oldyaw = 0;
+
+//Initialize setpoint for yaw controller
+float yaw_pid.setpoint = 0;
+
+//Initialize Error values to be used in yaw controller
+float yaw_pid.p_err = 0;
+float yaw_pid.i_err = 0;
+float yaw_pid.d_err = 0;
+
+//Yaw Controller Constant Initialization
+float yaw_pid.kp = .01;
+float yaw_pid.kd = 1;
+float yaw_pid.ki = .1;
+
+//depth controller constant initialization
+float depth_pid.kp = .01;
+float depth_pid.kd = 1;
+float depth_pid.ki = .1;
 
 	while(get_state()!=EXITING)
 	{
-		// set motors to constant PWM output for straight line //
-		//pwmWrite (PIN_BASE+motor_channels[0], 2106.4);	// set motor to 20%
-		//pwmWrite (PIN_BASE+motor_channels[1], 3819.6);	// set motor to 20%
+	// read IMU values
+	bno055 = bno055_read();
 
-		// read IMU values
-		bno055 = bno055_read();
+	// Write captured values to screen
+	//printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
+	//			 bno055.yaw, bno055.pitch, bno055.roll,
+	//			 bno055.p, bno055.q, bno055.r,
+	//			 bno055.sys, bno055.gyro, bno055.accel,
+	//			 bno055.mag);
+	
+	// Sanity test: Check if yaw control works
 
-		// Write captured values to screen
-		printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
-					 bno055.yaw, bno055.pitch, bno055.roll,
-					 bno055.p, bno055.q, bno055.r,
-					 bno055.sys, bno055.gyro, bno055.accel,
-					 bno055.mag);
-		//delay(1000);		// wait 1 sec until next read of IMU values
-		//delay(100);		// wait 0.1 sec until next read of IMU values
+	// setpoints //
+	setpoint.yaw = 0;
 
+	// control output //
+	if(sstate.yaw[0]<180) // AUV is pointed right
+	{
+		// u[2] is negative
+		u[2] = KP_YAW*(setpoint.yaw-sstate.yaw[0]); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
+	}
+	else		// AUV is pointed left
+	{
+		// u[2] is positive
+		u[2] = KP_YAW*(setpoint.yaw-(sstate.yaw[0]-360)); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
+	}
 
-		// Sanity test: Check if yaw control works
-
-					// setpoints //
-					setpoint.yaw = 0;
-
-					// control output //
-					if(sstate.yaw[0]<180) // AUV is pointed right
-					{
-						// u[2] is negative
-						u[2] = KP_YAW*(setpoint.yaw-sstate.yaw[0]); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
-					}
-					else		// AUV is pointed left
-					{
-						// u[2] is positive
-						u[2] = KP_YAW*(setpoint.yaw-(sstate.yaw[0]-360)); //+ KD_YAW*(sstate.yaw[0]-sstate.yaw[1])/DT; // yaw controller
-					}
-
-					// saturate yaw controller //
-					if(u[2]>YAW_SAT)
-					{
-						u[2]=YAW_SAT;
-					}
-					else if(u[2]<-YAW_SAT)
-					{
-						u[2]=-YAW_SAT;
-					}
+	// saturate yaw controller //
+	if(u[2]>YAW_SAT)
+	{
+		u[2]=YAW_SAT;
+	}
+	else if(u[2]<-YAW_SAT)
+	{
+		u[2]=-YAW_SAT;
+	}
 
 					// mix controls //
 					printf("u[2]: %f\n", u[2]);
@@ -326,7 +338,8 @@ void *navigation(void* arg)
 					//usleep(5000);
 				//}
 		//}
-	return 0;
+	}
+	pthread_exit(NULL);
 }
 
 
