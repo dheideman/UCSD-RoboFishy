@@ -59,7 +59,7 @@ while True:
     sys, gyro, accel, mag = bno.get_calibration_status()
 
     _string = "%f %f %f %f %f %f %i %i %i %i" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
-    fifo = open("bno055_fifo.txt", "w")
+    fifo = open("imu.fifo", "w")
     fifo.write(_string)
     fifo.close()
 #    print "%f %f %f %f %f %f %i %i %i %i\n" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)

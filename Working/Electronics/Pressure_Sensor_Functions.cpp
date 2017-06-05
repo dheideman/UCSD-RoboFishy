@@ -1,7 +1,7 @@
 /******************************************************************************
 * MS5837.cpp
 *
-* File to run Initialization and reading files on the MS5837 Pressure Sensor
+*File to run Initialization and reading files on the MS5837 Pressure Sensor
 ******************************************************************************/
 #include "Mapper.h"
 
@@ -10,25 +10,23 @@
  *
  * initializes pressure sensor
  *
- * Returns structure of 6 calibration coefficients
+ * Returns structure of 6 coefficients
 ***************************************************************************/
+
 pressure_calib_t init_ms5837(void)
 {
-	// initialize Python interpreter //
 	Py_Initialize();
+	pressure_calib_t pressure_calib; // create struct to hold calibration data
 
-	// create struct to hold calibration data //
-	pressure_calib_t pressure_calib; 
-
-	// create pointers to python object //
+	// create pointers to python object
 	PyObject *pName, *pModule, *pDict, *pFunc, *pValue;
 
-	// input name of python source file //
+	// input name of python source file
 	pName = PyString_FromString("MS5837");
 
-	// stuff //
+	// stuff
 	PyRun_SimpleString("import sys");
-	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/MainScript\")");
+	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/Mapper\")");
 	pModule = PyImport_Import(pName);
 	pDict = PyModule_GetDict(pModule);
 	pFunc = PyDict_GetItemString(pDict, "init_press");
@@ -47,8 +45,6 @@ pressure_calib_t init_ms5837(void)
 	Py_DECREF(pModule);
 	Py_DECREF(pName);
 	Py_Finalize();
-
-	// return pressure calibration values //
 	return pressure_calib;
 };
 
@@ -57,21 +53,18 @@ pressure_calib_t init_ms5837(void)
  *
  * Read pressure values from MS5837 pressure sensor
 ***************************************************************************/
+
 ms5837_t ms5837_read(pressure_calib_t pressure_calib)
 {
-	// create struct to hold pressure data //
 	ms5837_t ms5837;
 
-	// initialize Python interpreter //
 	Py_Initialize();
 
-	// create pointers to python object //
 	PyObject *pName, *pModule, *pDict, *pFunc, *pArgs, *pValue;
 
-	// input name of python source file //
-	pName = PyString_FromString("MS5837_example"); 
+	pName = PyString_FromString("MS5837_example"); // input name of python source file
 	PyRun_SimpleString("import sys");
-	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/MainScript\")");
+	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/Mapper\")");
 	pModule = PyImport_Import(pName);
 	pDict = PyModule_GetDict(pModule);
 	pFunc = PyDict_GetItemString(pDict, "read_press");
@@ -95,22 +88,18 @@ ms5837_t ms5837_read(pressure_calib_t pressure_calib)
 	Py_DECREF(pModule);
 	Py_DECREF(pName);
 	Py_Finalize();
-
-	// return pressure value //
 	return ms5837;
 };
 
 /***************************************************************************
  * void start_Py_ms5837
  *
- * Starts the pressure-reading Python script
+ * Starts pressure reading python program
 ***************************************************************************/
+
 void start_Py_ms5837(void)
 {
-	// open MS5837_example.py //
-	FILE* fd = fopen("python MS5837_example.py", "r");
-
-	// read pressure values //
-	PyRun_SimpleFile(fd,"python MS5837_example.py");
+	FILE* fd = fopen("python pressure_read.py", "r");
+	PyRun_SimpleFile(fd,"python pressure_read.py");
 	return;
 }

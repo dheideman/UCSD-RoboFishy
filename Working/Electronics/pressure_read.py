@@ -1,5 +1,7 @@
-# Distributed with a free-will license.
-# Use it any way you want, profit or free, provided it fits in the licenses of its associated works.
+# pressure_read.py
+#
+#  Reads pressure from MS5837_30BA01 at about 1 Hz
+#
 # MS5837_30BA01
 # This code is designed to work with the MS5837_30BA01_I2CADC I2C Mini Module available from ControlEverything.com.
 # https://www.controleverything.com/content/Pressure?sku=MS5837-30BA01_I2CS#tabs-0-product_tabset-2
@@ -44,7 +46,7 @@ while True:
     C6 = data[0] * 256 + data[1]
 
     # MS5837_30BA01 address, 0x76(118)
-    #       0x40(64)    Pressure conversion(OSR = 256) command
+    # 0x40(64)    Pressure conversion(OSR = 256) command
     bus.write_byte(0x76, 0x40)
 
     time.sleep(0.5)
@@ -56,7 +58,7 @@ while True:
     D1 = value[0] * 65536 + value[1] * 256 + value[2]
 
     # MS5837_30BA01 address, 0x76(118)
-    #       0x50(64)    Temperature conversion(OSR = 256) command
+    # 0x50(64)    Temperature conversion(OSR = 256) command
     bus.write_byte(0x76, 0x50)
 
     time.sleep(0.5)
@@ -75,19 +77,16 @@ while True:
     OFF2 = 0
     SENS2 = 0
 
-   
-   
     OFF2 = OFF - OFF2
     SENS2 = SENS - SENS2
     pressure = ((((D1 * SENS2) / 2097152) - OFF2) / 8192) / 10.0
-   
 
     # Output data to screen
     #print "Pressure : %.2f mbar" %pressure
     #print "Temperature in Celsius : %.2f C" %cTemp
     #print "Temperature in Fahrenheit : %.2f F" %fTemp
 
-    fifo = open("ms5837_fifo.txt", "w")
+    fifo = open("pressure.fifo", "w")
     _string = "%f" %(pressure)
     fifo.write(_string)
     fifo.close()
