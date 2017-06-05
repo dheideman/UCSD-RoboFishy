@@ -2,7 +2,7 @@
  *	Main script for the 2017 RoboFishy Scripps AUV
 ******************************************************************************/
 
-#include "Libraries.h"
+#include "Mapper.h"
 // Multithreading
 #include <pthread.h>
 #include <sched.h>
@@ -67,9 +67,41 @@ void *depth_thread(void* arg);
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//////////////////////////////// Declare functions ////////////////////////////
+//////////////////////////////// Global Variables /////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+// holds the setpoint data structure with current setpoints
+setpoint_t setpoint;
+
+// holds the system state structure with current system statesystem_state_t sstate;
+system_state_t sstate;
+
+// holds the calibration values for the MS5837 pressure sensor
+pressure_calib_t pressure_calib;
+
+// holds the latest pressure value from the MS5837 pressure sensor
+ms5837_t ms5837;
+
+// create structure for storing IMU data
+bno055_t bno055;
+
+// holds the latest temperature value from the DS18B20 temperature sensor
+ds18b20_t ds18b20;
+
+// holds the constants and latest errors of the yaw pid controller
+pid_data_t yaw_pid;
+
+// holds the constants and latest errors of the depth pid controller
+pid_data_t depth_pid;
+
+// motor channels
+int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4}; 
+
+// Ignoring sstate
+float depth = 0;
+
+// Thread attributes for different priorities
+pthread_attr_t tattrlow, tattrmed, tattrhigh;
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// Main Function ///////////////////////////////
@@ -183,6 +215,9 @@ void *navigation(void* arg)
 	float output_port;		// port motor output
 	float output_starboard; // starboard motor output
 
+	//Initialize Motor Percent to be returned by yaw_controller
+	float motor_percent;
+
 	//Initialize old imu data
 	yaw_pid.oldyaw = 0;
 
@@ -203,7 +238,7 @@ void *navigation(void* arg)
 	depth_pid.kp = .01;
 	depth_pid.kd = 1;
 	depth_pid.ki = .1;
-	
+
 	// Hard set motor speed
 //	 pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
 	set_motors(PIN_BASE+motor_channels[0], -0.2);
@@ -220,27 +255,27 @@ void *navigation(void* arg)
 	//			 bno055.p, bno055.q, bno055.r,
 	//			 bno055.sys, bno055.gyro, bno055.accel,
 	//			 bno055.mag);
-	
+
 	// Sanity test: Check if yaw control works
 /*
 	//Call yaw controller function
 	yaw_controller();
-	
+
 	//set port motor
-	set_motors(0,port_percent);
+	set_motors(0,motor_percent);
 
 	//set starboard motor
-	set_motors(1, starboard_percent);
+	set_motors(1, motor_percent);
 
 		*/
-		
+
 		// sleep for 5 ms //
 		usleep(5000);
 	}
-	
+
 	set_motors(PIN_BASE+motor_channels[0], 0);
 	set_motors(PIN_BASE+motor_channels[0], 0);
-	
+
 	pthread_exit(NULL);
 }
 
