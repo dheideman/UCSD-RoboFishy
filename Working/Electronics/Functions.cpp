@@ -187,7 +187,7 @@ void start_Py_bno055(void)	//	start bno055_read.py code
 /***************************************************************************
  * bno055_t bno055_read
  *
- * Description
+ * Reads IMU values from bno055_fifo.txt
 ***************************************************************************/
 
 bno055_t bno055_read(void)	// read values from bno055 IMU
@@ -364,44 +364,64 @@ int yaw_controller()
 	return 0;
 }
 /***************************************************************************
- * int set_motors()
+ * void set_motors()
  *
  * Takes in a value from -1 to 1 (-100 to +100%) and sets the motor 
  * outputs accordingly
 ***************************************************************************/
-int set_motors(int motor_num, float speed)
+int set_motor(int motor_num, float percent_out)
 {
 	int motor_num;				// indicates which motor to write to
 								// port = 0, starboard = 1, vert = 2
+	float motor_base;			// motor base of 20%
 	float motor_output;			// feeds the necessary PWM to the motor
-	float per_run = 0.2;		// percentage of full PWM to run at
+	float per_base = 0.2;		// percentage of full PWM to run at
+	float per_run = 0.1;		
 	//float min_per_run = 0.1;	// minimum percentage of full PWM to run at
 	int port_range = 2618;		// port motor range
 	int starboard_range = 2187;	// starboard motor range
 
-	// speed = (-) ----> AUV pointed right (starboard) (range: 2718-4095)
-	// speed = (+) ----> AUV pointed left (port) (range: 12-2630)
+	// percent_out = (-) ----> AUV pointed right (starboard) (range: 2718-4095)
+	// percent_out = (+) ----> AUV pointed left (port) (range: 12-2630)
+
 
 	// Calculate motor output //
-	if( speed < 0 )		
+	if( percent_out > 0 )		
 	{
-		motor_output = 2630 - per_run*port_range;				// set motor output
+		// Set motor to 20% base output //
+		motor_base = 2630 - per_base*port_range;				
 
-		// saturate motor output at 20% //
-		if( motor_output < (2630-per_run*port_range) )			
+		// Saturate motor output at minimum 10% //
+		if( (2630 - percent_out*port_range ) < (motor_base - per_run*port_range) )
 		{
-			motor_output = (2630-per_run*port_range);
+			motor_output = motor_base + per_run*port_range;
+		}
+		else
+		{
+			motor_output = 2630 - percent_out*port_range;
 		}
 		pwmWrite(motor_num, motor_output);
 	}
-	if( speed > 0 )		
+	if( percent_out < 0 )		
 	{
-		motor_output = 2718 + per_run*starboard_range;			// set motor output
+		// Set motor to 20% base output //
+		motor_base = 2718 + per_base*starboard_range;			
 
-		// saturate motor output at 20% //
-		if( motor_output > 2718 + per_run*starboard_range )
+		// Saturate motor output at maximum 30% //
+		if( (2718 - percent_out*starboard_range) > (motor_base + per_run*starboard_range) )
 		{
-			motor_output = 2718 + per_run*starboard_range;
+			motor_output = motor_base + per_run*starboard_range;
 		}
+		else
+		{
+			motor_output = 2718 - percent_out*starboard_range;
+		}
+		pwmWrite(motor_num, motor_output);
 	}
 	else
+	{
+		motor_output = 2674;									
+		pwmWrite(motor_num, motor_output);						// turn motors off
+	}
+
+}
