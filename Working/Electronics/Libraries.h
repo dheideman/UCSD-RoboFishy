@@ -1,6 +1,6 @@
-#include <pca9685.h>
-#include <wiringPi.h>
-#include <wiringPiI2C.h>
+#include <pca9685.h>	 // PWM board library
+#include <wiringPi.h>	 // GPIO access library for the RasPi
+#include <wiringPiI2C.h> // I2c access library for the RasPi
 #include <stdio.h>
 #include <stdlib.h>
 #include <Python.h>
@@ -138,8 +138,8 @@ pid_data_t yaw_pid;
 // holds the constants and latest errors of the depth pid controller
 pid_data_t depth_pid;
 
-// holds the pin number of each motor
-int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3}; // motor channels
+// holds the pin number that corresponds to each motor
+int motor_channels[] = {CHANNEL_1, CHANNEL_2, CHANNEL_3}; 
 
 // Ignoring sstate
 float depth = 0;
@@ -174,7 +174,7 @@ void start_Py_bno055(void); // start Python background process
 bno055_t bno055_read(void); // read values from bno055
 
 // Functions for Reading DS18B20 Temperature Sensor
-void start_Py_ds18b20(void); // start Python background process
+void start_Py_ds18b20(void); 	// start Python background process
 ds18b20_t ds18b20_read(void);	// read values from ds18b20
 
 // Startup Functions
