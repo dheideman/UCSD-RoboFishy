@@ -9,292 +9,12 @@
  * FLANN: 
  * http://docs.opencv.org/2.4/modules/features2d/doc/common_interfaces_of_descriptor_matchers.html?highlight=flannbasedmatcher#flannbasedmatcher
  ******************************************************************************/
-#include <iostream>
-#include <opencv2/opencv.hpp>
-#include "../../Modules/TypeDefs.h"
 
-// Multithreading
-#include <pthread.h>
-#include <sched.h>
-#include <unistd.h>
-
-#define DEBUG
-
-#define OUTPUT_VIDEO_NAME "DemoVideo.avi"
-#define FRAME_WIDTH       640
-#define FRAME_HEIGHT      480
-#define MIN_MINDIST       10
-#define MAX_MATCHES       500
-#define PI                3.141592653589793
-
-#define MATCH_CIRCLE_R    5      // Match circle radius, px
+#include "FeatureTracker.h"
 
 using namespace cv;
 using namespace std;
 
-// Typedef of struct to store new/old images
-typedef struct odom_data_t
-{
-  cv::Mat               newimg;       // The newer of the two images stored
-  cv::Mat               oldimg;       // The older of the two images stored
-  
-  pthread_mutex_t       newimglock;   // Mutex lock for newimg
-  pthread_mutex_t       oldimglock;   // Mutex lock for oldimg
-  
-  std::vector<Point2f>  newpts;       // The matched points in the new image
-  std::vector<Point2f>  oldpts;       // The matched points in the new image
-  
-  cv::Mat               tf;           // Transformation matrix between images
-} odom_data_t;
-
-// Global odometry image struct
-odom_data_t odomdata;
-
-// Thread attributes for different priorities
-pthread_attr_t tattrlow, tattrmed, tattrhigh;
-
-// Sub Images
-sub_images_t subimages;
-
-// Global state variable
-sub_state_t substate;
-
-/*******************************************************************************
- * bool compareDMatch(const DMatch& a, const DMatch& b)
- *
- * Returns true if the distance in match a is smaller than match b.
- * Used for sorting matches smallest to largest
- ******************************************************************************/
-bool compareDMatch(const DMatch& a, const DMatch& b)
-{
-  return a.distance < b.distance;
-}
-
-/*******************************************************************************
- * int initializeOdomDataLock(odom_data_t *_odomdata)
- *
- * Initialize locks for odom_data_t variable
- ******************************************************************************/
-int initializeOdomDataLock(odom_data_t *_odomdata)
-{
-  if (pthread_mutex_init(&_odomdata->newimglock, NULL) != 0)
-  {
-    cout << "Unable to initialize newimglock" << endl;
-    return 0;
-  }
-  if (pthread_mutex_init(&_odomdata->oldimglock, NULL) != 0)
-  {
-    cout << "Unable to initialize oldimglock" << endl;
-    return 0;
-  }
-  return 1;
-}
-
-/*******************************************************************************
- * int initializeSubImagesLock(sub_images_t *_subimages)
- *
- * Initialize locks for sub_images_t variable
- ******************************************************************************/
-int initializeSubImagesLock(sub_images_t *_subimages)
-{
-  if (pthread_mutex_init(&_subimages->brightframelock, NULL) != 0)
-  {
-    cout << "Unable to initialize brightframelock" << endl;
-    return 0;
-  }
-  if (pthread_mutex_init(&_subimages->darkframelock, NULL) != 0)
-  {
-    cout << "Unable to initialize darkframelock" << endl;
-    return 0;
-  }
-  return 1;
-}
-
-/////////////
-// Threads //
-/////////////
-
-/*******************************************************************************
- * void *visualOdometry(void*)
- * 
- * Visual odometry thread: calculates motion based on camera feed
- ******************************************************************************/
-void *visualOdometry(void* arg)
-{
-  // Retrieve arguments
-//   if (arg != NULL)
-//   {
-//     // We were passed something, so...  pointers?
-//     int* obj = (int*)arg;
-//   }
-//   // Or maybe just use a global struct containing new, old images and pts?
-  
-  // Lock access to subimages.brightframe, odomdata.oldimg
-  pthread_mutex_lock(&subimages.brightframelock);
-  pthread_mutex_lock(&odomdata.oldimglock);
-  
-  // Save bright frame to "old image"
-  subimages.brightframe.copyTo(odomdata.oldimg);
-  
-  // Unlock access to subimages.brightframe, odomdata.oldimg
-  pthread_mutex_unlock(&odomdata.oldimglock);
-  pthread_mutex_unlock(&subimages.brightframelock);
-  
-  // Create detector (FAST)
-  Ptr<FeatureDetector> detector = FastFeatureDetector::create();
-  
-  // Create vectors of KeyPoints (features)
-  vector<KeyPoint> newkeypoints, oldkeypoints;
-  
-  // Detect key points of "old" image
-  detector->detect(odomdata.oldimg, oldkeypoints);
-  
-  /* Part 2 Setup: Extract */
-  // Create extractor (will characterize each feature)
-  Ptr<DescriptorExtractor> extractor = ORB::create();
-  
-  // Create 2D matrix for descriptors for each image
-  // Each row corresponds to a feature
-  // 32 columns describe each feature
-  Mat newdescriptors, olddescriptors;
-  
-  // Characterize key points of "old" image
-  extractor->compute(odomdata.oldimg, oldkeypoints, olddescriptors);
-  
-  // Check if there are any descriptors available from the matches  
-  if ( olddescriptors.empty() )
-  {
-    cerr << "Error: olddescriptors is empty" << endl;
-//     return -1;
-  }
-  
-  // Make sure the descriptors are in the right type for the FLANN matcher
-  if(olddescriptors.type()!=CV_32F)
-    olddescriptors.convertTo(olddescriptors, CV_32F);
-  
-  /* Part 3 Setup: Match */
-  // Create FLANN matcher
-  Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create("FlannBased");
-  
-  // Create vector of matches, "good" matches
-  vector< DMatch > matches, goodmatches;
-  
-  /* Part 4 Setup: Calculate dx, dy, dtheta */
-  // Points to transform to calculate motion
-  // [0] = center point
-  // [1] = top-center point
-  vector<Point2f> pretfpts(2);    // Pre TF Pts
-  vector<Point2f> posttfpts(2);   // Post TF Pts
-  vector<Point2f> deltatfpts(2);  // Delta TF Pts
-  
-  // Initialize transformpoints
-  pretfpts[0] = cvPoint(FRAME_WIDTH/2, FRAME_HEIGHT/2); // center
-  pretfpts[1] = cvPoint(FRAME_WIDTH/2, 0); // center-top
-  
-  while( substate.mode != RUNNING )
-  {
-    // Lock access to subimages.brightframe, odomdata.newimg
-    pthread_mutex_lock(&subimages.brightframelock);
-    pthread_mutex_lock(&odomdata.newimglock);
-  
-    // Save bright frame to "new image"
-    subimages.brightframe.copyTo(odomdata.newimg);
-    
-    // Unlock access to subimages.brightframe, odomdata.newimg
-    pthread_mutex_unlock(&odomdata.newimglock);
-    pthread_mutex_unlock(&subimages.brightframelock);
-    
-    // Part 1: Detect features (KeyPoints)
-    detector->detect(odomdata.newimg, newkeypoints);
-    
-    // Part 2: Characterize each feature, store characteristics in Mats
-    extractor->compute(odomdata.newimg, newkeypoints, newdescriptors);
-    
-    // Make sure we have some descriptors, otherwise return error.
-    if ( newdescriptors.empty() )
-    {
-      cerr << "Error: newdescriptors is empty" << endl;
-//       return -1;
-    }
-    
-    // Convert descriptors to CV_32F type for FLANN
-    if(newdescriptors.type()!=CV_32F)
-      newdescriptors.convertTo(newdescriptors, CV_32F);
-      
-    // Part 3: Calculate matches between two images
-    matcher->match(newdescriptors, olddescriptors, matches);
-
-    /* Draw only "good" matches */
-    // Sort matches by distance: shortest to longest
-    sort(matches.begin(), matches.end(), compareDMatch);
-    
-    int nmatches = matches.size();
-    int ngoodmatches = (nmatches/2 > MAX_MATCHES ? MAX_MATCHES : nmatches/2);
-    
-    goodmatches.clear();
-    for(int i=0; i<ngoodmatches; i++)
-    {
-      goodmatches.push_back(matches[i]);
-    }
-    
-    if ( goodmatches.size() == 0 )
-    {
-      cerr << "Error: no good matches detected" << endl;
-//       return -1;
-    }
-    
-    // Part 4: Store all the points corresponding to the good matches
-    // Clear vectors first
-    odomdata.newpts.clear();
-    odomdata.oldpts.clear();
-    
-    // Now store the good matches
-    for (int i = 0; i < goodmatches.size(); i++)
-    {
-      // Get the keypoints from the good matches
-      odomdata.newpts.push_back(newkeypoints[goodmatches[i].queryIdx].pt);
-      odomdata.oldpts.push_back(oldkeypoints[goodmatches[i].trainIdx].pt);
-    }
-     
-    // Find perspective transformation between two planes.
-    odomdata.tf = findHomography(odomdata.newpts, odomdata.oldpts, CV_RANSAC);
-    
-    // Transform reference points to determine motion
-    perspectiveTransform(pretfpts, posttfpts, odomdata.tf);
-    
-    // Calculate pure dx, dy, dtheta of points (transformed - initial position)
-    deltatfpts[0] = posttfpts[0] - pretfpts[0]; // center
-    deltatfpts[1] = posttfpts[1] - posttfpts[0]; // top-center
-    
-    // Calculate dtheta using top-center motion
-    float dtheta = atan2(-1*deltatfpts[1].x, -1*deltatfpts[1].y);
-    
-    // Calculate new pose    
-    float dx = deltatfpts[0].x;
-    float dy = deltatfpts[0].y;
-    float st = sin(substate.pose.z);    // Using theta as determined by camera 
-    float ct = cos(substate.pose.z);
-    substate.pose.x += dx*ct + dy*st;
-    substate.pose.y -= -dx*st + dy*ct;  // image y is reversed from sub y
-    substate.pose.z += dtheta;          // theta stored as 'z'
-    
-    // Write tf, pose to screen
-    #ifdef DEBUG
-    cout << "tf = "<< endl << " "  << odomdata.tf << endl << endl;
-    cout << "pose = "<< endl << " " << substate.pose << endl << endl;
-    #endif
-    
-    // Swap newframe and oldframe.
-    cv::swap(odomdata.newimg,odomdata.oldimg);
-    
-    // Save feature information to "old" values
-    newkeypoints.swap(oldkeypoints);
-    cv::swap(newdescriptors,olddescriptors);
-    
-  } // end while(...)
-  
-  return NULL;
-} // end visualOdometry()
 
 //////////
 // Main //
@@ -340,34 +60,10 @@ int main(int argc, char** argv)
   // Initialize Mutex locks
   if(!initializeOdomDataLock(&odomdata)) return -1;
   if(!initializeSubImagesLock(&subimages)) return -1;
-    
-  // Initialize scheduling parameters, priorities
-  sched_param param;
-  int policy, maxpriority;
   
-  // Initialize priorities
-  pthread_attr_init(&tattrlow);
-  pthread_attr_init(&tattrmed);
-  pthread_attr_init(&tattrhigh);
   
-  // Get max priority
-  pthread_attr_getschedpolicy(&tattrlow, &policy);
-  maxpriority = sched_get_priority_max(policy);
-  
-  // Extract scheduling parameter
-  pthread_attr_getschedparam (&tattrlow, &param);
-  
-  // Set up low priority
-  param.sched_priority = maxpriority/4;
-  pthread_attr_setschedparam (&tattrlow, &param);
-  
-  // Set up medium priority
-  param.sched_priority = maxpriority/2;
-  pthread_attr_setschedparam (&tattrmed, &param);
-  
-  // Set up high priority
-  param.sched_priority = maxpriority-1;
-  pthread_attr_setschedparam (&tattrhigh, &param);
+  // Initialize priority thread attributes
+  initializeTAttr();
   
   // Thread handles
   pthread_t odometryThread;
@@ -375,13 +71,11 @@ int main(int argc, char** argv)
   // Create threads using modified attributes
   pthread_create (&odometryThread, &tattrhigh, visualOdometry, NULL);
   
-  
-
   // Destroy the thread attributes
-  pthread_attr_destroy(&tattrlow);
-  pthread_attr_destroy(&tattrmed);
-  pthread_attr_destroy(&tattrhigh);
+  destroyTAttr()
   
+  
+  // Wait for stuff to initialize
   sleep(1);
   
   // MAIN LOOP!

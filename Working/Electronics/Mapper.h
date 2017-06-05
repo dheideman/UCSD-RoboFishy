@@ -6,6 +6,8 @@
 #include <Python.h>
 #include <time.h>
 #include <signal.h>		// capture control-c
+#include "../../Modules/TypeDefs.h"
+
 
 #define PCA9685_ADDR 0x40
 #define PIN_BASE 300
@@ -74,8 +76,8 @@ typedef struct setpoint_t
 {
 	float roll;				// roll angle (rad)
 	float roll_rate;	// roll rate (rad/s)
-	float pitch;			// pitch angle (rad)
-	float pitch_rate; // pitch rate (rad/s)
+	//float pitch;			// pitch angle (rad)
+	//float pitch_rate; // pitch rate (rad/s)
 	float yaw;				// yaw angle in (rad)
 	float yaw_rate;		// yaw rate (rad/s)
 	float depth;			// z component in fixed coordinate system

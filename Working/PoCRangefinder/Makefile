@@ -10,7 +10,7 @@ LFLAGS	:= -lwiringPi -lpython2.7 -I/usr/include/python2.7 -lwiringPiPca9685 -lpt
 
 # Module Selection (add required modules to MODULES)
 MOD_PATH := ../../Modules
-MODULES := V4L2Control RangeFinder Camera
+MODULES := Core V4L2Control RangeFinder Camera
 
 # Local Source Variables
 SOURCES	 := $(wildcard *.cpp)

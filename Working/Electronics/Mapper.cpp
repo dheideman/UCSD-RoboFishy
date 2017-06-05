@@ -1,4 +1,4 @@
-/******************************************************************************
+substate.mode/******************************************************************************
  *	Main script for the 2017 RoboFishy Scripps AUV
 ******************************************************************************/
 
@@ -20,11 +20,11 @@
  * Controller Gains
 ******************************************************************************/
 
-// Pitch Controller //
+/*/ Pitch Controller // Do we need these?
 #define KP_PITCH 0
 #define KI_PITCH 0
 #define KD_PITCH 0
-
+*/
 // Yaw Controller //
 #define KP_YAW .01
 #define KI_YAW 0
@@ -36,7 +36,7 @@
 #define KD_DEPTH 0
 
 // Saturation Constants //
-#define PITCH_SAT 10	// upper limit of pitch controller
+//#define PITCH_SAT 10	// upper limit of pitch controller
 #define YAW_SAT 1		// upper limit of yaw controller
 #define INT_SAT 10		// upper limit of integral windup
 #define DINT_SAT 10		// upper limit of depth integral windup
@@ -70,6 +70,9 @@ void *depth_thread(void* arg);
 ///////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// Global Variables /////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+// holds the overall state type
+sub_state_t substate;
 
 // holds the setpoint data structure with current setpoints
 setpoint_t setpoint;
@@ -124,7 +127,7 @@ int main()
 		return -1;
 	}
 	printf("\nAll components are initializated\n");
-	set_state(UNINITIALIZED);
+	substate.mode = INITIALIZING;
 
 
 	// Initialize threads
@@ -172,10 +175,11 @@ int main()
 	time_t timer = time(NULL);
 
 	// Run main while loop, wait until it's time to stop
-	while(get_state()!=EXITING)
+	while(substate.mode != STOPPING)
 	{
 		// Check if we've passed the stop time
-		if(difftime(timer,time(NULL)) > STOP_TIME) set_state(EXITING);
+		if(difftime(timer,time(NULL)) > STOP_TIME)
+			substate.mode = STOPPING;
 
 		// Sleep a little
 		usleep(100000);
@@ -195,7 +199,7 @@ void *depth_thread(void* arg){
 	// Initialize pressure sensor
 	pressure_calib = init_ms5837();
 
-	while(get_state()!=EXITING){
+	while(substate.mode!=STOPPING){
 		// Read pressure sensor by passing calibration structure
 		ms5837 = ms5837_read(pressure_calib);
 		// calculate depth (no idea what's up with the function)
@@ -246,7 +250,7 @@ void *navigation(void* arg)
 	set_motor(0, -0.2);
 	set_motor(1, 0.2);
 
-	while(get_state()!=EXITING)
+	while(substate.mode!=STOPPING)
 	{
 	// read IMU values
 	bno055 = bno055_read();
@@ -290,7 +294,7 @@ void *navigation(void* arg)
 /*PI_THREAD (safety_thread)
 {
 	// read depth values from MS5837 pressure sensor //
-	while(get_state()!=EXITING)
+	while(substate.mode!=STOPPING)
 	{
 		// get pressure value //
 		calib = init_ms5837();
@@ -341,7 +345,7 @@ void *navigation(void* arg)
 /*
 PI_THREAD (logging_thread)
 {
-	while(get_state()!=EXITING){
+	while(substate.mode!=STOPPING){
 		FILE *fd = fopen("log.txt", "a");
 		char buffer[100] = {0};
 		// add logging values to the next line

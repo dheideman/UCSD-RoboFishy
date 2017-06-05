@@ -11,6 +11,20 @@
 
 using namespace cv;
 using namespace std;
+
+//////////////////////
+// Global Variables //
+//////////////////////
+
+// Image Capture Object
+cv::VideoCapture cap;
+
+// V4L2Control Object
+V4L2Control picamctrl;
+
+// Image Storage
+sub_images_t subimages;
+
  /*******************************************************************************
  * void *takePictures(void*)
  * 
@@ -94,4 +108,25 @@ void *takePictures(void*)
   
   // End thread
   pthread_exit(NULL);
+}
+
+
+/*******************************************************************************
+ * int initializeSubImagesLock(sub_images_t *_subimages)
+ *
+ * Initialize locks for sub_images_t variable
+ ******************************************************************************/
+int initializeSubImagesLock(sub_images_t *_subimages)
+{
+  if (pthread_mutex_init(&_subimages->brightframelock, NULL) != 0)
+  {
+    cout << "Unable to initialize brightframelock" << endl;
+    return 0;
+  }
+  if (pthread_mutex_init(&_subimages->darkframelock, NULL) != 0)
+  {
+    cout << "Unable to initialize darkframelock" << endl;
+    return 0;
+  }
+  return 1;
 }
