@@ -1,5 +1,6 @@
 # Simple Adafruit BNO055 sensor reading example.  Will print the orientation
 # and calibration data every second.
+
 import logging
 import sys
 import time
