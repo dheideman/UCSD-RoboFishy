@@ -1,10 +1,9 @@
 /******************************************************************************
-*PWM_Driver_Functions.cpp
+* PWM_Driver_Functions.cpp
 *
-*File to run Initialization and reading files on the BNO055 IMU
+* Runs initialization and reads files on the PCA9685 PWM board
 ******************************************************************************/
 #include "Mapper.h"
-
 
 /******************************************************************************
  * int initialize_motors(int channels[3], float freq)
