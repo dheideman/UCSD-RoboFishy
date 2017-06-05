@@ -329,8 +329,6 @@ int cleanup_auv()
 ******************************************************************************/
 int yaw_controller()
 {
-// read IMU values into sstate
-	bno055 = bno055_read();
 
 	// control output //
 	if(bno055.yaw<180) // AUV is pointed right
