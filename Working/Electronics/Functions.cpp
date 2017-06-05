@@ -327,7 +327,7 @@ int cleanup_auv()
 *
 * Takes in readings from IMU and calculates a percentage (-1 to 1)
 ******************************************************************************/
-int yaw_controller()
+float yaw_controller()
 {
 	// control output //
 	if(bno055.yaw<180) // AUV is pointed right
@@ -353,14 +353,7 @@ int yaw_controller()
 	//set current yaw to be the old yaw
 	yaw_pid.oldyaw=bno055.yaw;
 
-	//Set starboard positive and port negativ
-	starboard_percent = motor_percent;
-	port_percent = -motor_percent;
-
-	//set current yaw to be the old yaw
-	yaw_pid.oldyaw=bno055.yaw;
-
-	return 0;
+	return motor_percent;
 }
 /***************************************************************************
  * int set_motors()
