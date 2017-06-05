@@ -34,7 +34,6 @@ int set_motor(int motor_num, float speed)
 		{
 			motor_output = (2630-per_run*port_range);
 		}
-		pwmWrite(motor_num, motor_output);
 	}
 	if( speed > 0 )
 	{
@@ -47,11 +46,12 @@ int set_motor(int motor_num, float speed)
 		}
 	}
 	else
-	{
-		motor_output = 2674;	
-		
-		pwmWrite(motor_num, motor_output);		// Set motor to 20% base output //
-	}
+		motor_output = 2674;	// If all else fails, turn off the motor!
 	
+    // Set the motor speeds
+	pwmWrite(motor_num, motor_output);
+	
+    printf("Set motor %d to %d\n", motor_num, motor_output);
+
 	return 1;
 }

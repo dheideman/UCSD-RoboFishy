@@ -258,11 +258,11 @@ void *navigation(void* arg)
 	bno055 = bno055_read();
 
 	// Write captured values to screen
-	//printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
-	//			 bno055.yaw, bno055.pitch, bno055.roll,
-	//			 bno055.p, bno055.q, bno055.r,
-	//			 bno055.sys, bno055.gyro, bno055.accel,
-	//			 bno055.mag);
+	printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
+				 bno055.yaw, bno055.pitch, bno055.roll,
+				 bno055.p, bno055.q, bno055.r,
+				 bno055.sys, bno055.gyro, bno055.accel,
+				 bno055.mag);
 
 	// Sanity test: Check if yaw control works
 /*
