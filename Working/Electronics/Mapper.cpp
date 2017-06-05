@@ -95,7 +95,7 @@ pid_data_t yaw_pid;
 pid_data_t depth_pid;
 
 // motor channels
-int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4}; 
+int motor_channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3, CHANNEL_4};
 
 // Ignoring sstate
 float depth = 0;

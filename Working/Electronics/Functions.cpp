@@ -60,11 +60,6 @@ int saturate_number(float* val, float min, float max)
 	return 0;
 }
 
-
-///////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////Setup and Shutdown//////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
-
 /***************************************************************************
  * int scripps_auv_init(void)
  *
@@ -126,17 +121,28 @@ void ctrl_c(int signo)
 ***************************************************************************/
 int cleanup_auv()
 {
+	// Set state to exiting
 	set_state(EXITING);
-	usleep(500000); // let final threads clean up
+
+	// let 'em know
+	printf("\nExiting Cleanly\n");
+
+	// let final threads clean up
+	usleep(500000);
+
+	// delete fifo file
+	remove("bno055_fifo.txt")
+	printf("\nbno055_fifo.txt deleted successfully\n");
+
+	// Set all motors to zero
 	int channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3};
 	int i;
 	for( i = 0; (i < 3); i = i+1 )
 	{
-		//pwmWrite (PIN_BASE+channels[i], calcTicks(0, HERTZ));
 		pwmWrite (PIN_BASE+channels[i], 2674);		// set motor outputs to 0
+		// sleep...just cuz
 		usleep(10000);
 	}
-	printf("\nExiting Cleanly\n");
 	return 0;
 }
 
@@ -145,7 +151,7 @@ int cleanup_auv()
 *
 * Takes in readings from IMU and calculates a percentage (-1 to 1)
 ******************************************************************************/
-float yaw_controller()
+int yaw_controller()
 {
 	// control output //
 	if(bno055.yaw<180) // AUV is pointed right
@@ -171,7 +177,14 @@ float yaw_controller()
 	//set current yaw to be the old yaw
 	yaw_pid.oldyaw=bno055.yaw;
 
-	return motor_percent;
+	//Set starboard positive and port negativ
+	starboard_percent = motor_percent;
+	port_percent = -motor_percent;
+
+	//set current yaw to be the old yaw
+	yaw_pid.oldyaw=bno055.yaw;
+
+	return 0;
 }
 /***************************************************************************
  * int set_motors()
