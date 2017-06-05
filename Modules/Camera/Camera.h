@@ -26,9 +26,6 @@
 #include <ostream>
 #include <string>
 
-// Global typedefs
-#include "../../Modules/core/core.h"
-
 // Multithreading
 #include <pthread.h>
 #include <sched.h>
@@ -37,6 +34,9 @@
 // V4L2
 #include <linux/videodev2.h>
 #include "../../Modules/V4L2Control/V4L2Control.h"
+
+// Core
+#include "../../Modules/Core/Core.h"
 
 
 ///////////////
