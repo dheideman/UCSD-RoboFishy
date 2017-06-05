@@ -10,7 +10,6 @@
 *
 * Takes in readings from IMU and calculates a percentage (-1 to 1)
 ******************************************************************************/
-/*
 int yaw_controller()
 {
 	// control output //
@@ -46,4 +45,3 @@ int yaw_controller()
 
 	return 0;
 }
-*/

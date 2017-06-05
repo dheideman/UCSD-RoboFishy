@@ -1,7 +1,7 @@
 /******************************************************************************
 * MS5837.cpp
 *
-*File to run Initialization and reading files on the MS5837 Pressure Sensor
+* File to run Initialization and reading files on the MS5837 Pressure Sensor
 ******************************************************************************/
 #include "Mapper.h"
 
@@ -9,7 +9,6 @@
  * pressure_calib_t init_ms5837
  *
  * initializes pressure sensor
- *
  * Returns structure of 6 coefficients
 ***************************************************************************/
 

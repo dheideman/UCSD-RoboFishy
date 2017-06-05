@@ -22,7 +22,7 @@ int cleanup_auv()
 	usleep(500000);
 
 	// delete fifo file
-	remove("bno055_fifo.txt");
+	remove("bno055_fifo.txt")
 	printf("\nbno055_fifo.txt deleted successfully\n");
 
 	// Set all motors to zero
