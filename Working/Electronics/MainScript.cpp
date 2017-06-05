@@ -36,7 +36,7 @@
 
 // Saturation Constants //
 #define PITCH_SAT 10	// upper limit of pitch controller
-#define YAW_SAT .1			// upper limit of yaw controller
+#define YAW_SAT 1			// upper limit of yaw controller
 #define INT_SAT 10		// upper limit of integral windup
 #define DINT_SAT 10		// upper limit of depth integral windup
 
