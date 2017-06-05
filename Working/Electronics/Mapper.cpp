@@ -168,6 +168,9 @@ int main()
 	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 
+//	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
+
+
 	// Destroy the thread attributes
 	pthread_attr_destroy(&tattrlow);
 	pthread_attr_destroy(&tattrmed);
@@ -255,8 +258,8 @@ void *navigation(void* arg)
 
 	// Hard set motor speed
 //	 pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
-	set_motors(PIN_BASE+motor_channels[0], -0.2);
-	set_motors(PIN_BASE+motor_channels[0], 0.2);
+	set_motor(0, -0.2);
+	set_motor(1, 0.2);
 
 	while(substate.mode!=STOPPING)
 	{
@@ -264,11 +267,13 @@ void *navigation(void* arg)
 	bno055 = bno055_read();
 
 	// Write captured values to screen
-	printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
+	/*
+    printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
 				 bno055.yaw, bno055.pitch, bno055.roll,
 				 bno055.p, bno055.q, bno055.r,
 				 bno055.sys, bno055.gyro, bno055.accel,
 				 bno055.mag);
+    */
 
 	// Sanity test: Check if yaw control works
 /*
@@ -287,8 +292,8 @@ void *navigation(void* arg)
 		usleep(5000);
 	}
 
-	set_motors(PIN_BASE+motor_channels[0], 0);
-	set_motors(PIN_BASE+motor_channels[0], 0);
+	set_motor(0, 0);
+	set_motor(1, 0);
 
 	pthread_exit(NULL);
 }
@@ -392,7 +397,7 @@ void *safety_thread(void* arg)
 				Serial.println("We're dry.");
 			}
 		}
-
+	
 		pthread_exit(NULL);
 	}
 }
