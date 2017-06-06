@@ -48,7 +48,7 @@ int initialize_motors(int channels[3], float freq)
  * Takes in a value from -1 to 1 (-100 to +100%) and sets the motor
  * outputs accordingly
 ******************************************************************************/
-int set_motor(int motor_num, float percent)
+int set_motor(int motornum, float percent)
 {
 /*
 	motor_num += PIN_BASE;		// indicates which motor to write to
@@ -68,7 +68,7 @@ int set_motor(int motor_num, float percent)
   int npwmvalues   = 4096;
   
   // Define characteristics of PWM pulse, microseconds
-	int reverselimit = 1100;
+// int reverselimit = 1100;
 	int forwardlimit = 1900;
 	int zerovalue    = 1500;
 	int pwmperiod    = 1000000/HERTZ;
