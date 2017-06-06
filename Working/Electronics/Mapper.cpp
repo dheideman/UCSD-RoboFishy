@@ -260,8 +260,9 @@ void *navigation(void* arg)
 
 	// hard set motor speed //
 	// pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
-	set_motor(CHANNEL_1, -0.2);
-	set_motor(CHANNEL_2, 0.2);
+	set_motor(0, -0.2);  // right
+	set_motor(1, 0.2); // left
+    set_motor(2, 0.0);
 
 	while(substate.mode!=STOPPED)
 	{
@@ -301,8 +302,9 @@ void *navigation(void* arg)
 		usleep(5000);
 	}
 
-	set_motor(CHANNEL_1, 0);
-	set_motor(CHANNEL_2, 0);
+	set_motor(0, 0);
+	set_motor(1, 0);
+    set_motor(2, 0);
 
 	pthread_exit(NULL);
 }
