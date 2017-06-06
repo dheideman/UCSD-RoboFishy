@@ -75,7 +75,7 @@ int set_motor(int motornum, float percent)
 	
 	// Calculate scaling factors for mapping percent to motor output
 	float scalefactor = npwmvalues/pwmperiod;
-	int   halfrange   = forwardlimit - zerovalue;
+	float halfrange   = forwardlimit - zerovalue;
 	
 	// Saturation limits
   if( percent >  1.0) percent =  1.0;
