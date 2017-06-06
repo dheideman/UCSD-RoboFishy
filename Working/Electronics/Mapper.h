@@ -21,6 +21,7 @@
 #define CHANNEL_1 0		// port motor
 #define CHANNEL_2 1		// starboard motor
 #define CHANNEL_3 2		// vertical motor
+
 #define MOTOR_0 2674    // motor output is 0
 
 // Core Module
@@ -28,7 +29,6 @@
 
 
 /***************************************************************************
- *
  * Create Structs
  *
 ***************************************************************************/
@@ -131,7 +131,7 @@ extern pid_data_t yaw_pid;
 extern pid_data_t depth_pid;
 
 // motor channels
-extern int motor_channels[]; 
+extern int motor_channels[];
 
 // Ignoring sstate
 extern float depth;
