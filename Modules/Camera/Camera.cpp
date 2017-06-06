@@ -79,8 +79,10 @@ void *takePictures(void*)
     // Set exposure now (rather than later)
     picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, DARK_EXPOSURE );
     
-    // Turn laser on
-    digitalWrite(LASERPIN, HIGH);
+    // Turn laser on if it
+    if(substate.laserarmed = ARMED){
+      digitalWrite(LASERPIN, HIGH);
+    }
     
     // Retrieve encodes image from grab buffer to 'brightframe' variable
     cap.retrieve( subimages.brightframe );
@@ -90,7 +92,7 @@ void *takePictures(void*)
     // 'Grab' dark frame from webcam's image buffer
     cap.grab();
     
-    // Turn laser off
+    // Turn laser off                               Check the timing on this...
     digitalWrite(LASERPIN, LOW);
     
     // Set exposure now (rather than later)

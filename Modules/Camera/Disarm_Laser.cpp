@@ -1,8 +1,8 @@
 /************************ *****************************************************
- *Disarm_Laser.cpp
+ * Arm_Laser.cpp
  *
  * Module: Camera/Mapper
- * disarm the Laser for safe operation when the sub is not oriented vertically
+ * Arm the Laser for safe operation when the sub is not oriented vertically
  ******************************************************************************/
 
 #include "../../Electronics/Mapper.h"
@@ -33,16 +33,11 @@ void armlaser(void*)
     if( bno055.pitch > PITCH_SATURATION || bno055.roll > ROLL_SATURATION ){
     	// Set the State to CONFUSED not sure what to do with this yet..
     	substate.mode = CONFUSED;
-      // Turn off the laser if it is on
-      digitalWrite(LASERPIN, HIGH);
     	// Disarm the laser
     	substate.laserarmed = DISARMED;
     }
-    else{
-      substate.laserarmed = ARMED;
-    }
 
-    usleep(200000);
+    usleep(2500);
   }
   pthread_exit(NULL);
 }
