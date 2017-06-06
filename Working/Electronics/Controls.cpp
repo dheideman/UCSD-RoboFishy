@@ -12,7 +12,7 @@
 * +100%) that the port and starboard thrusters should run at
 ******************************************************************************/
 
-float yaw_controller(bno055 yaw_pid)
+float yaw_controller(bno055_t bno055 pid_data_t yaw_pid)
 {
 	// control output //
 	if( bno055.yaw < 180 ) // AUV is pointed right
