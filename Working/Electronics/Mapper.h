@@ -18,11 +18,10 @@
 #define MAX_PWM 4096
 #define HERTZ 400
 #define PCA9685_ADDR 0x40
-#define CHANNEL_1 0		// roll
-#define CHANNEL_2 1		// pitch
-#define CHANNEL_3 2		// yaw
-#define CHANNEL_4 3		// speed
-#define CHANNEL_5 4		// depth
+#define CHANNEL_1 0		// port motor
+#define CHANNEL_2 1		// starboard motor
+#define CHANNEL_3 2		// vertical motor
+
 #define MOTOR_0 2674    // motor output is 0
 
 // Core Module
@@ -30,7 +29,6 @@
 
 
 /***************************************************************************
- *
  * Create Structs
  *
 ***************************************************************************/
@@ -133,7 +131,7 @@ extern pid_data_t yaw_pid;
 extern pid_data_t depth_pid;
 
 // motor channels
-extern int motor_channels[]; 
+extern int motor_channels[];
 
 // Ignoring sstate
 extern float depth;

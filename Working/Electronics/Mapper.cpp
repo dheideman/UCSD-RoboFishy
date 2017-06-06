@@ -21,7 +21,7 @@
 ******************************************************************************/
 
 // Yaw Controller //
-#define KP_YAW .01
+#define KP_YAW 0.01
 #define KI_YAW 0
 #define KD_YAW 1
 
@@ -48,7 +48,13 @@
 #define GRAVITY 9.81
 
 // Depth Start Value //
-#define DEPTH_START -50 // starting depth (mm)
+#define DEPTH_START 50 // starting depth (mm)
+
+// Depth Threshold Value //
+#define DEPTH_STOP 10000	// threshold depth (mm)
+
+// Temperature Threshold Value //
+#define TEMP_STOP 50	// deg C
 
 // Stop Timer //
 #define STOP_TIME 4		// seconds
@@ -65,9 +71,9 @@ void *depth_thread(void* arg);
 void *safety_thread(void* arg);
 
 
-///////////////////////////////////////////////////////////////////////////////
-//////////////////////////////// Global Variables /////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+/******************************************************************************
+ * Global Variables
+******************************************************************************/
 
 // holds the setpoint data structure with current setpoints
 setpoint_t setpoint;
@@ -97,9 +103,9 @@ pid_data_t depth_pid;
 int motor_channels[] = {CHANNEL_1, CHANNEL_2, CHANNEL_3};
 
 
-
 // Ignoring sstate
 float depth = 0;
+
 
 /******************************************************************************
 * Main Function
@@ -201,8 +207,8 @@ void *depth_thread(void* arg)
 	{
 		// read pressure sensor by passing calibration structure //
 		ms5837 = ms5837_read(pressure_calib);
-		// calculate depth (no idea what's up with the function) //
-		depth = (ms5837.pressure-1013)*10.197-88.8;
+		// calculate depth (no idea what the magic numbers are)
+		depth = (ms5837.pressure-1013)*10.197-88.8; // units?
 
 		usleep(10000);
 	}
@@ -211,7 +217,7 @@ void *depth_thread(void* arg)
 }
 
 /******************************************************************************
- * Navigation Thread 
+ * Navigation Thread
  *
  * For yaw control
  *****************************************************************************/
@@ -219,12 +225,12 @@ void *depth_thread(void* arg)
 void *navigation(void* arg)
 {
 	initialize_motors(motor_channels, HERTZ);
-	
-	float output_port;		// port motor output
-	float output_starboard; // starboard motor output
+
+	//float output_port;		// port motor output
+	//float output_starboard; // starboard motor output
 
 	// initialize Motor Percent to be returned by yaw_controller //
-	float motor_percent;
+	//float motor_percent;
 
 	// initialize old imu data //
 	yaw_pid.oldyaw = 0;
@@ -235,7 +241,7 @@ void *navigation(void* arg)
 	// initialize error values to be used in yaw_controller //
 	yaw_pid.err = 0;
 	yaw_pid.i_err = 0;
-	
+
 
 	// yaw_controller constant initialization ///
 	yaw_pid.kp = 0.01;
@@ -303,9 +309,9 @@ void *navigation(void* arg)
 
 
 /******************************************************************************
- * Safety Thread 
- * 
- * Shuts down AUV if vehicle goes belows 10m, temperature gets too high, or 
+ * Safety Thread
+ *
+ * Shuts down AUV if vehicle goes belows 10m, temperature gets too high, or
  * water intrusion is detected
  *****************************************************************************/
 void *safety_thread(void* arg)
@@ -341,11 +347,11 @@ void *safety_thread(void* arg)
 		// filtered depth value //
 		sstate.fdepth[0] = A1*(sstate.depth[0]+sstate.depth[1])+A2*sstate.fdepth[1];
 		printf("Current depth is %f\n m", sstate.fdepth[0]/1000);
-		
-		//if(sstate.fdepth[0]>DEPTH_START)
-		if( sstate.depth[0] < DEPTH_START )
+
+		//if( sstate.fdepth[0]< DEPTH_STOP )
+		if( sstate.depth[0] < DEPTH_STOP )
 		{
-			substate.mode = RUNNING;			
+			substate.mode = RUNNING;
 		}
 		else
 		{
@@ -356,10 +362,10 @@ void *safety_thread(void* arg)
 		// set current depth values as old values //
 		sstate.depth[1] = sstate.depth[0];
 		sstate.fdepth[1] = sstate.fdepth[0];
-	
+
 		// sleep for 50 ms //
 		usleep(50000);
-	
+
 		/******************************************************************************
 		 * Temperature Protection
 		 *
@@ -373,11 +379,11 @@ void *safety_thread(void* arg)
 		printf("Temperature: %f", ds18b20.temperature);
 
 		// turn motors off if housing temperature gets too high //
-		if( ds18b20.temperature > 50 )
+		if( ds18b20.temperature > TEMP_STOP )
 		{
 			for( i=0; i<3; i++ )
 			{
-				pwmWrite(PIN_BASE+i, MOTOR_0); 
+				pwmWrite(PIN_BASE+i, MOTOR_0);
 			}
 		}
 
@@ -403,7 +409,7 @@ void *safety_thread(void* arg)
 			// tell 'em we're dry //
 			printf("We're dry.\n");
 		}
-	
+
 		pthread_exit(NULL);
 	}
 
@@ -412,8 +418,8 @@ void *safety_thread(void* arg)
 
 
 /******************************************************************************
- * Logging Thread 
- * 
+ * Logging Thread
+ *
  * Logs the sensor output data into a file
  *****************************************************************************/
 /*

@@ -11,13 +11,17 @@
 * Takes in readings from the IMU and returns a value between -1 and 1 (-100% - 
 * +100%) that the port and starboard thrusters should run at
 ******************************************************************************/
-/*
-float yaw_controller(bno055, yaw_pid)
+
+float yaw_controller(bno055_t bno055, pid_data_t yaw_pid)
 {
+	float motor_percent;
+	float DT = .005;
+	float YAW_SAT = .2;
+
 	// control output //
 	if( bno055.yaw < 180 ) // AUV is pointed right
 	{
-		// u[2] is negative
+		// motor_percent is negative
 
 		motor_percent = yaw_pid.kp*(yaw_pid.err) 
 			+ yaw_pid.kd*(bno055.r)+ yaw_pid.ki*yaw_pid.i_err; // yaw controller
@@ -25,13 +29,12 @@ float yaw_controller(bno055, yaw_pid)
 	}
 	else		// AUV is pointed left
 	{
-		// u[2] is positive
-		motor_percent = yaw_pid.kp*(yaw_pid.err) 
-			+ yaw_pid.kd*(bno055.r) 
-			+ yaw_pid.ki*yaw_pid.i_err; // yaw controller
+		// motor_percent is positive
+		motor_percent = yaw_pid.kp*(yaw_pid.err) + yaw_pid.kd*(bno055.r) 
+				+ yaw_pid.ki*yaw_pid.i_err; // yaw controller
 	}
 	// saturate yaw controller //
-	if( u[2] > YAW_SAT )
+	if( motor_percent > YAW_SAT )
 	{
 		motor_percent=YAW_SAT;
 	}
@@ -40,13 +43,15 @@ float yaw_controller(bno055, yaw_pid)
 		motor_percent = -YAW_SAT;
 	}
 
+	// accumulate error for integral control //
 	yaw_pid.i_err += yaw_pid.err*DT;
+
 	// set current yaw to be the old yaw //
 	yaw_pid.oldyaw = bno055.yaw;
 
 	return motor_percent;
 }
-*/
+
 
 
 /******************************************************************************
@@ -56,14 +61,14 @@ float yaw_controller(bno055, yaw_pid)
 * returns a value between -1 and 1 (-100% - +100%) that the vertical thruster
 * should run at
 ******************************************************************************/
-/*
+
 float depth_controller(float range)
 {
 	float vert_percent;			// vertical thruster output in a percentage
 	float depth_sum_error = 0;	// accumulated range error for integral control
     float range_current;
     float range_old;
-    float
+   
 
 	// accumulated range error for integral control //
 	depth_sum_error += range - depth_pid.setpoint;
@@ -95,4 +100,4 @@ float depth_controller(float range)
 
 	return vert_percent;
 }
-*/
+
