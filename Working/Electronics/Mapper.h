@@ -1,6 +1,8 @@
 #ifndef MAPPER_H
 #define MAPPER_H
 
+#define  DEBUG
+
 #include <pca9685.h>
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
