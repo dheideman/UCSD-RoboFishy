@@ -11,7 +11,7 @@
 * Takes in readings from the IMU and returns a value between -1 and 1 (-100% - 
 * +100%) that the port and starboard thrusters should run at
 ******************************************************************************/
-/*
+
 float yaw_controller(bno055, yaw_pid)
 {
 	// control output //
@@ -26,8 +26,7 @@ float yaw_controller(bno055, yaw_pid)
 	else		// AUV is pointed left
 	{
 		// u[2] is positive
-		motor_percent = yaw_pid.kp*(yaw_pid.err) 
-			+ yaw_pid.kd*(bno055.r) 
+	motor_percent = yaw_pid.kp*(yaw_pid.err) + yaw_pid.kd*(bno055.r) 
 			+ yaw_pid.ki*yaw_pid.i_err; // yaw controller
 	}
 	// saturate yaw controller //
@@ -46,7 +45,7 @@ float yaw_controller(bno055, yaw_pid)
 
 	return motor_percent;
 }
-*/
+
 
 
 /******************************************************************************
