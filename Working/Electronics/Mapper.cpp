@@ -48,7 +48,13 @@
 #define GRAVITY 9.81
 
 // Depth Start Value //
-#define DEPTH_START -50 // starting depth (mm)
+#define DEPTH_START 50 // starting depth (mm)
+
+// Depth Threshold Value //
+#define DEPTH_STOP 10000	// threshold depth (mm)
+
+// Temperature Threshold Value //
+#define TEMP_STOP 50	// deg C
 
 // Stop Timer //
 #define STOP_TIME 4		// seconds
@@ -340,8 +346,8 @@ void *safety_thread(void* arg)
 		sstate.fdepth[0] = A1*(sstate.depth[0]+sstate.depth[1])+A2*sstate.fdepth[1];
 		printf("Current depth is %f\n m", sstate.fdepth[0]/1000);
 		
-		//if(sstate.fdepth[0]>DEPTH_START)
-		if( sstate.depth[0] < DEPTH_START )
+		//if( sstate.fdepth[0]< DEPTH_STOP )
+		if( sstate.depth[0] < DEPTH_STOP )
 		{
 			substate.mode = RUNNING;			
 		}
@@ -371,7 +377,7 @@ void *safety_thread(void* arg)
 		printf("Temperature: %f", ds18b20.temperature);
 
 		// turn motors off if housing temperature gets too high //
-		if( ds18b20.temperature > 50 )
+		if( ds18b20.temperature > TEMP_STOP )
 		{
 			for( i=0; i<3; i++ )
 			{
