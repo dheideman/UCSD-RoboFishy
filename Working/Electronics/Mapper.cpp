@@ -20,11 +20,6 @@ substate.mode/******************************************************************
  * Controller Gains
 ******************************************************************************/
 
-/*/ Pitch Controller // Do we need these?
-#define KP_PITCH 0
-#define KI_PITCH 0
-#define KD_PITCH 0
-*/
 // Yaw Controller //
 #define KP_YAW .01
 #define KI_YAW 0
@@ -36,8 +31,7 @@ substate.mode/******************************************************************
 #define KD_DEPTH 0
 
 // Saturation Constants //
-//#define PITCH_SAT 10	// upper limit of pitch controller
-#define YAW_SAT 1		// upper limit of yaw controller
+#define YAW_SAT 1			// upper limit of yaw controller
 #define INT_SAT 10		// upper limit of integral windup
 #define DINT_SAT 10		// upper limit of depth integral windup
 
@@ -202,8 +196,8 @@ void *depth_thread(void* arg){
 	while(substate.mode!=STOPPING){
 		// Read pressure sensor by passing calibration structure
 		ms5837 = ms5837_read(pressure_calib);
-		// calculate depth (no idea what's up with the function)
-		depth = (ms5837.pressure-1013)*10.197-88.8;
+		// calculate depth (no idea what the magic numbers are)
+		depth = (ms5837.pressure-1013)*10.197-88.8; // units?
 
 		usleep(10000);
 	}

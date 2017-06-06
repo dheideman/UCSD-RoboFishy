@@ -19,11 +19,11 @@
 #define CHANNEL_3 2		// yaw
 #define CHANNEL_4 3		// speed
 #define CHANNEL_5 4		// depth
+
 #define MOTOR_0 2674    // motor output is 0
 
 
 /***************************************************************************
- *
  * Create Structs
  *
 ***************************************************************************/
@@ -138,7 +138,7 @@ extern pid_data_t yaw_pid;
 extern pid_data_t depth_pid;
 
 // motor channels
-extern int motor_channels[]; 
+extern int motor_channels[];
 
 // Ignoring sstate
 extern float depth;
