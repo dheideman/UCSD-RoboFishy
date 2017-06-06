@@ -50,6 +50,7 @@ int initialize_motors(int channels[3], float freq)
 ******************************************************************************/
 int set_motor(int motor_num, float percent)
 {
+/*
 	motor_num += PIN_BASE;		// indicates which motor to write to
 								// port = 0, starboard = 1, vert = 2
 	float motor_output;			// feeds the necessary PWM to the motor
@@ -57,27 +58,62 @@ int set_motor(int motor_num, float percent)
 	float motor_min_sat = 0;		// low range of motor output saturation
 	float base_percent = 0.2;	// base percentage of full PWM to run at
 	float comp_run = 0.1;		// percentage above base_percent to run	at
-    float base_output;
-    
-	int port_range = 2618;		// port motor range
-	int starboard_range = 1377; // starboard motor range
+  float base_output;
+*/
+  
+  // Define deadzone (percent)
+  float deadzone = 0.05;
+  
+  // Define number of different pwm values
+  int npwmvalues   = 4096;
+  
+  // Define characteristics of PWM pulse, microseconds
+	int reverselimit = 1100;
+	int forwardlimit = 1900;
+	int zerovalue    = 1500;
+	int pwmperiod    = 1000000/HERTZ;
+	
+	// Calculate scaling factors for mapping percent to motor output
+	float scalefactor = npwmvalues/pwmperiod;
+	int   halfrange   = forwardlimit - zerovalue;
+	
+	// Saturation limits
+  if( percent >  1.0) percent =  1.0;
+  if( percent < -1.0) percent = -1.0;
+  
+  // Deadzone check
+  if( abs(percent) < deadzone ) percent = 0.0;
+	
+	// Calculate required pulse length
+	float pulselength = zerovalue + ( percent * halfrange );
+	
+	// Calculate corresponding pwm output value
+	int motoroutput = pulselength * scalefactor;
+	
+	// Spin those motors
+  pwmWrite(motornum + PIN_BASE, motoroutput);	
+  
+  #ifdef DEBUG
+  // Print what we told the motor to spin at.
+  printf("Set motor %d to %f \n",motor_num, motor_output);
+  #endif
 
 	// percent = (-) ----> AUV pointed right (starboard) (range: 2718-4095)
 	// percent = (+) ----> AUV pointed left (port) (range: 12-2630)
 
-	// Calculate motor output //
-	if( percent > 0 )
-	{
-		// set motor output //
-		motor_output = 2630 - percent*port_range;
-
-		// max motor output at 30% //	
+//	// Calculate motor output //
+//	if( percent > 0 )
+//	{
+//		// set motor output //
+//		motor_output = 2630 - percent*port_range;
+//
+//		// max motor output at 30% //	
 //		motor_max_sat = base_output - comp_run*port_range;
-
-		// min motor output at 10% //			
+//
+//		// min motor output at 10% //			
 //		motor_min_sat = base_output + comp_run*port_range;
-
-		// saturate motor output at max of 30% //
+//
+//		// saturate motor output at max of 30% //
 //		if( motor_output < motor_max_sat )
 //		{
 //			motor_output = motor_max_sat;
@@ -91,22 +127,22 @@ int set_motor(int motor_num, float percent)
 //		{
 //			motor_output = 2630-percent*port_range;
 //		}
-	}
-    else if( percent < 0 )
-	{
-		// base motor output to 20% //
+//	}
+//    else if( percent < 0 )
+//	{
+//		// base motor output to 20% //
 //		base_output = 2718 - base_percent*starboard_range;
-
-		// set motor output //
-		motor_output = 2718 - percent*starboard_range;	
-
-		// max motor output at 30% //
+//
+//		// set motor output //
+//		motor_output = 2718 - percent*starboard_range;	
+//
+//		// max motor output at 30% //
 //		motor_max_sat = base_output + comp_run*starboard_range;
-
-		// min motor output at 10% //		
+//
+//		// min motor output at 10% //		
 //		motor_min_sat = base_output - comp_run*starboard_range;
-
-		// saturate motor output at max of 30% //
+//
+//		// saturate motor output at max of 30% //
 //		if( motor_output > motor_max_sat )
 //		{
 //			motor_output = motor_max_sat;
@@ -120,15 +156,15 @@ int set_motor(int motor_num, float percent)
 //		{
 //			motor_output = 2718 - percent*starboard_range;
 //		}
-	}
-	else
-	{
-		motor_output = 2674;	
-	}
-	
-    // Actually tell the motor to spin now
-    pwmWrite(motor_num, motor_output);	
-
-    printf("Set motor %d to %f \n",motor_num, motor_output);
+//	}
+//	else
+//	{
+//		motor_output = 2674;	
+//	}
+//	
+//    // Actually tell the motor to spin now
+//    pwmWrite(motor_num, motor_output);	
+//
+//    printf("Set motor %d to %f \n",motor_num, motor_output);
 	return 1;
 }
