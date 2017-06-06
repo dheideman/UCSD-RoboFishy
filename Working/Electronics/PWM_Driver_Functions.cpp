@@ -69,12 +69,12 @@ int set_motor(int motornum, float percent)
   
   // Define characteristics of PWM pulse, microseconds
 // int reverselimit = 1100;
-	int forwardlimit = 1900;
-	int zerovalue    = 1500;
+	int forwardlimit = 2000;
+	int zerovalue    = 1600;
 	int pwmperiod    = 1000000/HERTZ;
 	
 	// Calculate scaling factors for mapping percent to motor output
-	float scalefactor = npwmvalues/pwmperiod;
+	float scalefactor = (float) npwmvalues / (float) pwmperiod;
 	float halfrange   = forwardlimit - zerovalue;
 	
 	// Saturation limits
@@ -82,7 +82,7 @@ int set_motor(int motornum, float percent)
   if( percent < -1.0) percent = -1.0;
   
   // Deadzone check
-  if( abs(percent) < deadzone ) percent = 0.0;
+  if( (percent < deadzone) && (percent > -deadzone) ) percent = 0.0;
 	
 	// Calculate required pulse length
 	float pulselength = zerovalue + ( percent * halfrange );
