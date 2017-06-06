@@ -95,7 +95,7 @@ int set_motor(int motornum, float percent)
   
   #ifdef DEBUG
   // Print what we told the motor to spin at.
-  printf("Set motor %d to %f \n",motor_num, motor_output);
+  printf("Set motor %d to %d \n",motornum, motoroutput);
   #endif
 
 	// percent = (-) ----> AUV pointed right (starboard) (range: 2718-4095)
