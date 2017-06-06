@@ -59,14 +59,14 @@ float yaw_controller(bno055_t bno055, pid_data_t yaw_pid)
 * returns a value between -1 and 1 (-100% - +100%) that the vertical thruster
 * should run at
 ******************************************************************************/
-/*
+
 float depth_controller(float range)
 {
 	float vert_percent;			// vertical thruster output in a percentage
 	float depth_sum_error = 0;	// accumulated range error for integral control
     float range_current;
     float range_old;
-    float
+   
 
 	// accumulated range error for integral control //
 	depth_sum_error += range - depth_pid.setpoint;
@@ -98,4 +98,4 @@ float depth_controller(float range)
 
 	return vert_percent;
 }
-*/
+
