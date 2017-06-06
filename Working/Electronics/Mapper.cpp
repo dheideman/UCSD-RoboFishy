@@ -226,11 +226,11 @@ void *navigation(void* arg)
 {
 	initialize_motors(motor_channels, HERTZ);
 
-	float output_port;		// port motor output
-	float output_starboard; // starboard motor output
+	//float output_port;		// port motor output
+	//float output_starboard; // starboard motor output
 
 	// initialize Motor Percent to be returned by yaw_controller //
-	float motor_percent;
+	//float motor_percent;
 
 	// initialize old imu data //
 	yaw_pid.oldyaw = 0;
