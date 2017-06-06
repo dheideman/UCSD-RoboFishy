@@ -207,8 +207,10 @@ void *depth_thread(void* arg)
 	{
 		// read pressure sensor by passing calibration structure //
 		ms5837 = ms5837_read(pressure_calib);
+
 		// calculate depth (no idea what the magic numbers are)
 		depth = (ms5837.pressure-1013)*10.197-88.8; // units?
+		// 1013: ambient pressure (mbar)
 
 		usleep(10000);
 	}
