@@ -21,7 +21,7 @@
 ******************************************************************************/
 
 // Yaw Controller //
-#define KP_YAW .01
+#define KP_YAW 0.01
 #define KI_YAW 0
 #define KD_YAW 1
 
@@ -258,8 +258,8 @@ void *navigation(void* arg)
 
 	// hard set motor speed //
 	// pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
-	set_motor(0, -0.2);
-	set_motor(1, 0.2);
+	set_motor(CHANNEL_1, -0.2);
+	set_motor(CHANNEL_2, 0.2);
 
 	while(substate.mode!=STOPPED)
 	{
@@ -299,8 +299,8 @@ void *navigation(void* arg)
 		usleep(5000);
 	}
 
-	set_motor(0, 0);
-	set_motor(1, 0);
+	set_motor(CHANNEL_1, 0);
+	set_motor(CHANNEL_2, 0);
 
 	pthread_exit(NULL);
 }
