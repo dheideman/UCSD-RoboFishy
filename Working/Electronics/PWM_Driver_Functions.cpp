@@ -35,7 +35,7 @@ int initialize_motors(int channels[3], float freq)
 			{
 				// send "neutral" signal to arm ESCs //
 				pwmWrite (PIN_BASE+i, MOTOR_0);	
-				delay(1000);
+//				delay(1000);
 				active=0;
 			}
 		}

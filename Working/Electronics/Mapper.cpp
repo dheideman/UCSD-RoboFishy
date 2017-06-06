@@ -169,13 +169,13 @@ int main()
 	pthread_attr_destroy(&tattrhigh);
 
 	// Start timer!
-	time_t timer = time(NULL);
+	time_t start = time(0);
 
 	// Run main while loop, wait until it's time to stop
 	while(substate.mode != STOPPED)
 	{
 		// Check if we've passed the stop time
-		if(difftime(timer,time(NULL)) > STOP_TIME)
+		if(difftime(time(0),start) > STOP_TIME)
 			substate.mode = STOPPED;
 
 		// Sleep a little
@@ -259,7 +259,8 @@ void *navigation(void* arg)
 	{
 		// read IMU values
 		bno055 = bno055_read();
-		if (bno055.yaw < 180)
+/*
+        if (bno055.yaw < 180)
 		{
 		yaw_pid.err = abs(bno055.yaw - yaw_pid.setpoint);
 		}
@@ -268,7 +269,6 @@ void *navigation(void* arg)
 		yaw_pid.err =abs(bno055.yaw - (yaw_pid-360));
 		}
 		// Write captured values to screen
-		/*
 	    printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
 					 bno055.yaw, bno055.pitch, bno055.roll,
 					 bno055.p, bno055.q, bno055.r,

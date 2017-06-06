@@ -1,5 +1,5 @@
-#ifndef LIBRARIES_H
-#define LIBRARIES_H
+#ifndef MAPPER_H
+#define MAPPER_H
 
 #include <pca9685.h>
 #include <wiringPi.h>
