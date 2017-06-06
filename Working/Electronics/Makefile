@@ -35,11 +35,12 @@ $(TARGET): $(OBJECTS) $(MOD_OBJECTS)
 	@echo "Linking Complete"
 
 echo:
-	echo $(OBJECTS)
-	echo $(MOD_OBJECTS)
+	@echo $(INCLUDES)
+	@echo $(SOURCES)
+	@echo $(OBJECTS)
 
 # compiling command
-$(OBJECTS): %.o : %.cpp %.h
+$(OBJECTS): %.o : %.cpp $(INCLUDES)
 	@$(TOUCH) $(CC) $(CFLAGS) -c $< -o $(@)
 	@echo "Compiled "$<" successfully!"
 	

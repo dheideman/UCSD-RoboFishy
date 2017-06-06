@@ -1,3 +1,8 @@
+#ifndef MAPPER_H
+#define MAPPER_H
+
+#define  DEBUG
+
 #include <pca9685.h>
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
@@ -6,7 +11,6 @@
 #include <Python.h>
 #include <time.h>
 #include <signal.h>		// capture control-c
-#include "../../Modules/TypeDefs.h"
 
 
 #define PCA9685_ADDR 0x40
@@ -21,6 +25,9 @@
 #define CHANNEL_5 4		// depth
 
 #define MOTOR_0 2674    // motor output is 0
+
+// Core Module
+#include "../../Modules/Core/Core.h"
 
 
 /***************************************************************************
@@ -54,30 +61,18 @@ typedef struct
 	float temperature;
 }ds18b20_t;
 
-// Program Flow and State Control
-typedef enum state_t
-{
-	UNINITIALIZED,
-	RUNNING,
-	PAUSED,
-	EXITING
-}state_t;
 
-//struct for PID Controllers
+// struct for PID Controllers
 typedef struct pid_data_t
 {
 	float kp, ki, kd;
-	float p_err, i_err, d_err;
+	float err, i_err;
 	float setpoint;
 	float oldyaw;
 }pid_data_t;
 
 typedef struct setpoint_t
 {
-	float roll;				// roll angle (rad)
-	float roll_rate;	// roll rate (rad/s)
-	//float pitch;			// pitch angle (rad)
-	//float pitch_rate; // pitch rate (rad/s)
 	float yaw;				// yaw angle in (rad)
 	float yaw_rate;		// yaw rate (rad/s)
 	float depth;			// z component in fixed coordinate system
@@ -152,15 +147,9 @@ extern float depth;
 *
 ******************************************************************************/
 
-// System state
-enum state_t get_state();
-int set_state(enum state_t);
-
 // Functions for setting motor PWM with PCA9685
-int calcTicks(float impulseMs, int hertz);
 int initialize_motors(int channels[4], float freq);
 int saturate_number(float* val, float min, float max);
-
 int set_motor(int motor_num, float speed);
 
 // Functions for Reading MS5837 Pressure Sensor
@@ -178,6 +167,8 @@ ds18b20_t ds18b20_read(void);	// read values from ds18b20
 // Startup Functions
 int scripps_auv_init(void);
 
-//// Cleanup and Shutdown
+// Cleanup and Shutdown
 void ctrl_c(int signo); // signal catcher
 int cleanup_auv();		// call at the very end of main()
+
+#endif
