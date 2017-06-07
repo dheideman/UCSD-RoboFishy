@@ -69,7 +69,6 @@
 void *navigation(void* arg);
 void *depth_thread(void* arg);
 void *safety_thread(void* arg);
-float *sensorread_thread(void* arg);
 
 
 /******************************************************************************
