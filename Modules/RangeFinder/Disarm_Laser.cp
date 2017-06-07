@@ -31,8 +31,7 @@ void disarmLaser(void* arg)
   {
   	// If we exceed pitch or roll setpoints disarm the laser as to not blind anyone
     if( bno055.pitch > PITCH_SATURATION || bno055.roll > ROLL_SATURATION ){
-    	// Set the State to CONFUSED not sure what to do with this yet..
-    	substate.mode = CONFUSED;
+      
     	// Disarm the laser
     	substate.laserarmed = DISARMED;
     }
