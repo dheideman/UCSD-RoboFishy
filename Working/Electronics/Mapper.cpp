@@ -130,6 +130,7 @@ int main()
 	}
 	printf("\nAll components are initializated\n");
 	substate.mode = INITIALIZING;
+	substate.laserarmed = ARMED;
 
 
 	// Initialize threads
@@ -164,6 +165,7 @@ int main()
 	pthread_t navigationThread;
 	pthread_t depthThread;
 	pthread_t safetyThread;
+	pthread_t disarmlaserThread;
 
 	// Create threads using modified attributes
 	pthread_create (&navigationThread, &tattrmed, navigation, NULL);
@@ -171,6 +173,7 @@ int main()
 //	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 
 //	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
+//	pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
 
 
 	// Destroy the thread attributes
@@ -239,15 +242,8 @@ void *navigation(void* arg)
 	// initialize Motor Percent to be returned by yaw_controller //
 	//float motor_percent;
 
-	// Initialize old imu data //
-	yaw_pid.old = 0;
-
 	// Initialize setpoint for yaw_controller //
 	yaw_pid.setpoint = 0;
-
-	// Initialize error values to be used in yaw_controller //
-	yaw_pid.err = 0;
-	yaw_pid.i_err = 0;
 
 	// yaw_controller constant initialization //
 	yaw_pid.kp = 0.01;
@@ -294,7 +290,7 @@ void *navigation(void* arg)
 	// Sanity test: Check if yaw control works
 	
 	//Call yaw controller function
-	yaw_controller(bno055, yaw_pid);
+	motor_percent = yaw_controller(bno055, yaw_pid);
 
 	// Set port motor
 	//set_motor(0,motor_percent);
