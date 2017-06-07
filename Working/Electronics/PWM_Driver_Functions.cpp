@@ -50,16 +50,6 @@ int initialize_motors(int channels[3], float freq)
 ******************************************************************************/
 int set_motor(int motornum, float percent)
 {
-/*
-	motor_num += PIN_BASE;		// indicates which motor to write to
-								// port = 0, starboard = 1, vert = 2
-	float motor_output;			// feeds the necessary PWM to the motor
-	float motor_max_sat = 1;		// high range of motor output saturation
-	float motor_min_sat = 0;		// low range of motor output saturation
-	float base_percent = 0.2;	// base percentage of full PWM to run at
-	float comp_run = 0.1;		// percentage above base_percent to run	at
-  float base_output;
-*/
   // Define deadzone (percent)
   float deadzone = 0.05;
 
@@ -87,73 +77,5 @@ int set_motor(int motornum, float percent)
   printf("Set motor %d to %d \n",motornum, motoroutput);
   #endif
 
-	// percent = (-) ----> AUV pointed right (starboard) (range: 2718-4095)
-	// percent = (+) ----> AUV pointed left (port) (range: 12-2630)
-
-//	// Calculate motor output //
-//	if( percent > 0 )
-//	{
-//		// set motor output //
-//		motor_output = 2630 - percent*port_range;
-//
-//		// max motor output at 30% //	
-//		motor_max_sat = base_output - comp_run*port_range;
-//
-//		// min motor output at 10% //			
-//		motor_min_sat = base_output + comp_run*port_range;
-//
-//		// saturate motor output at max of 30% //
-//		if( motor_output < motor_max_sat )
-//		{
-//			motor_output = motor_max_sat;
-//		}
-//		// saturate motor output at min of 10% //
-//		else if ( motor_output > motor_min_sat )
-//		{
-//			motor_output = motor_min_sat;
-//		}
-//		else
-//		{
-//			motor_output = 2630-percent*port_range;
-//		}
-//	}
-//    else if( percent < 0 )
-//	{
-//		// base motor output to 20% //
-//		base_output = 2718 - base_percent*starboard_range;
-//
-//		// set motor output //
-//		motor_output = 2718 - percent*starboard_range;	
-//
-//		// max motor output at 30% //
-//		motor_max_sat = base_output + comp_run*starboard_range;
-//
-//		// min motor output at 10% //		
-//		motor_min_sat = base_output - comp_run*starboard_range;
-//
-//		// saturate motor output at max of 30% //
-//		if( motor_output > motor_max_sat )
-//		{
-//			motor_output = motor_max_sat;
-//		}
-//		// saturate motor output at min of 10% //
-//		else if ( motor_output < motor_min_sat )
-//		{
-//			motor_output = motor_min_sat;
-//		}
-//		else
-//		{
-//			motor_output = 2718 - percent*starboard_range;
-//		}
-//	}
-//	else
-//	{
-//		motor_output = 2674;	
-//	}
-//	
-//    // Actually tell the motor to spin now
-//    pwmWrite(motor_num, motor_output);	
-//
-//    printf("Set motor %d to %f \n",motor_num, motor_output);
 	return 1;
 }

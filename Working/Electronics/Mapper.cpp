@@ -116,24 +116,24 @@ float motor_percent = 0;
 
 int main()
 {
-	// Initialize python interpreter
+	// Initialize Python interpreter
 	Py_Initialize();
 
 	//Set up RasPi GPIO pins through wiringPi
 	wiringPiSetupGpio();
 
 	// Check if AUV is initialized correctly //
-	if( scripps_auv_init()<0 )
+	if( scripps_auv_init() < 0 )
 	{
 		return -1;
 	}
 	printf("\nAll components are initializated\n");
 	substate.mode = INITIALIZING;
   substate.laserarmed = ARMED;
-  
+	initializeTAttr();
 
 	// Initialize threads
-	sched_param param;
+	/*sched_param param;
 	int policy, maxpriority;
 
 	// Initialize priorities
@@ -158,7 +158,7 @@ int main()
 
 	// Set up high priority
 	param.sched_priority = maxpriority-1;
-	pthread_attr_setschedparam (&tattrhigh, &param);
+	pthread_attr_setschedparam (&tattrhigh, &param);*/
 
 	// Thread handles
 	pthread_t navigationThread;
@@ -174,11 +174,11 @@ int main()
 
 //	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 //	pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
-
+ 	destroyTAttr();
 	// Destroy the thread attributes
-	pthread_attr_destroy(&tattrlow);
+	/*pthread_attr_destroy(&tattrlow);
 	pthread_attr_destroy(&tattrmed);
-	pthread_attr_destroy(&tattrhigh);
+	pthread_attr_destroy(&tattrhigh);*/
 
 	// Start timer!
 	time_t start = time(0);
@@ -369,7 +369,6 @@ void *safety_thread(void* arg)
 
 	// Leak detection variables //
 	int leakStatePin = digitalRead(SOSPIN);	// read the input pin
-	int i;									// loop counting integer
 
 	// Leak detection pins //
 	pinMode(SOSPIN, INPUT);					// set SOSPIN as an INPUT
