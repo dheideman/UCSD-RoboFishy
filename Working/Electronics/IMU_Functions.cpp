@@ -18,9 +18,9 @@ void start_Py_bno055(void)
     fclose(fifo);
 
     // Start up the Python
-    std::FILE* fd = fopen("bno055_read.py", "r");
-	PyRun_SimpleFile(fd,"bno055_read.py");
-	
+    std::FILE* fd = fopen("read_imu.py", "r");
+	PyRun_SimpleFile(fd,"read_imu.py");
+
     // Wait 2 seconds to let the python script start up
     usleep(2000000);
 

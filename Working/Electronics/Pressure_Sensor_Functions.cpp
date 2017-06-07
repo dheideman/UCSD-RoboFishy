@@ -17,7 +17,7 @@ pressure_calib_t init_ms5837(void)
 	Py_Initialize();
 
 	// Create struct to hold calibration data
-	pressure_calib_t pressure_calib; 
+	pressure_calib_t pressure_calib;
 
 	// Create pointers to python object
 	PyObject *pName, *pModule, *pDict, *pFunc, *pValue;
@@ -67,7 +67,7 @@ ms5837_t ms5837_read(pressure_calib_t pressure_calib)
 	PyObject *pName, *pModule, *pDict, *pFunc, *pArgs, *pValue;
 
 	// Input name of Python source file
-	pName = PyString_FromString("MS5837_example"); 
+	pName = PyString_FromString("MS5837_example");
 	PyRun_SimpleString("import sys");
 	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/Mapper\")");
 	pModule = PyImport_Import(pName);
@@ -104,7 +104,7 @@ ms5837_t ms5837_read(pressure_calib_t pressure_calib)
 
 void start_Py_ms5837(void)
 {
-	FILE* fd = fopen("python pressure_read.py", "r");
-	PyRun_SimpleFile(fd,"python pressure_read.py");
+	FILE* fd = fopen("python read_pressure.py", "r");
+	PyRun_SimpleFile(fd,"python read_pressure.py");
 	return;
 }
