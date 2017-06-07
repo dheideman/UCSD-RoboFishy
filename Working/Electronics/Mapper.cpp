@@ -345,14 +345,14 @@ void *navigation(void* arg)
 
 		// Sleep for 5 ms //
 //		usleep(5000);
-//	}
+	}
 
 	//set_motor(0, 0);
 	//set_motor(1, 0);
     //set_motor(2, 0);
 
 //	pthread_exit(NULL);
-//}
+}
 
 
 /******************************************************************************
