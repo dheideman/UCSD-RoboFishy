@@ -5,6 +5,7 @@
  * Arm the Laser for safe operation when the sub is not oriented vertically
  ******************************************************************************/
 
+#include <RangeFinder.h>
 #include "../../Electronics/Mapper.h"
 #include "../Core/Core.h"
 
