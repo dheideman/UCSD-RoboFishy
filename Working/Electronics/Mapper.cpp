@@ -75,31 +75,31 @@ void *safety_thread(void* arg);
  * Global Variables
 ******************************************************************************/
 
-// holds the setpoint data structure with current setpoints
+// Holds the setpoint data structure with current setpoints
 setpoint_t setpoint;
 
-// holds the system state structure with current system statesystem_state_t sstate;
+// Holds the system state structure with current system statesystem_state_t sstate;
 system_state_t sstate;
 
-// holds the calibration values for the MS5837 pressure sensor
+// Holds the calibration values for the MS5837 pressure sensor
 pressure_calib_t pressure_calib;
 
-// holds the latest pressure value from the MS5837 pressure sensor
+// Holds the latest pressure value from the MS5837 pressure sensor
 ms5837_t ms5837;
 
-// create structure for storing IMU data
+// Create structure for storing IMU data
 bno055_t bno055;
 
-// holds the latest temperature value from the DS18B20 temperature sensor
+// Holds the latest temperature value from the DS18B20 temperature sensor
 ds18b20_t ds18b20;
 
-// holds the constants and latest errors of the yaw pid controller
+// Holds the constants and latest errors of the yaw pid controller
 pid_data_t yaw_pid;
 
-// holds the constants and latest errors of the depth pid controller
+// Holds the constants and latest errors of the depth pid controller
 pid_data_t depth_pid;
 
-// motor channels
+// Motor channels
 int motor_channels[] = {CHANNEL_1, CHANNEL_2, CHANNEL_3};
 
 
@@ -120,7 +120,7 @@ int main()
 	wiringPiSetupGpio();
 
 	// Check if AUV is initialized correctly //
-	if(scripps_auv_init()<0)
+	if( scripps_auv_init()<0 )
 	{
 		return -1;
 	}
@@ -233,7 +233,7 @@ void *navigation(void* arg)
 	//float output_starboard; // starboard motor output
 
 	// initialize Motor Percent to be returned by yaw_controller //
-	//float motor_percent;
+	float motor_percent;
 
 	// Initialize old imu data //
 	yaw_pid.oldyaw = 0;
@@ -268,22 +268,23 @@ void *navigation(void* arg)
 	{
 		// read IMU values
 		bno055 = bno055_read();
-/*
-        if (bno055.yaw < 180)
+
+	    if (bno055.yaw < 180)
 		{
 		yaw_pid.err = abs(bno055.yaw - yaw_pid.setpoint);
 		}
 		else
 		{
-		yaw_pid.err =abs(bno055.yaw - (yaw_pid-360));
+		yaw_pid.err =abs((bno055.yaw-360) - yaw_pid.setpoint);
 		}
 		// Write captured values to screen
-	    printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
+	    /*printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
 					 bno055.yaw, bno055.pitch, bno055.roll,
 					 bno055.p, bno055.q, bno055.r,
 					 bno055.sys, bno055.gyro, bno055.accel,
-					 bno055.mag);
-	    */
+					 bno055.mag);*/
+		printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
+    
 
 		// Sanity test: Check if yaw control works
 		/*
@@ -295,6 +296,7 @@ void *navigation(void* arg)
 
 		// Set starboard motor
 		set_motor(1, motor_percent);
+
 
 		*/
 
@@ -330,7 +332,7 @@ void *safety_thread(void* arg)
 	pinMode(17, OUTPUT);					// set GPIO 17 as an OUTPUT
 	digitalWrite(leakStatePin, HIGH);		// set GPIO 17 as HIGH (VCC)
 
-	while( substate.mode!=STOPPED )
+	while( substate.mode! = STOPPED )
 	{
 		/******************************************************************************
 		 * Depth Protection
