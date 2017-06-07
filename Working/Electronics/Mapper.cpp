@@ -235,7 +235,7 @@ void *navigation(void* arg)
 	//float motor_percent;
 
 	// initialize old imu data //
-	yaw_pid.oldyaw = 0;
+	yaw_pid.old = 0;
 
 	// initialize setpoint for yaw_controller //
 	yaw_pid.setpoint = 0;
