@@ -25,6 +25,7 @@ void start_Py_bno055(void)
 
     // Check whether the python script wrote anything
 	fifo = fopen("imu.fifo","r");
+
     // insert check here //
 	fclose(fifo);
 

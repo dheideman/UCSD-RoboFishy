@@ -75,31 +75,31 @@ void *safety_thread(void* arg);
  * Global Variables
 ******************************************************************************/
 
-// holds the setpoint data structure with current setpoints
+// Holds the setpoint data structure with current setpoints
 setpoint_t setpoint;
 
-// holds the system state structure with current system statesystem_state_t sstate;
+// Holds the system state structure with current system statesystem_state_t sstate;
 system_state_t sstate;
 
-// holds the calibration values for the MS5837 pressure sensor
+// Holds the calibration values for the MS5837 pressure sensor
 pressure_calib_t pressure_calib;
 
-// holds the latest pressure value from the MS5837 pressure sensor
+// Holds the latest pressure value from the MS5837 pressure sensor
 ms5837_t ms5837;
 
-// create structure for storing IMU data
+// Create structure for storing IMU data
 bno055_t bno055;
 
-// holds the latest temperature value from the DS18B20 temperature sensor
+// Holds the latest temperature value from the DS18B20 temperature sensor
 ds18b20_t ds18b20;
 
-// holds the constants and latest errors of the yaw pid controller
+// Holds the constants and latest errors of the yaw pid controller
 pid_data_t yaw_pid;
 
-// holds the constants and latest errors of the depth pid controller
+// Holds the constants and latest errors of the depth pid controller
 pid_data_t depth_pid;
 
-// motor channels
+// Motor channels
 int motor_channels[] = {CHANNEL_1, CHANNEL_2, CHANNEL_3};
 
 
@@ -120,7 +120,7 @@ int main()
 	wiringPiSetupGpio();
 
 	// Check if AUV is initialized correctly //
-	if(scripps_auv_init()<0)
+	if( scripps_auv_init()<0 )
 	{
 		return -1;
 	}
@@ -211,6 +211,7 @@ void *depth_thread(void* arg)
 		// calculate depth (no idea what the magic numbers are)
 		depth = (ms5837.pressure-1013)*10.197-88.8; // units?
 		// 1013: ambient pressure (mbar)
+		// 10.197*p_mbar = p_mmH20
 
 		usleep(10000);
 	}
@@ -234,31 +235,30 @@ void *navigation(void* arg)
 	// initialize Motor Percent to be returned by yaw_controller //
 	float motor_percent;
 
-	// initialize old imu data //
-	yaw_pid.old = 0;
+	// Initialize old imu data //
+	yaw_pid.oldyaw = 0;
 
-	// initialize setpoint for yaw_controller //
+	// Initialize setpoint for yaw_controller //
 	yaw_pid.setpoint = 0;
 
-	// initialize error values to be used in yaw_controller //
+	// Initialize error values to be used in yaw_controller //
 	yaw_pid.err = 0;
 	yaw_pid.i_err = 0;
 
-
-	// yaw_controller constant initialization ///
+	// yaw_controller constant initialization //
 	yaw_pid.kp = 0.01;
 	yaw_pid.kd = 0;
 	yaw_pid.ki = 0;
 
-	// range-from-bottom setpoint //
+	// Range-from-bottom setpoint //
 	depth_pid.setpoint = 2;	// meters
 
-	// depth controller constant initialization
+	// Depth controller constant initialization
 	depth_pid.kp = 0.01;
 	depth_pid.kd = 0;
 	depth_pid.ki = 0;
 
-	// hard set motor speed //
+	// Hard set motor speed //
 	// pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
 	//set_motor(0, -0.2);  // right
 	//set_motor(1, 0.2); // left
@@ -267,7 +267,7 @@ void *navigation(void* arg)
 	while(substate.mode!=STOPPED)
 	{
 		// read IMU values
-	bno055 = bno055_read();
+		bno055 = bno055_read();
 
     if (bno055.yaw < 180)
 	{
@@ -300,6 +300,38 @@ void *navigation(void* arg)
 	
 	printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
 	// sleep for 5 ms //
+	    if (bno055.yaw < 180)
+		{
+		yaw_pid.err = abs(bno055.yaw - yaw_pid.setpoint);
+		}
+		else
+		{
+		yaw_pid.err =abs((bno055.yaw-360) - yaw_pid.setpoint);
+		}
+		// Write captured values to screen
+	    /*printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
+					 bno055.yaw, bno055.pitch, bno055.roll,
+					 bno055.p, bno055.q, bno055.r,
+					 bno055.sys, bno055.gyro, bno055.accel,
+					 bno055.mag);*/
+		printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
+    
+
+		// Sanity test: Check if yaw control works
+		/*
+		// Call yaw controller function
+		yaw_controller();
+
+		// Set port motor
+		set_motor(0,motor_percent);
+
+		// Set starboard motor
+		set_motor(1, motor_percent);
+
+
+		*/
+
+		// Sleep for 5 ms //
 		usleep(5000);
 	}
 
@@ -331,7 +363,7 @@ void *safety_thread(void* arg)
 	pinMode(17, OUTPUT);					// set GPIO 17 as an OUTPUT
 	digitalWrite(leakStatePin, HIGH);		// set GPIO 17 as HIGH (VCC)
 
-	while( substate.mode!=STOPPED )
+	while( substate.mode! = STOPPED )
 	{
 		/******************************************************************************
 		 * Depth Protection
@@ -388,6 +420,9 @@ void *safety_thread(void* arg)
 			{
 				pwmWrite(PIN_BASE+i, MOTOR_0);
 			}
+
+			// let 'em' know it's too hot and we're shutting down //
+			printf("It's too hot! Turning off all motors...\n");
 		}
 
 		/******************************************************************************
@@ -400,17 +435,37 @@ void *safety_thread(void* arg)
 		if( leakStatePin == HIGH )
 		{
 			// tell 'em it's bad //
-			printf("LEAK DETECTED!\n");
+			printf("LEAK DETECTED! Turning off all motors...\n");
 			for( i=0; i<3; i++ )
 			{
 				// shut off motors //
-				set_motor(PIN_BASE+i, MOTOR_0);
+				set_motor(i, MOTOR_0);
 			}
         }
 		else if (leakStatePin == LOW)
 		{
-			// tell 'em we're dry //
-			printf("We're dry.\n");
+			// let 'em know we're dry //
+			printf("We're dry. We're still good to go.\n");
+		}
+
+		/******************************************************************************
+		 * Collision Protection
+		 *
+		 * Shut down AUV if a collision is detected
+		 *****************************************************************************/
+
+		// check IMU accelerometer for collision (1+ g detected) //
+		if( bno055.x_acc > 1.0*GRAVITY || bno055.y_acc > 1.0*GRAVITY 
+			|| bno055.z_acc > 1.0*GRAVITY )
+		{
+			for( i=0; i<3; i++ )
+			{
+				// shut off all motors //
+				set_motor(i, MOTOR_0);
+			}
+
+			// let 'em' know we're turning off //
+			printf("Collision detected. Turning off all motors...");
 		}
 
 		pthread_exit(NULL);
