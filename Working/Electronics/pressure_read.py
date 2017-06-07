@@ -86,6 +86,7 @@ while True:
     #print "Temperature in Celsius : %.2f C" %cTemp
     #print "Temperature in Fahrenheit : %.2f F" %fTemp
 
+    # write pressure info to fifo
     fifo = open("pressure.fifo", "w")
     _string = "%f" %(pressure)
     fifo.write(_string)
