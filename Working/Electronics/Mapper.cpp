@@ -253,8 +253,8 @@ void *navigation(void* arg)
 
 	// yaw_controller constant initialization //
 	yaw_pid.kp = 0.01;
-	yaw_pid.kd = 0;
-	yaw_pid.ki = 0;
+	yaw_pid.kd = 1;
+	yaw_pid.ki = .1;
 
 	// Range-from-bottom setpoint //
 	depth_pid.setpoint = 2;	// meters
@@ -279,13 +279,13 @@ void *navigation(void* arg)
 		// read IMU values
 		bno055 = bno055_read();
 
-	    if (bno055.yaw < 180)
+	    if (bno055.yaw < 180) //AUV pointed right
 		{
-			yaw_pid.err = abs(bno055.yaw - yaw_pid.setpoint);
+			yaw_pid.err = bno055.yaw - yaw_pid.setpoint;
 		}
-		else
+		else //AUV pointed left
 		{
-			yaw_pid.err =abs((bno055.yaw-360) - yaw_pid.setpoint);
+			yaw_pid.err =(bno055.yaw-360) - yaw_pid.setpoint;
 		}
 
 		// Write captured values to screen
