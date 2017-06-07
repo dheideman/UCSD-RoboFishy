@@ -374,7 +374,7 @@ void *safety_thread(void* arg)
 	digitalWrite(leakStatePin, HIGH);		// set GPIO 17 as HIGH (VCC)
 
 	// Leak checking variables
-	int leakState;
+	int leakState;	// holds the state (HIGH or LOW) of the SOSPIN
 
 	while( substate.mode != STOPPED )
 	{
