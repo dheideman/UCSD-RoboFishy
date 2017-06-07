@@ -60,23 +60,15 @@ int set_motor(int motornum, float percent)
 	float comp_run = 0.1;		// percentage above base_percent to run	at
   float base_output;
 */
-  
   // Define deadzone (percent)
   float deadzone = 0.05;
-  
-  // Define number of different pwm values
-  int npwmvalues   = 4096;
-  
+
   // Define characteristics of PWM pulse, microseconds
-// int reverselimit = 1100;
-	int forwardlimit = 2000;
-	int zerovalue    = 1600;
-	int pwmperiod    = 1000000/HERTZ;
-	
-	// Calculate scaling factors for mapping percent to motor output
-	float scalefactor = (float) npwmvalues / (float) pwmperiod;
-	float halfrange   = forwardlimit - zerovalue;
-	
+//  int pwmlowlimit  = 1940;
+	int pwmhighlimit = 3354;
+	int pwmzerovalue = 2647;
+	float amplitude  = pwmhighlimit - pwmzerovalue;
+
 	// Saturation limits
   if( percent >  1.0) percent =  1.0;
   if( percent < -1.0) percent = -1.0;
@@ -84,11 +76,8 @@ int set_motor(int motornum, float percent)
   // Deadzone check
   if( (percent < deadzone) && (percent > -deadzone) ) percent = 0.0;
 	
-	// Calculate required pulse length
-	float pulselength = zerovalue + ( percent * halfrange );
-	
 	// Calculate corresponding pwm output value
-	int motoroutput = pulselength * scalefactor;
+	int motoroutput = percent * amplitude;
 	
 	// Spin those motors
   pwmWrite(motornum + PIN_BASE, motoroutput);	
