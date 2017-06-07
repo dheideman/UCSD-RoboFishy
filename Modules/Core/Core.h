@@ -101,7 +101,7 @@ void destroyTAttr();
 extern sub_state_t substate;
 
 // Holds the system state structure with current system state
-extern system_state_t sstate;
+//extern system_state_t sstate;
 
 // Thread attributes for different priorities
 extern pthread_attr_t tattrlow, tattrmed, tattrhigh;
