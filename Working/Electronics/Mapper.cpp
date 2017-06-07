@@ -54,7 +54,7 @@
 #define DEPTH_STOP 10000	// threshold depth (mm)
 
 // Temperature Threshold Value //
-#define TEMP_STOP 50	// deg C
+#define TEMP_STOP 25	// deg C
 
 // Stop Timer //
 #define STOP_TIME 4		// seconds
@@ -120,7 +120,7 @@ int main()
 	// Initialize python interpreter
 	Py_Initialize();
 
-	//Set up Pi GPIO pins through wiringPi
+	//Set up RasPi GPIO pins through wiringPi
 	wiringPiSetupGpio();
 
 	// Check if AUV is initialized correctly //
@@ -168,7 +168,7 @@ int main()
 	// Create threads using modified attributes
 	pthread_create (&navigationThread, &tattrmed, navigation, NULL);
 //	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
-//	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
+	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 
 //	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 
@@ -272,7 +272,7 @@ void *navigation(void* arg)
 	//set_motor(1, 0.2); // left
     //set_motor(2, 0.0);
 
-	while(substate.mode!=STOPPED)
+	/*while(substate.mode!=STOPPED)
 	{
 		// read IMU values
 		bno055 = bno055_read();
@@ -285,7 +285,7 @@ void *navigation(void* arg)
 		{
 			yaw_pid.err =abs((bno055.yaw-360) - yaw_pid.setpoint);
 		}
-
+*/
 		// Write captured values to screen
 	    /*printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
 			 bno055.yaw, bno055.pitch, bno055.roll,
@@ -298,7 +298,7 @@ void *navigation(void* arg)
 		// Sanity test: Check if yaw control works
 		
 		//Call yaw controller function
-		yaw_controller(bno055, yaw_pid);
+/*		yaw_controller(bno055, yaw_pid);
 
 		// Set port motor
 		//set_motor(0,motor_percent);
@@ -317,14 +317,15 @@ void *navigation(void* arg)
 		else
 		{
 		yaw_pid.err =abs((bno055.yaw-360) - yaw_pid.setpoint);
-		}
+		}*/
+
 		// Write captured values to screen
 	    /*printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
 					 bno055.yaw, bno055.pitch, bno055.roll,
 					 bno055.p, bno055.q, bno055.r,
 					 bno055.sys, bno055.gyro, bno055.accel,
 					 bno055.mag);*/
-		printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
+		//printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
     
 
 		// Sanity test: Check if yaw control works
@@ -342,15 +343,15 @@ void *navigation(void* arg)
 		*/
 
 		// Sleep for 5 ms //
-		usleep(5000);
-	}
+//		usleep(5000);
+//	}
 
 	//set_motor(0, 0);
 	//set_motor(1, 0);
     //set_motor(2, 0);
 
-	pthread_exit(NULL);
-}
+//	pthread_exit(NULL);
+//}
 
 
 /******************************************************************************
@@ -359,7 +360,7 @@ void *navigation(void* arg)
  * Shuts down AUV if vehicle goes belows 10m, temperature gets too high, or
  * water intrusion is detected
  *****************************************************************************/
-/*void *safety_thread(void* arg)
+void *safety_thread(void* arg)
 {
 	// Set up WiringPi for use // (not sure if actually needed)
 	wiringPiSetup();
@@ -373,7 +374,7 @@ void *navigation(void* arg)
 	pinMode(17, OUTPUT);					// set GPIO 17 as an OUTPUT
 	digitalWrite(leakStatePin, HIGH);		// set GPIO 17 as HIGH (VCC)
 
-	while( substate.mode! = STOPPED )
+	while( substate.mode != STOPPED )
 	{
 		/******************************************************************************
 		 * Depth Protection
@@ -410,13 +411,13 @@ void *navigation(void* arg)
 
 		// sleep for 50 ms //
 		usleep(50000);
-
+*/
 		/******************************************************************************
 		 * Temperature Protection
 		 *
 		 * Shut down AUV if housing temperature exceeds 50 deg C
 		 *****************************************************************************/
-/*
+
 		// read temperature values from DS18B20 temperature sensor //
 		ds18b20 = ds18b20_read(); 	// temperature in deg C
 
@@ -450,7 +451,7 @@ void *navigation(void* arg)
 			// let 'em know we're dry //
 			printf("We're dry. We're still good to go.\n");
 		}
-
+*/
 		/******************************************************************************
 		 * Collision Protection
 		 *
@@ -472,7 +473,7 @@ void *navigation(void* arg)
 		}
 
 		pthread_exit(NULL);
-	}
+	}*/
 
     return NULL;
 }
