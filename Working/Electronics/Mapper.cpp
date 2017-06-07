@@ -71,9 +71,9 @@ void *depth_thread(void* arg);
 void *safety_thread(void* arg);
 
 
-///////////////////////////////////////////////////////////////////////////////
-//////////////////////////////// Global Variables /////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+/******************************************************************************
+ * Global Variables
+******************************************************************************/
 
 // holds the setpoint data structure with current setpoints
 setpoint_t setpoint;
@@ -103,9 +103,9 @@ pid_data_t depth_pid;
 int motor_channels[] = {CHANNEL_1, CHANNEL_2, CHANNEL_3};
 
 
-
 // Ignoring sstate
 float depth = 0;
+
 
 /******************************************************************************
 * Main Function
@@ -207,8 +207,10 @@ void *depth_thread(void* arg)
 	{
 		// read pressure sensor by passing calibration structure //
 		ms5837 = ms5837_read(pressure_calib);
+
 		// calculate depth (no idea what the magic numbers are)
 		depth = (ms5837.pressure-1013)*10.197-88.8; // units?
+		// 1013: ambient pressure (mbar)
 
 		usleep(10000);
 	}
@@ -258,8 +260,9 @@ void *navigation(void* arg)
 
 	// hard set motor speed //
 	// pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
-	set_motor(CHANNEL_1, -0.2);
-	set_motor(CHANNEL_2, 0.2);
+	set_motor(0, -0.2);  // right
+	set_motor(1, 0.2); // left
+    set_motor(2, 0.0);
 
 	while(substate.mode!=STOPPED)
 	{
@@ -299,8 +302,9 @@ void *navigation(void* arg)
 		usleep(5000);
 	}
 
-	set_motor(CHANNEL_1, 0);
-	set_motor(CHANNEL_2, 0);
+	set_motor(0, 0);
+	set_motor(1, 0);
+    set_motor(2, 0);
 
 	pthread_exit(NULL);
 }
