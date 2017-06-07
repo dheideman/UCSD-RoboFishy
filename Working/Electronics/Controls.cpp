@@ -59,7 +59,7 @@ float marchPID(pid_data_t controller, float input)
 * should run at
 ******************************************************************************/
 
-float depth_controller(float range)
+/*float depth_controller(float range)
 {
 	float vert_percent;			// vertical thruster output in a percentage
     float DEPTH_SAT = 1;
@@ -98,3 +98,4 @@ float depth_controller(float range)
 
 	return vert_percent;
 }
+*/
