@@ -272,7 +272,7 @@ void *navigation(void* arg)
 		}
 		else
 		{
-		yaw_pid.err =abs(bno055.yaw - (yaw_pid-360));
+		yaw_pid.err =abs(bno055.yaw - (yaw_pid.setpoint-360));
 		}
 		// Write captured values to screen
 	    printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
