@@ -42,6 +42,13 @@ typedef enum armed_t
   DISARMED
 } armed_t;
 
+// Struct for holding BNO055 return values
+typedef struct
+{
+  float yaw, roll, pitch, p, q, r;
+  int sys, gyro, accel, mag;
+}bno055_t;
+
 // Submersible overall state type
 typedef struct sub_state_t
 {
@@ -50,7 +57,7 @@ typedef struct sub_state_t
   double        depth;          // Depth below surface
   cv::Point3f   pose;           // Location + Yaw of sub
   armed_t       laserarmed;     // Whether the laser can be turned on or not
-//   cv::Mat     imuorientation; // Orientation as determined by IMU
+  bno055_t      imuorientation; // Orientation as determined by IMU
 } sub_state_t;
 
 

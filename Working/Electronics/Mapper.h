@@ -46,13 +46,6 @@ typedef struct
 	float pressure;
 }ms5837_t;
 
-// Struct for holding BNO055 return values
-typedef struct
-{
-	float yaw, roll, pitch, p, q, r;
-	int sys, gyro, accel, mag;
-}bno055_t;
-
 // Struct for holding DS18B20 temperature sensor return values
 typedef struct
 {
