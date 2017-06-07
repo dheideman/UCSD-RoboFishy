@@ -66,10 +66,11 @@ typedef struct
 typedef struct pid_data_t
 {
 	float kp, ki, kd;
-	float err, i_err;
+	float kerr, ierr, derr;
 	float setpoint;
-	float old;
-	float current;
+	float old, current;
+	float SAT;
+	float DT;
 }pid_data_t;
 
 // Struct for setpoints
