@@ -368,7 +368,6 @@ void *safety_thread(void* arg)
 
 	// Leak detection variables //
 	int leakStatePin = digitalRead(SOSPIN);	// read the input pin
-	int i;									// loop counting integer
 
 	// Leak detection pins //
 	pinMode(SOSPIN, INPUT);					// set SOSPIN as an INPUT
