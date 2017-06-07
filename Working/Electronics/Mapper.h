@@ -145,7 +145,7 @@ int set_motor(int motor_num, float speed);
 float yaw_controller(bno055_t bno055, pid_data_t yaw_pid);
 
 // Functions for reading MS5837 Pressure Sensor
-pressure_calib_t init_ms5837(); 			   // initialize ms5837
+pressure_calib_t init_ms5837(void); 		   // initialize ms5837
 ms5837_t ms5837_read(pressure_calib_t arg_in); // read values from ms5837
 
 // Functions for reading BNO055 IMU
@@ -155,6 +155,12 @@ bno055_t bno055_read(void); // read values from bno055
 // Functions for reading DS18B20 temperature sensor
 void start_Py_ds18b20(void); 	// start Python background process
 ds18b20_t ds18b20_read(void);	// read values from ds18b20
+
+// Functions for protecting AUV in dangerous conditions
+submode_t pressure_protect(float pressure, float fdepth);
+submode_t temp_protection(float temperature);
+submode_t leak_protection(int leakState);
+submode_t collision_protection(float x_acc, float y_acc, float z_acc);
 
 // Startup functions
 int scripps_auv_init(void);

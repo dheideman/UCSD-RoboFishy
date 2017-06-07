@@ -36,7 +36,7 @@ int cleanup_auv()
 		// Sleep...just cuz
 		usleep(10000);
 	}
-
+	
 	// Shutdown Python interpreter
 	Py_Finalize();
 

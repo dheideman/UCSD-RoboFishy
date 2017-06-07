@@ -4,62 +4,62 @@
 
 #include "Mapper.h"
 
-// Multithreading //
+// Multithreading 
 #include <pthread.h>
 #include <sched.h>
 #include <unistd.h>
 
-// Sampling Values //
+// Sampling Values 
 #define SAMPLE_RATE 200 // sample rate of main control loop (Hz)
 #define DT 0.005		// timestep; make sure this is equal to 1/SAMPLE_RATE!
 
-// Conversion Factors //
+// Conversion Factors 
 #define UNITS_KPA 0.1 // converts pressure from mbar to kPa
 
 /******************************************************************************
 * Controller Gains
 ******************************************************************************/
 
-// Yaw Controller //
+// Yaw Controller 
 #define KP_YAW 0.01
 #define KI_YAW 0
 #define KD_YAW 1
 
-// Depth Controller //
+// Depth Controller 
 #define KP_DEPTH 0
 #define KI_DEPTH 0
 #define KD_DEPTH 0
 
-// Saturation Constants //
+// Saturation Constants 
 #define YAW_SAT 1		// upper limit of yaw controller
 #define DEPTH_SAT 1		// upper limit of depth controller
 #define INT_SAT 10		// upper limit of integral windup
 #define DINT_SAT 10		// upper limit of depth integral windup
 
-// Filter Values //
+// Filter Values 
 #define A1 0.3			// for MS5837 pressure sensor
 #define A2 0.4			// for MS5837 pressure sensor
 
-// Fluid Densities in kg/m^3 //
+// Fluid Densities in kg/m^3 
 #define DENSITY_FRESHWATER 997
 #define DENSITY_SALTWATER 1029
 
-// Acceleration Due to Gravity in m/s^2 //
+// Acceleration Due to Gravity in m/s^2 
 #define GRAVITY 9.81
 
-// Depth Start Value //
+// Depth Start Value 
 #define DEPTH_START 50 // starting depth (mm)
 
-// Depth Threshold Value //
+// Depth Threshold Value 
 #define DEPTH_STOP 10000	// threshold depth (mm)
 
-// Temperature Threshold Value //
+// Temperature Threshold Value 
 #define TEMP_STOP 25	// deg C
 
-// Stop Timer //
+// Stop Timer 
 #define STOP_TIME 4		// seconds
 
-// SOS Leak Sensor Pin //
+// SOS Leak Sensor Pin 
 #define SOSPIN 27		// connected to GPIO 27
 
 /******************************************************************************
@@ -119,17 +119,17 @@ int main()
 	// Initialize Python interpreter
 	Py_Initialize();
 
-	//Set up RasPi GPIO pins through wiringPi
+	// Set up RasPi GPIO pins through wiringPi
 	wiringPiSetupGpio();
 
-	// Check if AUV is initialized correctly //
+	// Check if AUV is initialized correctly
 	if( scripps_auv_init() < 0 )
 	{
 		return -1;
 	}
 	printf("\nAll components are initializated\n");
 	substate.mode = INITIALIZING;
-  substate.laserarmed = ARMED;
+    substate.laserarmed = ARMED;
 	initializeTAttr();
 
 	// Initialize threads
@@ -206,12 +206,12 @@ int main()
 ******************************************************************************/
 void *depth_thread(void* arg)
 {
-	// Initialize pressure sensor //
+	// Initialize pressure sensor 
 	pressure_calib = init_ms5837();
 
 	while(substate.mode!=STOPPED)
 	{
-		// Read pressure sensor by passing calibration structure //
+		// Read pressure sensor by passing calibration structure 
 		ms5837 = ms5837_read(pressure_calib);
 
 		// Calculate depth (no idea what the magic numbers are)
@@ -238,25 +238,25 @@ void *navigation(void* arg)
 	//float output_port;		// port motor output
 	//float output_starboard; // starboard motor output
 
-	// initialize Motor Percent to be returned by yaw_controller //
+	// Initialize motor percent to be returned by yaw_controller 
 	//float motor_percent;
 
-	// Initialize old imu data //
+	// Initialize old imu data 
 	yaw_pid.old = 0;
 
-	// Initialize setpoint for yaw_controller //
+	// Initialize setpoint for yaw_controller 
 	yaw_pid.setpoint = 0;
 
-	// Initialize error values to be used in yaw_controller //
+	// Initialize error values to be used in yaw_controller 
 	yaw_pid.err = 0;
 	yaw_pid.i_err = 0;
 
-	// yaw_controller constant initialization //
+	// Yaw controller constant initialization 
 	yaw_pid.kp = 0.01;
 	yaw_pid.kd = 1;
 	yaw_pid.ki = .1;
 
-	// Range-from-bottom setpoint //
+	// Range-from-bottom setpoint 
 	depth_pid.setpoint = 2;	// meters
 
 	// Depth controller constant initialization
@@ -264,11 +264,11 @@ void *navigation(void* arg)
 	depth_pid.kd = 0;
 	depth_pid.ki = 0;
 
-	// Initialize error values to be used in depth_controller //
+	// Initialize error values to be used in depth_controller 
 	depth_pid.err = 0;
 	depth_pid.i_err = 0;
 
-	// Hard set motor speed //
+	// Hard set motor speed 
 	// pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
 	//set_motor(0, -0.2);  // right
 	//set_motor(1, 0.2); // left
@@ -367,118 +367,49 @@ void *safety_thread(void* arg)
 	// Set up WiringPi for use // (not sure if actually needed)
 	wiringPiSetup();
 
-	// Leak detection variables //
-	int leakStatePin = digitalRead(SOSPIN);	// read the input pin
-
-	// Leak detection pins //
+	// Leak detection pins 
 	pinMode(SOSPIN, INPUT);					// set SOSPIN as an INPUT
 	pinMode(17, OUTPUT);					// set GPIO 17 as an OUTPUT
 	digitalWrite(leakStatePin, HIGH);		// set GPIO 17 as HIGH (VCC)
 
+	// Leak checking variables
+	int leakState;
+
 	while( substate.mode != STOPPED )
 	{
-		/******************************************************************************
-		 * Depth Protection
-		 *
-		 * Shut down AUV if vehicle travels deeper than 10m
-		 *****************************************************************************/ 
-/*
-		// get pressure value //
-		pressure_calib = init_ms5837();
-		ms5837 = ms5837_read(pressure_calib);
-		sstate.depth[0] = (ms5837.pressure-1013)*10.197-88.8;
-		//sstate.depth[0] = (ms5837.pressure*UNITS_KPA-101.325)/
-		//	(DENSITY_FRESHWATER*GRAVITY)*0.000001;		// current depth in mm
-		printf("%f\n", sstate.depth[0]);
-
-		// filtered depth value //
-		sstate.fdepth[0] = A1*(sstate.depth[0]+sstate.depth[1])+A2*sstate.fdepth[1];
-		printf("Current depth is %f\n m", sstate.fdepth[0]/1000);
-
-		//if( sstate.fdepth[0]< DEPTH_STOP )
-		if( sstate.depth[0] < DEPTH_STOP )
+		// Check pressure
+		substate.mode = pressure_protect(ms5837.pressure, sstate.fdepth);
+		if( substate.mode == STOPPED )
 		{
-			substate.mode = RUNNING;
-		}
-		else
-		{
-			substate.mode = STOPPED;
-			printf("%s\n", "STOPPED");
+			continue;
 		}
 
-		// set current depth values as old values //
-		sstate.depth[1] = sstate.depth[0];
-		sstate.fdepth[1] = sstate.fdepth[0];
-
-		// sleep for 50 ms //
-		usleep(50000);
-*/
-		/******************************************************************************
-		 * Temperature Protection
-		 *
-		 * Shut down AUV if housing temperature exceeds 50 deg C
-		 *****************************************************************************/
-
-		// read temperature values from DS18B20 temperature sensor //
-		ds18b20 = ds18b20_read(); 	// temperature in deg C
-
-		// let 'em know how hot we are //
-		printf("Temperature: %f", ds18b20.temperature);
-
-		// Shut down AUV if housing temperature gets too high //
-		if( ds18b20.temperature > TEMP_STOP )
+		// Check temperautre
+		substate.mode = temp_protect(ds18b20.temperature);
+		if( substate.mode == STOPPED )
 		{
-			substate.mode = STOPPED;
-
-			// let 'em' know it's bad //
-			printf("It's too hot! Shutting down...\n");
+			continue;
 		}
 
-		/******************************************************************************
-		 * Leak Protection
-		 *
-		 * Shut down AUV if a leak is detected
-		 *****************************************************************************/
-/*
-		// check leak sensor for water intrusion //
-		if( leakStatePin == HIGH )
+		// Check for leak
+		leakState = digitalRead(SOSPIN);	// check the state of SOSPIN
+		substate.mode = leak_protect(leakState);
+		if( substate.mode == STOPPED )
 		{
-			// tell 'em it's bad //
-			substate.mode = STOPPED;
-			printf("LEAK DETECTED! Shutting down...\n");
-        }
-		else if (leakStatePin == LOW)
-		{
-			// let 'em know we're dry //
-			printf("We're dry. We're still good to go.\n");
-		}
-*/
-		/******************************************************************************
-		 * Collision Protection
-		 *
-		 * Shut down AUV if a collision is detected
-		 *****************************************************************************/
-/*
-		// check IMU accelerometer for collision (1+ g detected) //
-		if( (float)fabs(bno055.x_acc) > 1.0*GRAVITY 
-			|| (float)fabs(bno055.y_acc) > 1.0*GRAVITY 
-			|| (float)fabs(bno055.z_acc) > 1.0*GRAVITY )
-		{
-			for( i=0; i<3; i++ )
-			{
-				// shut off all motors //
-				set_motor(i, MOTOR_0);
-			}
-
-			// let 'em' know we're turning off //
-			printf("Collision detected. Shutting down...");
+			continue;
 		}
 
-		pthread_exit(NULL);
-	}*/
+		// Check for collision
+		substate.mode = collision_protect(substate.imuorientation.x_acc, 
+			substate.imuorientation.y_acc, substate.imuorientation.z_acc);
+		if( substate.mode == STOPPED )
+		{
+			continue;
+		}
+		
 	}
 
-    return NULL;
+    pthread_exit(NULL);
 }
 
 
