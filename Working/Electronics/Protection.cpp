@@ -42,7 +42,7 @@
 sub_state_t temp_protection(float temperature)
 {
 	// Declare variable to hold the submode
-	enum submode;
+	typedef enum submode;
 
 	// Read temperature values from DS18B20 temperature sensor 
 	//ds18b20 = ds18b20_read(); 	// temperature in deg C
