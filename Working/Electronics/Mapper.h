@@ -32,34 +32,33 @@
  * Create Structs
 ***************************************************************************/
 
-// struct for hold ms5837 calibration values
+// Struct for hold ms5837 calibration values
 typedef struct
 {
 	float C1, C2, C3, C4, C5, C6;
 }pressure_calib_t;
 
-// struct for holding ms5837 return values
+// Struct for holding ms5837 return values
 typedef struct
 {
 	//float pressure, temperature;
 	float pressure;
 }ms5837_t;
 
-// struct for holding bno055 return values
+// Struct for holding bno055 return values
 typedef struct
 {
 	float yaw, roll, pitch, p, q, r;
 	int sys, gyro, accel, mag;
 }bno055_t;
 
-// struct for holding ds18b20 temperature sensor return values
+// Struct for holding ds18b20 temperature sensor return values
 typedef struct
 {
 	float temperature;
 }ds18b20_t;
 
-
-// struct for PID Controllers
+// Struct for PID Controllers
 typedef struct pid_data_t
 {
 	float kp, ki, kd;
@@ -69,21 +68,23 @@ typedef struct pid_data_t
 	float current;
 }pid_data_t;
 
+// Struct for setpoints
 typedef struct setpoint_t
 {
 	float yaw;				// yaw angle in (rad)
-	float yaw_rate;		// yaw rate (rad/s)
+	float yaw_rate;			// yaw rate (rad/s)
 	float depth;			// z component in fixed coordinate system
 	float speed;			// speed setpoint
 }setpoint_t;
 
+// Struct for holding current system state
 typedef struct system_state_t
 {
 	float roll;					// current roll angle (rad)
-	float pitch[2];			// current pitch angle (rad) 0: current value, 1: last value
+	float pitch[2];				// current pitch angle (rad) 0: current value, 1: last value
 	float yaw[2];				// current yaw angle (rad) 0: current value, 1: last value
-	float depth[2];			// depth estimate (m)
-	float fdepth[2];		// filtered depth estimate (m)
+	float depth[2];				// depth estimate (m)
+	float fdepth[2];			// filtered depth estimate (m)
 	float speed;				// speed (m/s)
 
 	float p[2];					// first derivative of roll (rad/s)
@@ -93,18 +94,15 @@ typedef struct system_state_t
 
 	int sys;		// system calibrations status (0=uncalibrated, 3=fully calibrated)
 	int gyro;		// gyro calibrations status (0=uncalibrated, 3=fully calibrated)
-	int accel;	// accelerometer calibrations status (0=uncalibrated, 3=fully calibrated)
+	int accel;		// accelerometer calibrations status (0=uncalibrated, 3=fully calibrated)
 	int mag;		// magnetometer calibrations status (0=uncalibrated, 3=fully calibrated)
-
-	float control_u[4];			// control outputs: depth,roll,pitch,yaw
-	float esc_out;				// control output to motors
-	//float esc_out[4];			// normalized (0-1) outputs to motors
-	int num_yaw_spins;			// remember number of spins around Z-axis
 }system_state_t;
 
 
 /***************************************************************************
- * Global Variables
+*
+* Global Variables
+*
 ***************************************************************************/
 
 // Holds the setpoint data structure with current setpoints
