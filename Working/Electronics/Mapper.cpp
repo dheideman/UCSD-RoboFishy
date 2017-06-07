@@ -3,6 +3,7 @@
 ******************************************************************************/
 
 #include "Mapper.h"
+#include "Core.h"
 
 // Multithreading
 #include <pthread.h>
@@ -383,34 +384,63 @@ void *safety_thread(void* arg)
 
 	/*while( substate.mode != STOPPED )
 	{
-		// Check pressure
-		substate.mode = pressure_protect(ms5837.pressure, sstate.fdepth);
-		if( substate.mode == STOPPED )
+		// Check if depth threshold has been exceeded
+		if( substate.fdepth > DEPTH_STOP )
 		{
+			substate.mode = STOPPED;
+			printf("%s\n", "STOPPED");
 			continue;
+		}
+		else
+		{
+			// We're still good
+			substate.mode = RUNNING;
 		}
 
-		// Check temperautre
-		substate.mode = temp_protect(ds18b20.temperature);
-		if( substate.mode == STOPPED )
+		// Check temperature
+		// Shut down AUV if housing temperature gets too high 
+
+		if( ds18b20.temperature > TEMP_STOP )
 		{
+			substate.mode = STOPPED;
+			printf("It's too hot! Shutting down...\n");
 			continue;
 		}
+		else
+		{
+			// We're still good
+			substate.mode = RUNNING;
+		}
+
 
 		// Check for leak
 		leakState = digitalRead(LEAKPIN);	// check the state of LEAKPIN
-		substate.mode = leak_protect(leakState);
-		if( substate.mode == STOPPED )
+		if( leakState == HIGH )
 		{
+			substate.mode = STOPPED;
+			printf("LEAK DETECTED! Shutting down...\n");
 			continue;
 		}
+		else if (leakState == LOW)
+		{
+			// We're still good 
+			substate.mode = RUNNING;
+		}
 
-		// Check for collision
+		// Check IMU accelerometer for collision (1+ g detected) 
 		substate.mode = collision_protect(substate.imuorientation.x_acc,
 			substate.imuorientation.y_acc, substate.imuorientation.z_acc);
-		if( substate.mode == STOPPED )
+		if( (float)fabs(x_acc) > 1.0*GRAVITY || (float)fabs(y_acc) > 1.0*GRAVITY 
+			|| (float)fabs(z_acc) > 1.0*GRAVITY )
 		{
+			substate.mode = STOPPED;
+			printf("Collision detected. Shutting down...");
 			continue;
+		}
+		else
+		{
+			// We're still good
+			substate.mode = RUNNING;
 		}
 
 	}*/
