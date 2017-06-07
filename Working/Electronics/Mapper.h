@@ -128,6 +128,9 @@ extern int motor_channels[];
 // Ignoring sstate
 extern float depth;
 
+// Holds the AUV substate
+extern sub_state_t substate;
+
 
 /******************************************************************************
 *
