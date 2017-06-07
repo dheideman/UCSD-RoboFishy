@@ -28,10 +28,10 @@
 #define MOTOR_0 2674    // motor output is 0
 
 // Motor Constants
-#define MOTOR_DEADZONE = 0.05   // 5 percent
-#define PWM_LOW_LIMIT  = 1940   // PWM value
-#define PWM_HIGH_LIMIT = 3354   // PWM value
-#define PWM_ZERO_VALUE = 2647   // PWM value
+#define MOTOR_DEADZONE 0.05   // 5 percent
+#define PWM_LOW_LIMIT  1940   // PWM value
+#define PWM_HIGH_LIMIT 3354   // PWM value
+#define PWM_ZERO_VALUE 2647   // PWM value
 
 // Protection Constants
 #define DEPTH_STOP 2000	// threshold depth (mm)
@@ -39,7 +39,7 @@
 
 
 /***************************************************************************
-* 
+*
 * Create Structs
 *
 ***************************************************************************/
