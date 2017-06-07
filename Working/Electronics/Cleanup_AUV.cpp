@@ -36,5 +36,8 @@ int cleanup_auv()
 		// Sleep...just cuz
 		usleep(10000);
 	}
+
+	Py_Finalize();
+
 	return 0;
 }
