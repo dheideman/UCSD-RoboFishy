@@ -136,8 +136,6 @@ extern int motor_channels[];
 extern float depth;
 
 
-
-
 /******************************************************************************
 *
 * Function Prototypes
@@ -152,22 +150,22 @@ int set_motor(int motor_num, float speed);
 // Yaw controller declaration function
 float yaw_controller(bno055_t bno055, pid_data_t yaw_pid);
 
-// Functions for Reading MS5837 Pressure Sensor
+// Functions for reading MS5837 Pressure Sensor
 pressure_calib_t init_ms5837(); // initialize ms5837
 ms5837_t ms5837_read(pressure_calib_t arg_in); // read values from ms5837
 
-// Functions for Reading BNO055 IMU
+// Functions for reading BNO055 IMU
 void start_Py_bno055(void); // start Python background process
 bno055_t bno055_read(void); // read values from bno055
 
-// Functions for Reading DS18B20 Temperature Sensor
+// Functions for reading DS18B20 temperature sensor
 void start_Py_ds18b20(void); // start Python background process
 ds18b20_t ds18b20_read(void);	// read values from ds18b20
 
-// Startup Functions
+// Startup functions
 int scripps_auv_init(void);
 
-// Cleanup and Shutdown
+// Cleanup and shutdown
 void ctrl_c(int signo); // signal catcher
 int cleanup_auv();		// call at the very end of main()
 
