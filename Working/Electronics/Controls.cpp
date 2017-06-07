@@ -12,43 +12,28 @@
 * +100%) that the port and starboard thrusters should run at
 ******************************************************************************/
 
-float yaw_controller(bno055_t bno055, pid_data_t yaw_pid)
-{
-	float motor_percent;
-	float DT = 0.005;
-	float YAW_SAT = 0.2;
+float marchPID(pid_data_t controller, float input)
+{	
+	controller.current = input;
 
-	// control output //
-	if( bno055.yaw < 180 ) // AUV is pointed right
-	{
-		// motor_percent is negative
-		motor_percent = yaw_pid.kp*(yaw_pid.err) 
-			+ yaw_pid.kd*(bno055.r)+ yaw_pid.ki*yaw_pid.i_err; // yaw controller
+	controller.kerr = input - controller.setpoint;
+	controller.derr = (controller.new - controller.old)/(controller.DT);
+	controller.ierr += controller.DT * input;
 
-	}
-	else		// AUV is pointed left
+
+	controller.output =   controller.kp * controller.kerr
+						+ controller.ki * controller.ierr
+						+ controller.kd * controller.derr;
+
+	if(controller.output > controller.SAT)
 	{
-		// motor_percent is positive
-	motor_percent = yaw_pid.kp*(yaw_pid.err) + yaw_pid.kd*(bno055.r) 
-			+ yaw_pid.ki*yaw_pid.i_err; // yaw controller
+		controller.output = controller.SAT;
 	}
 
-	// saturate yaw controller //
-	if( motor_percent > YAW_SAT )
-	{
-		motor_percent=YAW_SAT;
-	}
-	else if( motor_percent < -YAW_SAT )
-	{
-		motor_percent = -YAW_SAT;
-	}
+	// set current input to be the old input //
+	controller.old = input;
 
-	yaw_pid.i_err += yaw_pid.err*DT;
-
-	// set current yaw to be the old yaw //
-	yaw_pid.old = bno055.yaw;
-
-	return motor_percent;
+	return controller.output;
 }
 
 
