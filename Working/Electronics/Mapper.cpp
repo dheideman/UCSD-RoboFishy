@@ -302,7 +302,7 @@ void *navigation(void* arg)
 		// Sanity test: Check if yaw control works
 
 		//Call yaw controller function
-/*		yaw_controller(substate.imuorientation, yaw_pid);
+/*		marchPID(substate.imuorientation, yaw_pid);
 
 		// Set port motor
 		//set_motor(0,motor_percent);

@@ -9,11 +9,11 @@
  * void start_Py_ds18b20(void)
  *
  * Writes temperature values from the DS18B20 temperature sensor into
- * ds18b20_fifo.fifo
+ * temp.fifo
 ***************************************************************************/
 void start_Py_ds18b20(void)
 {
-    std::FILE* fd = fopen("temperature_sensor.py", "r");
+  std::FILE* fd = fopen("temperature_sensor.py", "r");
 	PyRun_SimpleFile(fd,"temperature_sensor.py");
 	return;
 }
@@ -21,16 +21,16 @@ void start_Py_ds18b20(void)
 /***************************************************************************
  * ds18b20_t ds18b20_read(void)
  *
- * Reads temperature values from ds18b20_fifo.fifo
+ * Reads temperature values from temp.fifo
 ***************************************************************************/
 ds18b20_t ds18b20_read(void)
 {
 	// Create struct to hold temperature data
 	ds18b20_t ds18b20;
 
-	// Read temperature values from ds18b20_fifo.fifo
+	// Read temperature values from temp.fifo
 	char buf[1000];
-    std::FILE *fd = fopen( "ds18b20_fifo.fifo", "r");
+    std::FILE *fd = fopen("temp.fifo", "r");
 	fgets(buf,1000,fd);
 	fclose(fd);
 	sscanf(buf,"%f",&ds18b20.temperature);
