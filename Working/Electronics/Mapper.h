@@ -144,7 +144,7 @@ extern float depth;
 ******************************************************************************/
 
 // Functions for setting motor PWM with PCA9685
-int initialize_motors(int channels[4], float freq);
+int initialize_motors(int channels[3], float freq);
 int saturate_number(float* val, float min, float max);
 int set_motor(int motor_num, float speed);
 

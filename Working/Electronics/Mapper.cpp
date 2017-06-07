@@ -130,7 +130,6 @@ int main()
 	}
 	printf("\nAll components are initializated\n");
 	substate.mode = INITIALIZING;
-	substate.laserarmed = ARMED;
 
 
 	// Initialize threads
@@ -165,7 +164,6 @@ int main()
 	pthread_t navigationThread;
 	pthread_t depthThread;
 	pthread_t safetyThread;
-	pthread_t disarmlaserThread;
 
 	// Create threads using modified attributes
 	pthread_create (&navigationThread, &tattrmed, navigation, NULL);
@@ -173,7 +171,6 @@ int main()
 //	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 
 //	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
-//	pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
 
 
 	// Destroy the thread attributes
@@ -207,15 +204,15 @@ int main()
 ******************************************************************************/
 void *depth_thread(void* arg)
 {
-	// initialize pressure sensor //
+	// Initialize pressure sensor //
 	pressure_calib = init_ms5837();
 
 	while(substate.mode!=STOPPED)
 	{
-		// read pressure sensor by passing calibration structure //
+		// Read pressure sensor by passing calibration structure //
 		ms5837 = ms5837_read(pressure_calib);
 
-		// calculate depth (no idea what the magic numbers are)
+		// Calculate depth (no idea what the magic numbers are)
 		depth = (ms5837.pressure-1013)*10.197-88.8; // units?
 		// 1013: ambient pressure (mbar)
 		// 10.197*p_mbar = p_mmH20
@@ -242,8 +239,15 @@ void *navigation(void* arg)
 	// initialize Motor Percent to be returned by yaw_controller //
 	//float motor_percent;
 
+	// Initialize old imu data //
+	yaw_pid.old = 0;
+
 	// Initialize setpoint for yaw_controller //
 	yaw_pid.setpoint = 0;
+
+	// Initialize error values to be used in yaw_controller //
+	yaw_pid.err = 0;
+	yaw_pid.i_err = 0;
 
 	// yaw_controller constant initialization //
 	yaw_pid.kp = 0.01;
@@ -258,6 +262,10 @@ void *navigation(void* arg)
 	depth_pid.kd = 0;
 	depth_pid.ki = 0;
 
+	// Initialize error values to be used in depth_controller //
+	depth_pid.err = 0;
+	depth_pid.i_err = 0;
+
 	// Hard set motor speed //
 	// pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
 	//set_motor(0, -0.2);  // right
@@ -269,37 +277,39 @@ void *navigation(void* arg)
 		// read IMU values
 		bno055 = bno055_read();
 
-    if (bno055.yaw < 180)
-	{
-	yaw_pid.err = abs(bno055.yaw - yaw_pid.setpoint);
-	}
-	else
-	{
-	yaw_pid.err =abs((bno055.yaw-360) - yaw_pid.setpoint);
-	}
-	// Write captured values to screen
-    /*printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
-				 bno055.yaw, bno055.pitch, bno055.roll,
-				 bno055.p, bno055.q, bno055.r,
-				 bno055.sys, bno055.gyro, bno055.accel,
-				 bno055.mag);*/
+	    if (bno055.yaw < 180)
+		{
+			yaw_pid.err = abs(bno055.yaw - yaw_pid.setpoint);
+		}
+		else
+		{
+			yaw_pid.err =abs((bno055.yaw-360) - yaw_pid.setpoint);
+		}
+
+		// Write captured values to screen
+	    /*printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
+			 bno055.yaw, bno055.pitch, bno055.roll,
+			 bno055.p, bno055.q, bno055.r,
+			 bno055.sys, bno055.gyro, bno055.accel,
+			 bno055.mag);*/
 	
     
 
-	// Sanity test: Check if yaw control works
+		// Sanity test: Check if yaw control works
+		
+		//Call yaw controller function
+		yaw_controller(bno055, yaw_pid);
+
+		// Set port motor
+		//set_motor(0,motor_percent);
+
+		// Set starboard motor
+		//set_motor(1, motor_percent);
+
+		
+		printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
 	
-	//Call yaw controller function
-	motor_percent = yaw_controller(bno055, yaw_pid);
-
-	//set port motor
-	//set_motors(0,motor_percent);
-
-	//set starboard motor
-	//set_motors(1, motor_percent);
-
-	
-	printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
-	// sleep for 5 ms //
+		// Sleep for 5 ms //
 	    if (bno055.yaw < 180)
 		{
 		yaw_pid.err = abs(bno055.yaw - yaw_pid.setpoint);
