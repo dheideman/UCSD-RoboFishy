@@ -25,16 +25,16 @@ void start_Py_ds18b20(void)
 ***************************************************************************/
 ds18b20_t ds18b20_read(void)	
 {
-	// create struct to hold temperature data //
+	// Create struct to hold temperature data 
 	ds18b20_t ds18b20;
 
-	// read temperature values from ds18b20_fifo.fifo //
+	// Read temperature values from ds18b20_fifo.fifo 
 	char buf[1000];
     std::FILE *fd = fopen( "ds18b20_fifo.fifo", "r");
 	fgets(buf,1000,fd);
 	fclose(fd);
 	sscanf(buf,"%f",&ds18b20.temperature);
 
-	// return a temperature value //
+	// Return a temperature value 
 	return ds18b20;
 }
