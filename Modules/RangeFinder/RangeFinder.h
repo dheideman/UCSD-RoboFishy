@@ -70,7 +70,6 @@ typedef struct local_images_t
 
 // Threads
 void *rangeFinder(void*);
-void *disarmLaser(void*);
 
 // Mutex Lock Initializer
   // Coming soon
