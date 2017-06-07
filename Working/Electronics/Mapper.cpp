@@ -80,7 +80,7 @@ void *safety_thread(void* arg);
 setpoint_t setpoint;
 
 // Holds the system state structure with current system statesystem_state_t sstate;
-system_state_t sstate;
+//system_state_t sstate;
 
 // Holds the calibration values for the MS5837 pressure sensor
 pressure_calib_t pressure_calib;
@@ -89,7 +89,7 @@ pressure_calib_t pressure_calib;
 ms5837_t ms5837;
 
 // Create structure for storing IMU data
-bno055_t bno055;
+//bno055_t bno055;
 
 // Holds the latest temperature value from the DS18B20 temperature sensor
 ds18b20_t ds18b20;
@@ -277,16 +277,17 @@ void *navigation(void* arg)
 
 	while(substate.mode!=STOPPED)
 	{
-		// read IMU values
-		bno055 = bno055_read();
+		// read IMU values from fifo file
+		//bno055 = bno055_read();
+		substate.imuorientation = bno055_read();
 
-	    if (bno055.yaw < 180) //AUV pointed right
+	    if (substate.imuorientation.yaw < 180) //AUV pointed right
 		{
-			yaw_pid.err = bno055.yaw - yaw_pid.setpoint;
+			yaw_pid.err = substate.imuorientation.yaw - yaw_pid.setpoint;
 		}
 		else //AUV pointed left
 		{
-			yaw_pid.err =(bno055.yaw-360) - yaw_pid.setpoint;
+			yaw_pid.err =(substate.imuorientation.yaw-360) - yaw_pid.setpoint;
 		}
 
 		// Write captured values to screen
@@ -301,7 +302,7 @@ void *navigation(void* arg)
 		// Sanity test: Check if yaw control works
 
 		//Call yaw controller function
-		yaw_controller(bno055, yaw_pid);
+		yaw_controller(substate.imuorientation, yaw_pid);
 
 		// Set port motor
 		//set_motor(0,motor_percent);
@@ -313,13 +314,13 @@ void *navigation(void* arg)
 		printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
 
 		// Sleep for 5 ms //
-	    if (bno055.yaw < 180)
+	    if (substate.imuorientation.yaw < 180)
 		{
-		yaw_pid.err = abs(bno055.yaw - yaw_pid.setpoint);
+		yaw_pid.err = abs(substate.imuorientation.yaw - yaw_pid.setpoint);
 		}
 		else
 		{
-		yaw_pid.err =abs((bno055.yaw-360) - yaw_pid.setpoint);
+		yaw_pid.err =abs((substate.imuorientation.yaw - 360) - yaw_pid.setpoint);
 		}
 
 		// Write captured values to screen
@@ -374,7 +375,7 @@ void *safety_thread(void* arg)
 	digitalWrite(LEAKPOWERPIN, HIGH);	// write high to provide Vcc
 
 	// Leak checking variables
-	int leakState;
+	int leakState;	// holds the state (HIGH or LOW) of the SOSPIN
 
 	while( substate.mode != STOPPED )
 	{
