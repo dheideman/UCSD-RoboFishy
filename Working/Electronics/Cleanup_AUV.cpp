@@ -15,23 +15,25 @@ int cleanup_auv()
 	// Set state to exiting
 	substate.mode = STOPPED;
 
-	// let 'em know
+	// Let 'em know
 	printf("\nExiting Cleanly\n");
 
-	// let final threads clean up
+	// Let final threads clean up
 	usleep(500000);
 
-	// delete fifo file
+	// Delete fifo file
 	remove("bno055_fifo.txt");
 	printf("\nbno055_fifo.txt deleted successfully\n");
 
 	// Set all motors to zero
 	int channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3};
 	int i;
-	for( i = 0; (i < 3); i = i+1 )
+	for( i=0; i<3; i++ )
 	{
-		pwmWrite (PIN_BASE+channels[i], 2674);		// set motor outputs to 0
-		// sleep...just cuz
+		// Shut off motors
+		pwmWrite (PIN_BASE+channels[i], MOTOR_0);
+
+		// Sleep...just cuz
 		usleep(10000);
 	}
 	return 0;
