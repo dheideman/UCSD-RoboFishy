@@ -70,34 +70,15 @@ typedef struct pid_data_t
 }pid_data_t;
 
 // Struct for setpoints
-typedef struct setpoint_t
+/*typedef struct setpoint_t
 {
 	float yaw;				// yaw angle in (rad)
 	float yaw_rate;			// yaw rate (rad/s)
 	float depth;			// z component in fixed coordinate system
 	float speed;			// speed setpoint
-}setpoint_t;
+}setpoint_t;*/
 
-// Struct for holding current system state
-typedef struct system_state_t
-{
-	float roll;					// current roll angle (rad)
-	float pitch[2];				// current pitch angle (rad) 0: current value, 1: last value
-	float yaw[2];				// current yaw angle (rad) 0: current value, 1: last value
-	float depth[2];				// depth estimate (m)
-	float fdepth[2];			// filtered depth estimate (m)
-	float speed;				// speed (m/s)
 
-	float p[2];					// first derivative of roll (rad/s)
-	float q[2];					// first derivative of pitch (rad/s)
-	float r[2];					// first derivative of yaw (rad/s)
-	float ddepth;				// first derivative of depth (m/s)
-
-	int sys;		// system calibrations status (0=uncalibrated, 3=fully calibrated)
-	int gyro;		// gyro calibrations status (0=uncalibrated, 3=fully calibrated)
-	int accel;		// accelerometer calibrations status (0=uncalibrated, 3=fully calibrated)
-	int mag;		// magnetometer calibrations status (0=uncalibrated, 3=fully calibrated)
-}system_state_t;
 
 
 /***************************************************************************
@@ -107,10 +88,7 @@ typedef struct system_state_t
 ***************************************************************************/
 
 // Holds the setpoint data structure with current setpoints
-extern setpoint_t setpoint;
-
-// Holds the system state structure with current system statesystem_state_t sstate;
-extern system_state_t sstate;
+//extern setpoint_t setpoint;
 
 // Holds the calibration values for the MS5837 pressure sensor
 extern pressure_calib_t pressure_calib;
@@ -119,7 +97,7 @@ extern pressure_calib_t pressure_calib;
 extern ms5837_t ms5837;
 
 // Create structure for storing IMU data
-extern bno055_t bno055;
+//extern bno055_t bno055; //moved to the core
 
 // Holds the latest temperature value from the DS18B20 temperature sensor
 extern ds18b20_t ds18b20;
