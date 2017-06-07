@@ -267,38 +267,39 @@ void *navigation(void* arg)
 	while(substate.mode!=STOPPED)
 	{
 		// read IMU values
-		bno055 = bno055_read();
-/*
-        if (bno055.yaw < 180)
-		{
-		yaw_pid.err = abs(bno055.yaw - yaw_pid.setpoint);
-		}
-		else
-		{
-		yaw_pid.err =abs((bno055.yaw-360) - yaw_pid.setpoint);
-		}
-		// Write captured values to screen
-	    printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
-					 bno055.yaw, bno055.pitch, bno055.roll,
-					 bno055.p, bno055.q, bno055.r,
-					 bno055.sys, bno055.gyro, bno055.accel,
-					 bno055.mag);
-	    */
+	bno055 = bno055_read();
 
-		// Sanity test: Check if yaw control works
-		/*
-		//Call yaw controller function
-		yaw_controller();
+    if (bno055.yaw < 180)
+	{
+	yaw_pid.err = abs(bno055.yaw - yaw_pid.setpoint);
+	}
+	else
+	{
+	yaw_pid.err =abs((bno055.yaw-360) - yaw_pid.setpoint);
+	}
+	// Write captured values to screen
+    /*printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
+				 bno055.yaw, bno055.pitch, bno055.roll,
+				 bno055.p, bno055.q, bno055.r,
+				 bno055.sys, bno055.gyro, bno055.accel,
+				 bno055.mag);*/
+	printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
+    
 
-		//set port motor
-		set_motors(0,motor_percent);
+	// Sanity test: Check if yaw control works
+	/*
+	//Call yaw controller function
+	yaw_controller();
 
-		//set starboard motor
-		set_motors(1, motor_percent);
+	//set port motor
+	set_motors(0,motor_percent);
 
-		*/
+	//set starboard motor
+	set_motors(1, motor_percent);
 
-		// sleep for 5 ms //
+	*/
+
+	// sleep for 5 ms //
 		usleep(5000);
 	}
 
