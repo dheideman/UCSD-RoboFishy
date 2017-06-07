@@ -260,9 +260,9 @@ void *navigation(void* arg)
 
 	// hard set motor speed //
 	// pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
-	set_motor(0, -0.2);  // right
-	set_motor(1, 0.2); // left
-    set_motor(2, 0.0);
+	//set_motor(0, -0.2);  // right
+	//set_motor(1, 0.2); // left
+    //set_motor(2, 0.0);
 
 	while(substate.mode!=STOPPED)
 	{
@@ -283,29 +283,29 @@ void *navigation(void* arg)
 				 bno055.p, bno055.q, bno055.r,
 				 bno055.sys, bno055.gyro, bno055.accel,
 				 bno055.mag);*/
-	printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
+	
     
 
 	// Sanity test: Check if yaw control works
-	/*
+	
 	//Call yaw controller function
 	yaw_controller();
 
 	//set port motor
-	set_motors(0,motor_percent);
+	//set_motors(0,motor_percent);
 
 	//set starboard motor
-	set_motors(1, motor_percent);
+	//set_motors(1, motor_percent);
 
-	*/
-
+	
+	printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
 	// sleep for 5 ms //
 		usleep(5000);
 	}
 
-	set_motor(0, 0);
-	set_motor(1, 0);
-    set_motor(2, 0);
+	//set_motor(0, 0);
+	//set_motor(1, 0);
+    //set_motor(2, 0);
 
 	pthread_exit(NULL);
 }
