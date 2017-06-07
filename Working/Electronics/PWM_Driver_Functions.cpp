@@ -50,24 +50,18 @@ int initialize_motors(int channels[3], float freq)
 ******************************************************************************/
 int set_motor(int motornum, float percent)
 {
-  // Define deadzone (percent)
-  float deadzone = 0.05;
-
   // Define characteristics of PWM pulse, microseconds
-//  int pwmlowlimit  = 1940;
-	int pwmhighlimit = 3354;
-	int pwmzerovalue = 2647;
-	float amplitude  = pwmhighlimit - pwmzerovalue;
+	float amplitude  = PWM_HIGH_LIMIT - PWM_ZERO_VALUE;
 
 	// Saturation limits
   if( percent >  1.0) percent =  1.0;
   if( percent < -1.0) percent = -1.0;
   
   // Deadzone check
-  if( (percent < deadzone) && (percent > -deadzone) ) percent = 0.0;
+  if( (percent < MOTOR_DEADZONE) && (percent > -MOTOR_DEADZONE) ) percent = 0.0;
 	
 	// Calculate corresponding pwm output value
-	int motoroutput = percent * amplitude;
+	int motoroutput = percent * amplitude + PWM_ZERO_VALUE;
 	
 	// Spin those motors
   pwmWrite(motornum + PIN_BASE, motoroutput);	

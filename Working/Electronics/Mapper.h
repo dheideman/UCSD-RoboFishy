@@ -1,8 +1,6 @@
 #ifndef MAPPER_H
 #define MAPPER_H
 
-#define  DEBUG
-
 #include <pca9685.h>
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
@@ -12,6 +10,11 @@
 #include <time.h>
 #include <signal.h>		// capture control-c
 
+// Core Module
+#include "../../Modules/Core/Core.h"
+
+
+#define  DEBUG
 
 #define PCA9685_ADDR 0x40
 #define PIN_BASE 300
@@ -24,8 +27,12 @@
 
 #define MOTOR_0 2674    // motor output is 0
 
-// Core Module
-#include "../../Modules/Core/Core.h"
+// Motor Constants
+#define MOTOR_DEADZONE = 0.05   // 5 percent
+#define PWM_LOW_LIMIT  = 1940   // PWM value
+#define PWM_HIGH_LIMIT = 3354   // PWM value
+#define PWM_ZERO_VALUE = 2647   // PWM value
+
 
 
 /***************************************************************************
