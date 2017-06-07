@@ -3,7 +3,6 @@
 ******************************************************************************/
 
 #include "Mapper.h"
-#include "Core.h"
 
 // Multithreading
 #include <pthread.h>
@@ -206,7 +205,7 @@ int main()
 *
 * For Recording Depth & Determining If AUV is in Water or Not
 ******************************************************************************/
-void *depth_thread(void* arg)
+/*void *depth_thread(void* arg)
 {
 	// Initialize pressure sensor
 	pressure_calib = init_ms5837();
@@ -225,14 +224,14 @@ void *depth_thread(void* arg)
 	}
 
 	pthread_exit(NULL);
-}
+}*/
 
 /******************************************************************************
  * Navigation Thread
  *
  * For yaw control
  *****************************************************************************/
-
+/*
 void *navigation(void* arg)
 {
 	initialize_motors(motor_channels, HERTZ);
@@ -303,7 +302,7 @@ void *navigation(void* arg)
 		// Sanity test: Check if yaw control works
 
 		//Call yaw controller function
-		yaw_controller(substate.imuorientation, yaw_pid);
+/*		yaw_controller(substate.imuorientation, yaw_pid);
 
 		// Set port motor
 		//set_motor(0,motor_percent);
@@ -349,14 +348,14 @@ void *navigation(void* arg)
 
 		// Sleep for 5 ms //
 //		usleep(5000);
-	}
+//	}
 
 	//set_motor(0, 0);
 	//set_motor(1, 0);
     //set_motor(2, 0);
 
 //	pthread_exit(NULL);
-}
+//}
 
 
 /******************************************************************************
@@ -379,8 +378,9 @@ void *safety_thread(void* arg)
 	int leakState;	// holds the state (HIGH or LOW) of the LEAKPIN
 
 	// Test if temp sensor reads anything
-	int temp;
-	//temp = ds18b20_read();
+	float temp;
+	temp = ds18b20_read();
+	printf("Temperature: %f degC\n", temp);
 
 	/*while( substate.mode != STOPPED )
 	{
@@ -388,7 +388,7 @@ void *safety_thread(void* arg)
 		if( substate.fdepth > DEPTH_STOP )
 		{
 			substate.mode = STOPPED;
-			printf("%s\n", "STOPPED");
+			printf("We're too deep! Shutting down...\n");
 			continue;
 		}
 		else
@@ -428,10 +428,9 @@ void *safety_thread(void* arg)
 		}
 
 		// Check IMU accelerometer for collision (1+ g detected) 
-		substate.mode = collision_protect(substate.imuorientation.x_acc,
-			substate.imuorientation.y_acc, substate.imuorientation.z_acc);
-		if( (float)fabs(x_acc) > 1.0*GRAVITY || (float)fabs(y_acc) > 1.0*GRAVITY 
-			|| (float)fabs(z_acc) > 1.0*GRAVITY )
+		if( (float)fabs(substate.imuorientation.x_acc) > 1.0*GRAVITY 
+			|| (float)fabs(substate.imuorientation.y_acc) > 1.0*GRAVITY 
+			|| (float)fabs(substate.imuorientation.z_acc) > 1.0*GRAVITY )
 		{
 			substate.mode = STOPPED;
 			printf("Collision detected. Shutting down...");
