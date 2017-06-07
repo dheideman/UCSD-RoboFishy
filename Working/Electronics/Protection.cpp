@@ -39,7 +39,7 @@
  *
  * Shut down AUV if housing temperature exceeds 50 deg C
  *****************************************************************************/
-sub_state_t temp_protection(float temperature)
+/*sub_state_t temp_protection(float temperature)
 {
 	// Declare variable to hold the submode
 	enum submode;
@@ -65,7 +65,7 @@ sub_state_t temp_protection(float temperature)
 	}
 
 	return submode;
-}
+}*/
 /******************************************************************************
  * Leak Protection
  *

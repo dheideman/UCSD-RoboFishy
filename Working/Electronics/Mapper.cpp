@@ -77,7 +77,7 @@ void *safety_thread(void* arg);
 ******************************************************************************/
 
 // Holds the setpoint data structure with current setpoints
-setpoint_t setpoint;
+//setpoint_t setpoint;
 
 // Holds the system state structure with current system statesystem_state_t sstate;
 //system_state_t sstate;
@@ -379,7 +379,7 @@ void *safety_thread(void* arg)
 
 	// Test if temp sensor reads anything
 	int temp;
-	temp = ds18b20_read();
+	//temp = ds18b20_read();
 
 	/*while( substate.mode != STOPPED )
 	{
