@@ -237,7 +237,7 @@ void *navigation(void* arg)
 	float motor_percent;
 
 	// Initialize old imu data //
-	yaw_pid.oldyaw = 0;
+	yaw_pid.old = 0;
 
 	// Initialize setpoint for yaw_controller //
 	yaw_pid.setpoint = 0;
@@ -261,15 +261,46 @@ void *navigation(void* arg)
 
 	// Hard set motor speed //
 	// pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
-	set_motor(0, -0.2);  // right
-	set_motor(1, 0.2); // left
-    set_motor(2, 0.0);
+	//set_motor(0, -0.2);  // right
+	//set_motor(1, 0.2); // left
+    //set_motor(2, 0.0);
 
 	while(substate.mode!=STOPPED)
 	{
 		// read IMU values
 		bno055 = bno055_read();
 
+    if (bno055.yaw < 180)
+	{
+	yaw_pid.err = abs(bno055.yaw - yaw_pid.setpoint);
+	}
+	else
+	{
+	yaw_pid.err =abs((bno055.yaw-360) - yaw_pid.setpoint);
+	}
+	// Write captured values to screen
+    /*printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
+				 bno055.yaw, bno055.pitch, bno055.roll,
+				 bno055.p, bno055.q, bno055.r,
+				 bno055.sys, bno055.gyro, bno055.accel,
+				 bno055.mag);*/
+	
+    
+
+	// Sanity test: Check if yaw control works
+	
+	//Call yaw controller function
+	yaw_controller(bno055, yaw_pid);
+
+	//set port motor
+	//set_motors(0,motor_percent);
+
+	//set starboard motor
+	//set_motors(1, motor_percent);
+
+	
+	printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
+	// sleep for 5 ms //
 	    if (bno055.yaw < 180)
 		{
 		yaw_pid.err = abs(bno055.yaw - yaw_pid.setpoint);
@@ -305,9 +336,9 @@ void *navigation(void* arg)
 		usleep(5000);
 	}
 
-	set_motor(0, 0);
-	set_motor(1, 0);
-    set_motor(2, 0);
+	//set_motor(0, 0);
+	//set_motor(1, 0);
+    //set_motor(2, 0);
 
 	pthread_exit(NULL);
 }
@@ -319,7 +350,7 @@ void *navigation(void* arg)
  * Shuts down AUV if vehicle goes belows 10m, temperature gets too high, or
  * water intrusion is detected
  *****************************************************************************/
-void *safety_thread(void* arg)
+/*void *safety_thread(void* arg)
 {
 	// set up WiringPi for use // (not sure if actually needed)
 	wiringPiSetup();
@@ -339,8 +370,8 @@ void *safety_thread(void* arg)
 		 * Depth Protection
 		 *
 		 * Shut down AUV if vehicle travels deeper than 10m
-		 *****************************************************************************/
-
+		 *****************************************************************************/ 
+/*
 		// get pressure value //
 		pressure_calib = init_ms5837();
 		ms5837 = ms5837_read(pressure_calib);
@@ -376,7 +407,7 @@ void *safety_thread(void* arg)
 		 *
 		 * Shut down AUV if housing temperature exceeds 50 deg C
 		 *****************************************************************************/
-
+/*
 		// read temperature values from DS18B20 temperature sensor //
 		ds18b20 = ds18b20_read(); 	// temperature in deg C
 
@@ -400,7 +431,7 @@ void *safety_thread(void* arg)
 		 *
 		 * Shut down AUV if a leak is detected
 		 *****************************************************************************/
-
+/*
 		// check leak sensor for water intrusion //
 		if( leakStatePin == HIGH )
 		{
@@ -423,7 +454,7 @@ void *safety_thread(void* arg)
 		 *
 		 * Shut down AUV if a collision is detected
 		 *****************************************************************************/
-
+/*
 		// check IMU accelerometer for collision (1+ g detected) //
 		if( bno055.x_acc > 1.0*GRAVITY || bno055.y_acc > 1.0*GRAVITY 
 			|| bno055.z_acc > 1.0*GRAVITY )

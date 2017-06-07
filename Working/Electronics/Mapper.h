@@ -151,6 +151,9 @@ int initialize_motors(int channels[4], float freq);
 int saturate_number(float* val, float min, float max);
 int set_motor(int motor_num, float speed);
 
+// Yaw controller declaration function
+float yaw_controller(bno055_t bno055, pid_data_t yaw_pid);
+
 // Functions for Reading MS5837 Pressure Sensor
 pressure_calib_t init_ms5837(); // initialize ms5837
 ms5837_t ms5837_read(pressure_calib_t arg_in); // read values from ms5837
