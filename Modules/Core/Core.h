@@ -2,7 +2,7 @@
  * Core.h
  *
  * Core Module: Defines global submersible types
- * 
+ *
  ******************************************************************************/
 
 #ifndef AUVCORE_H
@@ -47,7 +47,7 @@ typedef struct
 {
   float yaw, roll, pitch, p, q, r;
   int sys, gyro, accel, mag;
-}bno055_t;
+} bno055_t;
 
 // Submersible overall state type
 typedef struct sub_state_t
