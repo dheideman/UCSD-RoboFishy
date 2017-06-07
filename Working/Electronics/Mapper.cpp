@@ -1,6 +1,6 @@
 /******************************************************************************
- *	Main script for the 2017 RoboFishy Scripps AUV
- *****************************************************************************/
+*	Main script for the 2017 RoboFishy Scripps AUV
+******************************************************************************/
 
 #include "Mapper.h"
 
@@ -17,7 +17,7 @@
 #define UNITS_KPA 0.1 // converts pressure from mbar to kPa
 
 /******************************************************************************
- * Controller Gains
+* Controller Gains
 ******************************************************************************/
 
 // Yaw Controller //
@@ -103,9 +103,12 @@ pid_data_t depth_pid;
 // Motor channels
 int motor_channels[] = {CHANNEL_1, CHANNEL_2, CHANNEL_3};
 
-
 // Ignoring sstate
 float depth = 0;
+
+//yaw_controller intialization
+float motor_percent = 0;
+
 
 
 /******************************************************************************
@@ -237,17 +240,10 @@ void *navigation(void* arg)
 	//float output_starboard; // starboard motor output
 
 	// initialize Motor Percent to be returned by yaw_controller //
-	float motor_percent;
-
-	// Initialize old imu data //
-	yaw_pid.old = 0;
+	//float motor_percent;
 
 	// Initialize setpoint for yaw_controller //
 	yaw_pid.setpoint = 0;
-
-	// Initialize error values to be used in yaw_controller //
-	yaw_pid.err = 0;
-	yaw_pid.i_err = 0;
 
 	// yaw_controller constant initialization //
 	yaw_pid.kp = 0.01;
@@ -293,7 +289,7 @@ void *navigation(void* arg)
 	// Sanity test: Check if yaw control works
 	
 	//Call yaw controller function
-	yaw_controller(bno055, yaw_pid);
+	motor_percent = yaw_controller(bno055, yaw_pid);
 
 	//set port motor
 	//set_motors(0,motor_percent);
@@ -476,30 +472,6 @@ void *navigation(void* arg)
 	}
 
     return NULL;
-}
-
-
-/******************************************************************************
- * Sensor-Read Thread
- *
- * Reads pressure data from the MS5837, temperature data from the DS18B20, 
- * IMU data from the BNO055, and leak sensor data from the SOS leak sensor
- *****************************************************************************/
-
-float *sensorread_thread(void* arg)
-{
-	// Read IMU data from the BNO055 //
-	bno055 = bno055_read();
-
-	// Read pressure data from the MS5837 //
-
-
-	// Read temperature data from the DS18B20 //
-	ds18b20 = ds18b20_read(); 	// temperature in deg C
-
-	// Read leak sensor data from the SOS leak sensor //
-	
-
 }
 
 
