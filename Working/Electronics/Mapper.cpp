@@ -231,7 +231,7 @@ int main()
  *
  * For yaw control
  *****************************************************************************/
-
+/*
 void *navigation(void* arg)
 {
 	initialize_motors(motor_channels, HERTZ);
@@ -302,7 +302,7 @@ void *navigation(void* arg)
 		// Sanity test: Check if yaw control works
 
 		//Call yaw controller function
-		yaw_controller(substate.imuorientation, yaw_pid);
+/*		yaw_controller(substate.imuorientation, yaw_pid);
 
 		// Set port motor
 		//set_motor(0,motor_percent);
@@ -348,14 +348,14 @@ void *navigation(void* arg)
 
 		// Sleep for 5 ms //
 //		usleep(5000);
-	}
+//	}
 
 	//set_motor(0, 0);
 	//set_motor(1, 0);
     //set_motor(2, 0);
 
 //	pthread_exit(NULL);
-}
+//}
 
 
 /******************************************************************************
