@@ -361,14 +361,14 @@ void *navigation(void* arg)
  *****************************************************************************/
 /*void *safety_thread(void* arg)
 {
-	// set up WiringPi for use // (not sure if actually needed)
+	// Set up WiringPi for use // (not sure if actually needed)
 	wiringPiSetup();
 
-	// leak detection variables //
+	// Leak detection variables //
 	int leakStatePin = digitalRead(SOSPIN);	// read the input pin
 	int i;									// loop counting integer
 
-	// leak detection pins //
+	// Leak detection pins //
 	pinMode(SOSPIN, INPUT);					// set SOSPIN as an INPUT
 	pinMode(17, OUTPUT);					// set GPIO 17 as an OUTPUT
 	digitalWrite(leakStatePin, HIGH);		// set GPIO 17 as HIGH (VCC)
@@ -423,16 +423,13 @@ void *navigation(void* arg)
 		// let 'em know how hot we are //
 		printf("Temperature: %f", ds18b20.temperature);
 
-		// turn motors off if housing temperature gets too high //
+		// Shut down AUV if housing temperature gets too high //
 		if( ds18b20.temperature > TEMP_STOP )
 		{
-			for( i=0; i<3; i++ )
-			{
-				pwmWrite(PIN_BASE+i, MOTOR_0);
-			}
+			substate.mode = STOPPED;
 
-			// let 'em' know it's too hot and we're shutting down //
-			printf("It's too hot! Turning off all motors...\n");
+			// let 'em' know it's bad //
+			printf("It's too hot! Shutting down...\n");
 		}
 
 		/******************************************************************************
@@ -445,12 +442,8 @@ void *navigation(void* arg)
 		if( leakStatePin == HIGH )
 		{
 			// tell 'em it's bad //
-			printf("LEAK DETECTED! Turning off all motors...\n");
-			for( i=0; i<3; i++ )
-			{
-				// shut off motors //
-				set_motor(i, MOTOR_0);
-			}
+			substate.mode = STOPPED;
+			printf("LEAK DETECTED! Shutting down...\n");
         }
 		else if (leakStatePin == LOW)
 		{
@@ -475,7 +468,7 @@ void *navigation(void* arg)
 			}
 
 			// let 'em' know we're turning off //
-			printf("Collision detected. Turning off all motors...");
+			printf("Collision detected. Shutting down...");
 		}
 
 		pthread_exit(NULL);
