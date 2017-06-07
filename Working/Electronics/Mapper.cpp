@@ -204,15 +204,15 @@ int main()
 ******************************************************************************/
 void *depth_thread(void* arg)
 {
-	// initialize pressure sensor //
+	// Initialize pressure sensor //
 	pressure_calib = init_ms5837();
 
 	while(substate.mode!=STOPPED)
 	{
-		// read pressure sensor by passing calibration structure //
+		// Read pressure sensor by passing calibration structure //
 		ms5837 = ms5837_read(pressure_calib);
 
-		// calculate depth (no idea what the magic numbers are)
+		// Calculate depth (no idea what the magic numbers are)
 		depth = (ms5837.pressure-1013)*10.197-88.8; // units?
 		// 1013: ambient pressure (mbar)
 		// 10.197*p_mbar = p_mmH20
@@ -281,12 +281,13 @@ void *navigation(void* arg)
 	{
 	yaw_pid.err =abs((bno055.yaw-360) - yaw_pid.setpoint);
 	}
+
 	// Write captured values to screen
     /*printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
-				 bno055.yaw, bno055.pitch, bno055.roll,
-				 bno055.p, bno055.q, bno055.r,
-				 bno055.sys, bno055.gyro, bno055.accel,
-				 bno055.mag);*/
+		 bno055.yaw, bno055.pitch, bno055.roll,
+		 bno055.p, bno055.q, bno055.r,
+		 bno055.sys, bno055.gyro, bno055.accel,
+		 bno055.mag);*/
 	
     
 
@@ -295,11 +296,11 @@ void *navigation(void* arg)
 	//Call yaw controller function
 	yaw_controller(bno055, yaw_pid);
 
-	//set port motor
-	//set_motors(0,motor_percent);
+	// Set port motor
+	//set_motor(0,motor_percent);
 
-	//set starboard motor
-	//set_motors(1, motor_percent);
+	// Set starboard motor
+	//set_motor(1, motor_percent);
 
 	
 	printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
