@@ -273,7 +273,7 @@ void *navigation(void* arg)
 	//set_motor(1, 0.2); // left
     //set_motor(2, 0.0);
 
-	/*while(substate.mode!=STOPPED)
+	while(substate.mode!=STOPPED)
 	{
 		// read IMU values
 		bno055 = bno055_read();
@@ -286,7 +286,7 @@ void *navigation(void* arg)
 		{
 			yaw_pid.err =(bno055.yaw-360) - yaw_pid.setpoint;
 		}
-*/
+
 		// Write captured values to screen
 	    /*printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
 			 bno055.yaw, bno055.pitch, bno055.roll,
@@ -299,7 +299,7 @@ void *navigation(void* arg)
 		// Sanity test: Check if yaw control works
 		
 		//Call yaw controller function
-/*		yaw_controller(bno055, yaw_pid);
+		yaw_controller(bno055, yaw_pid);
 
 		// Set port motor
 		//set_motor(0,motor_percent);
@@ -318,7 +318,7 @@ void *navigation(void* arg)
 		else
 		{
 		yaw_pid.err =abs((bno055.yaw-360) - yaw_pid.setpoint);
-		}*/
+		}
 
 		// Write captured values to screen
 	    /*printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
