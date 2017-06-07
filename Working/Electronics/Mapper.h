@@ -61,11 +61,11 @@ typedef struct
 // Struct for PID Controllers
 typedef struct pid_data_t
 {
-	float kp, ki, kd;
-	float err, i_err;
-	float setpoint;
-	float old;
-	float current;
+	float kp=.01, ki=.1, kd=1;
+	float err=0, i_err=0;
+	float setpoint=0;
+	float old=0;
+	float current=0;
 }pid_data_t;
 
 // Struct for setpoints
