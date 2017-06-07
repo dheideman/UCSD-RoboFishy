@@ -107,6 +107,10 @@ int motor_channels[] = {CHANNEL_1, CHANNEL_2, CHANNEL_3};
 // Ignoring sstate
 float depth = 0;
 
+//yaw_controller intialization
+float motor_percent = 0;
+
+
 
 /******************************************************************************
 * Main Function
@@ -234,7 +238,7 @@ void *navigation(void* arg)
 	//float output_starboard; // starboard motor output
 
 	// initialize Motor Percent to be returned by yaw_controller //
-	float motor_percent;
+	//float motor_percent;
 
 	// Initialize old imu data //
 	yaw_pid.old = 0;
