@@ -14,12 +14,20 @@
 
 float marchPID(pid_data_t controller, float input)
 {
-	controller.current = input;
-
+	//Calculating errors
 	controller.kerr = input - controller.setpoint;
-	controller.derr = (controller.new - controller.old)/(controller.DT);
+	controller.derr = (input - controller.old)/(controller.DT);
 	controller.ierr += controller.DT * input;
 
+	if(controller.ierr > controller.isat)
+	{
+		controller.ierr = controller.isat;
+	}
+
+	if(controller.ierr < -controller.isat)
+	{
+		controller.ierr = - controller.isat;
+	}
 
 	controller.output =   controller.kp * controller.kerr
 						+ controller.ki * controller.ierr
@@ -30,6 +38,11 @@ float marchPID(pid_data_t controller, float input)
 		controller.output = controller.SAT;
 	}
 
+
+	if(controller.output < -controller.SAT)
+	{
+		controller.output = -controller.SAT;
+	}
 	// set current input to be the old input //
 	controller.old = input;
 
@@ -46,7 +59,7 @@ float marchPID(pid_data_t controller, float input)
 * should run at
 ******************************************************************************/
 
-float depth_controller(float range)
+/*float depth_controller(float range)
 {
 	float vert_percent;			// vertical thruster output in a percentage
     float DEPTH_SAT = 1;
@@ -85,3 +98,4 @@ float depth_controller(float range)
 
 	return vert_percent;
 }
+*/
