@@ -349,7 +349,7 @@ void *navigation(void* arg)
  * Shuts down AUV if vehicle goes belows 10m, temperature gets too high, or
  * water intrusion is detected
  *****************************************************************************/
-void *safety_thread(void* arg)
+/*void *safety_thread(void* arg)
 {
 	// set up WiringPi for use // (not sure if actually needed)
 	wiringPiSetup();
@@ -369,8 +369,8 @@ void *safety_thread(void* arg)
 		 * Depth Protection
 		 *
 		 * Shut down AUV if vehicle travels deeper than 10m
-		 *****************************************************************************/
-
+		 *****************************************************************************/ 
+/*
 		// get pressure value //
 		pressure_calib = init_ms5837();
 		ms5837 = ms5837_read(pressure_calib);
@@ -406,7 +406,7 @@ void *safety_thread(void* arg)
 		 *
 		 * Shut down AUV if housing temperature exceeds 50 deg C
 		 *****************************************************************************/
-
+/*
 		// read temperature values from DS18B20 temperature sensor //
 		ds18b20 = ds18b20_read(); 	// temperature in deg C
 
@@ -430,7 +430,7 @@ void *safety_thread(void* arg)
 		 *
 		 * Shut down AUV if a leak is detected
 		 *****************************************************************************/
-
+/*
 		// check leak sensor for water intrusion //
 		if( leakStatePin == HIGH )
 		{
@@ -453,7 +453,7 @@ void *safety_thread(void* arg)
 		 *
 		 * Shut down AUV if a collision is detected
 		 *****************************************************************************/
-
+/*
 		// check IMU accelerometer for collision (1+ g detected) //
 		if( bno055.x_acc > 1.0*GRAVITY || bno055.y_acc > 1.0*GRAVITY 
 			|| bno055.z_acc > 1.0*GRAVITY )
