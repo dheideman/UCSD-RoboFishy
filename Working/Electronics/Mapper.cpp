@@ -129,7 +129,7 @@ int main()
 	}
 	printf("\nAll components are initializated\n");
 	substate.mode = INITIALIZING;
-	//substate.laserarmed = ARMED;
+  substate.laserarmed = ARMED;
 	initializeTAttr();
 
 	// Initialize threads
@@ -164,12 +164,13 @@ int main()
 	pthread_t navigationThread;
 	pthread_t depthThread;
 	pthread_t safetyThread;
-	//pthread_t disarmlaserThread;
+	pthread_t disarmlaserThread;
+  
 
 	// Create threads using modified attributes
 	pthread_create (&navigationThread, &tattrmed, navigation, NULL);
 //	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
-	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
+//	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 
 //	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 //	pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
