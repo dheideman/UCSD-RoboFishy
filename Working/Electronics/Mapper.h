@@ -30,7 +30,6 @@
 
 /***************************************************************************
  * Create Structs
- *
 ***************************************************************************/
 
 // struct for hold ms5837 calibration values
@@ -103,35 +102,36 @@ typedef struct system_state_t
 	int num_yaw_spins;			// remember number of spins around Z-axis
 }system_state_t;
 
-///////////////////////////////////////////////////////////////////////////////
-//////////////////////////// Global Variables /////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 
-// holds the setpoint data structure with current setpoints
+/***************************************************************************
+ * Global Variables
+***************************************************************************/
+
+// Holds the setpoint data structure with current setpoints
 extern setpoint_t setpoint;
 
-// holds the system state structure with current system statesystem_state_t sstate;
+// Holds the system state structure with current system statesystem_state_t sstate;
 extern system_state_t sstate;
 
-// holds the calibration values for the MS5837 pressure sensor
+// Holds the calibration values for the MS5837 pressure sensor
 extern pressure_calib_t pressure_calib;
 
-// holds the latest pressure value from the MS5837 pressure sensor
+// Holds the latest pressure value from the MS5837 pressure sensor
 extern ms5837_t ms5837;
 
-// create structure for storing IMU data
+// Create structure for storing IMU data
 extern bno055_t bno055;
 
-// holds the latest temperature value from the DS18B20 temperature sensor
+// Holds the latest temperature value from the DS18B20 temperature sensor
 extern ds18b20_t ds18b20;
 
-// holds the constants and latest errors of the yaw pid controller
+// Holds the constants and latest errors of the yaw pid controller
 extern pid_data_t yaw_pid;
 
-// holds the constants and latest errors of the depth pid controller
+// Holds the constants and latest errors of the depth pid controller
 extern pid_data_t depth_pid;
 
-// motor channels
+// Motor channels
 extern int motor_channels[];
 
 // Ignoring sstate
