@@ -60,7 +60,7 @@
 #define STOP_TIME 4		// seconds
 
 // Leak Sensor Inpu and Power Pin
-#define LEAKPIN 27			// connected to GPIO 27
+#define LEAKPIN 27		// connected to GPIO 27
 #define LEAKPOWERPIN 17 // providing Vcc to leak board
 
 /******************************************************************************
@@ -375,9 +375,13 @@ void *safety_thread(void* arg)
 	digitalWrite(LEAKPOWERPIN, HIGH);	// write high to provide Vcc
 
 	// Leak checking variables
-	int leakState;	// holds the state (HIGH or LOW) of the SOSPIN
+	int leakState;	// holds the state (HIGH or LOW) of the LEAKPIN
 
-	while( substate.mode != STOPPED )
+	// Test if temp sensor reads anything
+	int temp;
+	temp = ds18b20_read();
+
+	/*while( substate.mode != STOPPED )
 	{
 		// Check pressure
 		substate.mode = pressure_protect(ms5837.pressure, sstate.fdepth);
@@ -409,7 +413,7 @@ void *safety_thread(void* arg)
 			continue;
 		}
 
-	}
+	}*/
 
     pthread_exit(NULL);
 }
