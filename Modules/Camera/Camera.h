@@ -79,6 +79,7 @@ typedef struct sub_images_t
 
 // Thread
 void *takePictures(void*);
+void disarmLaser(void* arg);
 
 // Mutex Lock Initializer
 int initializeSubImagesLock(sub_images_t *_subimages);

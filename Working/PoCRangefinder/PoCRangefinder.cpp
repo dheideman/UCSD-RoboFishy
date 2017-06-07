@@ -73,7 +73,9 @@ int main(int argc, char** argv)
   // We're initializing!
   substate.mode = INITIALIZING;
   wiringPiSetup();
-  pinMode(LASERPIN, OUTPUT);  
+  pinMode(LASERPIN, OUTPUT); 
+  // The laser is now armed
+  substate.laserarmed = ARMED; 
   // Open windows on your monitor
   namedWindow( SOURCE_WINDOW, CV_WINDOW_AUTOSIZE );  
   
@@ -94,48 +96,58 @@ int main(int argc, char** argv)
   
   // set default white balance
   whiteBalanceCallback(0,0);
+
+  initializeTAttr();
   
-  
+  // Initialize threads
+  /*sched_param param;
+  int policy, maxpriority;
+
+  // Initialize priorities
+  pthread_attr_init(&tattrlow);
+  pthread_attr_init(&tattrmed);
+  pthread_attr_init(&tattrhigh);
+
+  // Get max priority
+  pthread_attr_getschedpolicy(&tattrlow, &policy);
+  maxpriority = sched_get_priority_max(policy);
+
+  // Extract scheduling parameter
+  pthread_attr_getschedparam (&tattrlow, &param);
+
+  // Set up low priority
+  param.sched_priority = maxpriority/4;
+  pthread_attr_setschedparam (&tattrlow, &param);
+
+  // Set up medium priority
+  param.sched_priority = maxpriority/2;
+  pthread_attr_setschedparam (&tattrmed, &param);
+
+  // Set up high priority
+  param.sched_priority = maxpriority-1;
+  pthread_attr_setschedparam (&tattrhigh, &param);*/
+
   // Start multithreading!
   pthread_t cameraThread;
-  // Setting Priorities
-  pthread_attr_t tattr;
-  sched_param param;
-  
-  // Initialize attributes with defaults
-  pthread_attr_init (&tattr);
-  // Save the parameters to "param"
-  pthread_attr_getschedparam (&tattr, &param);
-  // Set the priority parameter of "param", leaving others at default
-  param.sched_priority = sched_get_priority_max(SCHED_RR) - 1;
-  // Set attributes to modified parameters
-  pthread_attr_setschedparam (&tattr, &param);
+  pthread_t rangeThread;
+  pthread_t disarmlaserThread;
 
   // Create thread using modified attributes
-  pthread_create (&cameraThread, &tattr, takePictures, NULL);
+  pthread_create (&cameraThread, &tattrhigh, takePictures, NULL);
   
   
   // Pause for 4 seconds to let everything initialize
-  sleep(4);
 
-  pthread_t rangeThread;
+  // Do we need to sleep here? test
+  //sleep(4);  
 
-  // Create schedule parameters
-  pthread_attr_t rangetattr;
-  sched_param rangeparam;
-  
-  // Initialize attributes with defaults
-  pthread_attr_init (&rangetattr);
-  // Save the parameters to "param"
-  pthread_attr_getschedparam (&rangetattr, &rangeparam);
-  // Set the priority parameter of "param", leaving others at default
-  rangeparam.sched_priority = sched_get_priority_max(SCHED_RR)/2;
-  // Set attributes to modified parameters
-  pthread_attr_setschedparam (&rangetattr, &rangeparam);
+
   // Create the RangeFinder thread
-  pthread_create (&rangeThread, &rangetattr, rangeFinder, NULL);
-  
- 
+  pthread_create (&rangeThread, &tattrmed, rangeFinder, NULL);
+  pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
+  //  Destroy the Thread Attributes
+  destroyTAttr();
+
   // Announce that we're done initializing
   cout << "Done Initializing." << endl;
   // Wait a second to get the rangefinder thread running
@@ -159,7 +171,11 @@ int main(int argc, char** argv)
 
   // Set mode to STOPPED
   substate.mode = STOPPED; 
-  cout << "STOPPED." << endl;
+  cout << "THREADS STOPPED" << endl;
+
+  // Turn off the laser in case disarm didnt work
+  substate.laserarmed = DISARMED;
+  cout << "LASER DISARMED" << endl;
   
   
 }// end main
