@@ -327,7 +327,7 @@ void *navigation(void* arg)
 					 bno055.sys, bno055.gyro, bno055.accel,
 					 bno055.mag);*/
 
-		printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
+		//printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
     
 
 		// Sanity test: Check if yaw control works
@@ -376,9 +376,9 @@ void *safety_thread(void* arg)
 	int leakState;	// holds the state (HIGH or LOW) of the LEAKPIN
 
 	// Test if temp sensor reads anything
-	//float temp;
-	ds18b20.temperature = ds18b20_read();
-	printf("Temperature: %f degC\n", ds18b20.temperature);
+	float temp;
+	temp = ds18b20_read();
+	printf("Temperature: %f degC\n", temp);
 
 	/*while( substate.mode != STOPPED )
 	{
