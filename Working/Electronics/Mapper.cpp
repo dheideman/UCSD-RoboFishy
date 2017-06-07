@@ -388,7 +388,7 @@ void *safety_thread(void* arg)
 		if( substate.fdepth > DEPTH_STOP )
 		{
 			substate.mode = STOPPED;
-			printf("%s\n", "STOPPED");
+			printf("We're too deep! Shutting down...\n");
 			continue;
 		}
 		else
@@ -428,10 +428,9 @@ void *safety_thread(void* arg)
 		}
 
 		// Check IMU accelerometer for collision (1+ g detected) 
-		substate.mode = collision_protect(substate.imuorientation.x_acc,
-			substate.imuorientation.y_acc, substate.imuorientation.z_acc);
-		if( (float)fabs(x_acc) > 1.0*GRAVITY || (float)fabs(y_acc) > 1.0*GRAVITY 
-			|| (float)fabs(z_acc) > 1.0*GRAVITY )
+		if( (float)fabs(substate.imuorientation.x_acc) > 1.0*GRAVITY 
+			|| (float)fabs(substate.imuorientation.y_acc) > 1.0*GRAVITY 
+			|| (float)fabs(substate.imuorientation.z_acc) > 1.0*GRAVITY )
 		{
 			substate.mode = STOPPED;
 			printf("Collision detected. Shutting down...");
