@@ -11,7 +11,7 @@
  *
  * Shut down AUV if vehicle travels deeper than 10m
  *****************************************************************************/ 
-/*submode_t pressure_protect(float pressure, float fdepth)
+/*sub_state_t.sub_mode_t pressure_protect(float pressure, float fdepth)
 {
 	// Declare variable to hold the submode
 	enum submode;
@@ -39,7 +39,7 @@
  *
  * Shut down AUV if housing temperature exceeds 50 deg C
  *****************************************************************************/
-sub_mode_t temp_protection(float temperature)
+sub_state_t.sub_mode_t temp_protection(float temperature)
 {
 	// Declare variable to hold the submode
 	enum submode;
@@ -71,7 +71,7 @@ sub_mode_t temp_protection(float temperature)
  *
  * Shut down AUV if a leak is detected
  *****************************************************************************/
-sub_mode_t leak_protection(int leakState)
+/*sub_state_t.sub_mode_t leak_protection(int leakState)
 {
 	// Declare variable to hold the submode
 	enum submode;
@@ -97,7 +97,7 @@ sub_mode_t leak_protection(int leakState)
  *
  * Shut down AUV if a collision is detected
  *****************************************************************************/
-/*submode_t collision_protection(float x_acc, float y_acc, float z_acc)
+/*sub_state_t.sub_mode_t collision_protection(float x_acc, float y_acc, float z_acc)
 {
 	// Declare variable to hold the submode
 	enum submode;
