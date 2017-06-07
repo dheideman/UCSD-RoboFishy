@@ -144,7 +144,7 @@ int main(int argc, char** argv)
 
   // Create the RangeFinder thread
   pthread_create (&rangeThread, &tattrmed, rangeFinder, NULL);
-  
+  pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
   //  Destroy the Thread Attributes
   destroyTAttr();
 

@@ -79,7 +79,7 @@ typedef struct system_state_t
   int gyro;   // gyro calibrations status (0=uncalibrated, 3=fully calibrated)
   int accel;    // accelerometer calibrations status (0=uncalibrated, 3=fully calibrated)
   int mag;    // magnetometer calibrations status (0=uncalibrated, 3=fully calibrated)
-}system_state_t;
+} system_state_t;
 
 /////////////////////////
 // Function Prototypes //

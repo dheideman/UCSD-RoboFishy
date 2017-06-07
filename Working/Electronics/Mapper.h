@@ -33,6 +33,9 @@
 #define PWM_HIGH_LIMIT = 3354   // PWM value
 #define PWM_ZERO_VALUE = 2647   // PWM value
 
+// Protection Constants
+#define DEPTH_STOP 2000	// threshold depth (mm)
+#define TEMP_STOP 25	// deg C
 
 
 /***************************************************************************
@@ -142,10 +145,10 @@ void start_Py_ds18b20(void); 	// start Python background process
 ds18b20_t ds18b20_read(void);	// read values from ds18b20
 
 // Functions for protecting AUV in dangerous conditions
-submode_t pressure_protect(float pressure, float fdepth);
-submode_t temp_protection(float temperature);
-submode_t leak_protection(int leakState);
-submode_t collision_protection(float x_acc, float y_acc, float z_acc);
+sub_state_t pressure_protect(float pressure, float fdepth);
+sub_state_t temp_protection(float temperature);
+sub_state_t leak_protection(int leakState);
+sub_state_t collision_protection(float x_acc, float y_acc, float z_acc);
 
 // Startup functions
 int scripps_auv_init(void);
