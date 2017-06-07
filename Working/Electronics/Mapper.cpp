@@ -162,16 +162,16 @@ int main()
 	pthread_attr_setschedparam (&tattrhigh, &param);*/
 
 	// Thread handles
-	pthread_t navigationThread;
-	pthread_t depthThread;
+	//pthread_t navigationThread;
+	//pthread_t depthThread;
 	pthread_t safetyThread;
-	pthread_t disarmlaserThread;
+	//pthread_t disarmlaserThread;
 
 
 	// Create threads using modified attributes
-	pthread_create (&navigationThread, &tattrmed, navigation, NULL);
+//	pthread_create (&navigationThread, &tattrmed, navigation, NULL);
 //	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
-//	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
+	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 
 //	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 //	pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
@@ -327,7 +327,7 @@ void *navigation(void* arg)
 					 bno055.sys, bno055.gyro, bno055.accel,
 					 bno055.mag);*/
 
-		printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
+		//printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
     
 
 		// Sanity test: Check if yaw control works
@@ -376,9 +376,8 @@ void *safety_thread(void* arg)
 	int leakState;	// holds the state (HIGH or LOW) of the LEAKPIN
 
 	// Test if temp sensor reads anything
-	float temp;
-	temp = ds18b20_read();
-	printf("Temperature: %f degC\n", temp);
+	ds18b20 = ds18b20_read();
+	printf("Temperature: %f degC\n", ds18b20.temperature);
 
 	/*while( substate.mode != STOPPED )
 	{

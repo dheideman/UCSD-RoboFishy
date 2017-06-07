@@ -2,7 +2,7 @@
  * Core.h
  *
  * Core Module: Defines global submersible types
- * 
+ *
  ******************************************************************************/
 
 #ifndef AUVCORE_H
@@ -61,27 +61,6 @@ typedef struct sub_state_t
   bno055_t      imuorientation; // Orientation as determined by IMU
 } sub_state_t;
 
-// Struct for holding current system state
-typedef struct system_state_t
-{
-  float roll;         // current roll angle (rad)
-  float pitch[2];       // current pitch angle (rad) 0: current value, 1: last value
-  float yaw[2];       // current yaw angle (rad) 0: current value, 1: last value
-  float depth[2];       // depth estimate (m)
-  float fdepth[2];      // filtered depth estimate (m)
-  float speed;        // speed (m/s)
-
-  float p[2];         // first derivative of roll (rad/s)
-  float q[2];         // first derivative of pitch (rad/s)
-  float r[2];         // first derivative of yaw (rad/s)
-  float ddepth;       // first derivative of depth (m/s)
-
-  int sys;    // system calibrations status (0=uncalibrated, 3=fully calibrated)
-  int gyro;   // gyro calibrations status (0=uncalibrated, 3=fully calibrated)
-  int accel;    // accelerometer calibrations status (0=uncalibrated, 3=fully calibrated)
-  int mag;    // magnetometer calibrations status (0=uncalibrated, 3=fully calibrated)
-} system_state_t;
-
 /////////////////////////
 // Function Prototypes //
 /////////////////////////
@@ -99,9 +78,6 @@ void destroyTAttr();
 
 // Global State Variable
 extern sub_state_t substate;
-
-// Holds the system state structure with current system state
-extern system_state_t sstate;
 
 // Thread attributes for different priorities
 extern pthread_attr_t tattrlow, tattrmed, tattrhigh;
