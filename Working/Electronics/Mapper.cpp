@@ -116,7 +116,7 @@ float motor_percent = 0;
 
 int main()
 {
-	// Initialize python interpreter
+	// Initialize Python interpreter
 	Py_Initialize();
 
 	//Set up RasPi GPIO pins through wiringPi
