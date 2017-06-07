@@ -43,7 +43,7 @@ int initialize_motors(int channels[3], float freq)
 }
 
 /******************************************************************************
- * int set_motor()
+ * int set_motor(int motornum, float percent)
  *
  * Takes in a value from -1 to 1 (-100 to +100%) and sets the motor
  * outputs accordingly
