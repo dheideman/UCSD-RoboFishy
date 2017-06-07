@@ -29,7 +29,9 @@
 
 
 /***************************************************************************
- * Create Structs
+* 
+* Create Structs
+*
 ***************************************************************************/
 
 // Struct for hold ms5837 calibration values
@@ -38,21 +40,20 @@ typedef struct
 	float C1, C2, C3, C4, C5, C6;
 }pressure_calib_t;
 
-// Struct for holding ms5837 return values
+// Struct for holding MS5837 return values
 typedef struct
 {
-	//float pressure, temperature;
 	float pressure;
 }ms5837_t;
 
-// Struct for holding bno055 return values
+// Struct for holding BNO055 return values
 typedef struct
 {
 	float yaw, roll, pitch, p, q, r;
 	int sys, gyro, accel, mag;
 }bno055_t;
 
-// Struct for holding ds18b20 temperature sensor return values
+// Struct for holding DS18B20 temperature sensor return values
 typedef struct
 {
 	float temperature;
@@ -151,7 +152,7 @@ int set_motor(int motor_num, float speed);
 float yaw_controller(bno055_t bno055, pid_data_t yaw_pid);
 
 // Functions for reading MS5837 Pressure Sensor
-pressure_calib_t init_ms5837(); // initialize ms5837
+pressure_calib_t init_ms5837(); 			   // initialize ms5837
 ms5837_t ms5837_read(pressure_calib_t arg_in); // read values from ms5837
 
 // Functions for reading BNO055 IMU
@@ -159,7 +160,7 @@ void start_Py_bno055(void); // start Python background process
 bno055_t bno055_read(void); // read values from bno055
 
 // Functions for reading DS18B20 temperature sensor
-void start_Py_ds18b20(void); // start Python background process
+void start_Py_ds18b20(void); 	// start Python background process
 ds18b20_t ds18b20_read(void);	// read values from ds18b20
 
 // Startup functions
