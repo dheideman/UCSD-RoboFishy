@@ -47,7 +47,7 @@ typedef struct
 {
   float yaw, roll, pitch, p, q, r;
   int sys, gyro, accel, mag;
-}bno055_t;
+} bno055_t;
 
 // Submersible overall state type
 typedef struct sub_state_t
@@ -55,6 +55,7 @@ typedef struct sub_state_t
   sub_mode_t    mode;           // Operating mode
   double        range;          // Range to bottom
   double        depth;          // Depth below surface
+  double        fdepth;         // Filtered depth below surface
   cv::Point3f   pose;           // Location + Yaw of sub
   armed_t       laserarmed;     // Whether the laser can be turned on or not
   bno055_t      imuorientation; // Orientation as determined by IMU
