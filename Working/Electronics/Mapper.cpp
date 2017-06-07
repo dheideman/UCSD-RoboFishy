@@ -3,7 +3,6 @@
 ******************************************************************************/
 
 #include "Mapper.h"
-#include "Core.h"
 
 // Multithreading
 #include <pthread.h>
@@ -206,7 +205,7 @@ int main()
 *
 * For Recording Depth & Determining If AUV is in Water or Not
 ******************************************************************************/
-void *depth_thread(void* arg)
+/*void *depth_thread(void* arg)
 {
 	// Initialize pressure sensor
 	pressure_calib = init_ms5837();
@@ -225,7 +224,7 @@ void *depth_thread(void* arg)
 	}
 
 	pthread_exit(NULL);
-}
+}*/
 
 /******************************************************************************
  * Navigation Thread
@@ -379,8 +378,9 @@ void *safety_thread(void* arg)
 	int leakState;	// holds the state (HIGH or LOW) of the LEAKPIN
 
 	// Test if temp sensor reads anything
-	int temp;
+	float temp;
 	temp = ds18b20_read();
+	printf("Temperature: %f degC\n", temp);
 
 	/*while( substate.mode != STOPPED )
 	{
