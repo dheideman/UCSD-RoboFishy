@@ -13,6 +13,9 @@
  *****************************************************************************/ 
 /*submode_t pressure_protect(float pressure, float fdepth)
 {
+	// Declare variable to hold the submode
+	enum submode;
+	
 	// Check if depth threshold has been exceeded
 	if( fdepth > DEPTH_STOP )
 	{
@@ -36,8 +39,11 @@
  *
  * Shut down AUV if housing temperature exceeds 50 deg C
  *****************************************************************************/
-submode_t temp_protection(float temperature)
+sub_mode_t temp_protection(float temperature)
 {
+	// Declare variable to hold the submode
+	enum submode;
+
 	// Read temperature values from DS18B20 temperature sensor 
 	//ds18b20 = ds18b20_read(); 	// temperature in deg C
 
@@ -65,8 +71,11 @@ submode_t temp_protection(float temperature)
  *
  * Shut down AUV if a leak is detected
  *****************************************************************************/
-/*submode_t leak_protection(int leakState)
+sub_mode_t leak_protection(int leakState)
 {
+	// Declare variable to hold the submode
+	enum submode;
+
 	// Check leak sensor for water intrusion 
 	if( leakState == HIGH )
 	{
@@ -90,6 +99,9 @@ submode_t temp_protection(float temperature)
  *****************************************************************************/
 /*submode_t collision_protection(float x_acc, float y_acc, float z_acc)
 {
+	// Declare variable to hold the submode
+	enum submode;
+
 	// Check IMU accelerometer for collision (1+ g detected) 
 	if( (float)fabs(x_acc) > 1.0*GRAVITY || (float)fabs(y_acc) > 1.0*GRAVITY 
 		|| (float)fabs(z_acc) > 1.0*GRAVITY )
