@@ -459,8 +459,9 @@ void *safety_thread(void* arg)
 		 *****************************************************************************/
 /*
 		// check IMU accelerometer for collision (1+ g detected) //
-		if( bno055.x_acc > 1.0*GRAVITY || bno055.y_acc > 1.0*GRAVITY 
-			|| bno055.z_acc > 1.0*GRAVITY )
+		if( (float)fabs(bno055.x_acc) > 1.0*GRAVITY 
+			|| (float)fabs(bno055.y_acc) > 1.0*GRAVITY 
+			|| (float)fabs(bno055.z_acc) > 1.0*GRAVITY )
 		{
 			for( i=0; i<3; i++ )
 			{
