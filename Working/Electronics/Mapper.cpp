@@ -211,6 +211,7 @@ void *depth_thread(void* arg)
 		// calculate depth (no idea what the magic numbers are)
 		depth = (ms5837.pressure-1013)*10.197-88.8; // units?
 		// 1013: ambient pressure (mbar)
+		// 10.197*p_mbar = p_mmH20
 
 		usleep(10000);
 	}
@@ -234,31 +235,30 @@ void *navigation(void* arg)
 	// initialize Motor Percent to be returned by yaw_controller //
 	//float motor_percent;
 
-	// initialize old imu data //
+	// Initialize old imu data //
 	yaw_pid.oldyaw = 0;
 
-	// initialize setpoint for yaw_controller //
+	// Initialize setpoint for yaw_controller //
 	yaw_pid.setpoint = 0;
 
-	// initialize error values to be used in yaw_controller //
+	// Initialize error values to be used in yaw_controller //
 	yaw_pid.err = 0;
 	yaw_pid.i_err = 0;
 
-
-	// yaw_controller constant initialization ///
+	// yaw_controller constant initialization //
 	yaw_pid.kp = 0.01;
 	yaw_pid.kd = 0;
 	yaw_pid.ki = 0;
 
-	// range-from-bottom setpoint //
+	// Range-from-bottom setpoint //
 	depth_pid.setpoint = 2;	// meters
 
-	// depth controller constant initialization
+	// Depth controller constant initialization
 	depth_pid.kp = 0.01;
 	depth_pid.kd = 0;
 	depth_pid.ki = 0;
 
-	// hard set motor speed //
+	// Hard set motor speed //
 	// pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
 	set_motor(0, -0.2);  // right
 	set_motor(1, 0.2); // left
@@ -287,18 +287,18 @@ void *navigation(void* arg)
 
 		// Sanity test: Check if yaw control works
 		/*
-		//Call yaw controller function
+		// Call yaw controller function
 		yaw_controller();
 
-		//set port motor
-		set_motors(0,motor_percent);
+		// Set port motor
+		set_motor(0,motor_percent);
 
-		//set starboard motor
-		set_motors(1, motor_percent);
+		// Set starboard motor
+		set_motor(1, motor_percent);
 
 		*/
 
-		// sleep for 5 ms //
+		// Sleep for 5 ms //
 		usleep(5000);
 	}
 
@@ -387,6 +387,9 @@ void *safety_thread(void* arg)
 			{
 				pwmWrite(PIN_BASE+i, MOTOR_0);
 			}
+
+			// let 'em' know it's too hot and we're shutting down //
+			printf("It's too hot! Turning off all motors...\n");
 		}
 
 		/******************************************************************************
@@ -399,17 +402,37 @@ void *safety_thread(void* arg)
 		if( leakStatePin == HIGH )
 		{
 			// tell 'em it's bad //
-			printf("LEAK DETECTED!\n");
+			printf("LEAK DETECTED! Turning off all motors...\n");
 			for( i=0; i<3; i++ )
 			{
 				// shut off motors //
-				set_motor(PIN_BASE+i, MOTOR_0);
+				set_motor(i, MOTOR_0);
 			}
         }
 		else if (leakStatePin == LOW)
 		{
-			// tell 'em we're dry //
-			printf("We're dry.\n");
+			// let 'em know we're dry //
+			printf("We're dry. We're still good to go.\n");
+		}
+
+		/******************************************************************************
+		 * Collision Protection
+		 *
+		 * Shut down AUV if a collision is detected
+		 *****************************************************************************/
+
+		// check IMU accelerometer for collision (1+ g detected) //
+		if( bno055.x_acc > 1.0*GRAVITY || bno055.y_acc > 1.0*GRAVITY 
+			|| bno055.z_acc > 1.0*GRAVITY )
+		{
+			for( i=0; i<3; i++ )
+			{
+				// shut off all motors //
+				set_motor(i, MOTOR_0);
+			}
+
+			// let 'em' know we're turning off //
+			printf("Collision detected. Turning off all motors...");
 		}
 
 		pthread_exit(NULL);

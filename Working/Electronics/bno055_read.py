@@ -62,7 +62,7 @@ while True:
     fifo = open("imu.fifo", "w")
     fifo.write(_string)
     fifo.close()
-#    print "%f %f %f %f %f %f %i %i %i %i\n" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
+    #print "%f %f %f %f %f %f %i %i %i %i\n" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
 
     out, err = cproc.communicate(input)
     # Print everything out.
@@ -70,19 +70,25 @@ while True:
 
     # Other values you can optionally read:
     # Orientation as a quaternion:
-    x,y,z,w = bno.read_quaterion()
+    #x,y,z,w = bno.read_quaterion()
     # Sensor temperature in degrees Celsius:
-    temp_c = bno.read_temp()
+    #temp_c = bno.read_temp()
     # Magnetometer data (in micro-Teslas):
-    x,y,z = bno.read_magnetometer()
+    #x,y,z = bno.read_magnetometer()
     # Accelerometer data (in meters per second squared):
-    x,y,z = bno.read_accelerometer()
+    #x,y,z = bno.read_accelerometer()
     # Linear acceleration data (i.e. acceleration from movement, not gravity--
     # returned in meters per second squared):
-    x,y,z = bno.read_linear_acceleration()
+    x_acc,y_acc,z_acc = bno.read_linear_acceleration()
     # Gravity acceleration data (i.e. acceleration just from gravity--returned
     # in meters per second squared):
-    x,y,z = bno.read_gravity()
+    #x,y,z = bno.read_gravity()
+
+    _string2 = "%f %f %f" %(x_acc, y_acc, z_acc)
+    fifo2 = open("accelerometer.fifo", "w")
+    fifo2.write(_string2)
+    fifo2.close()
+    #print "%f %f %f" %(x_acc, y_acc, z_acc)
 
     # Sleep until the next reading.
     time.sleep(0.01)
