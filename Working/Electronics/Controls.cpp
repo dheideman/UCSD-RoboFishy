@@ -67,7 +67,7 @@ float depth_controller(float range)
     float range_current;
     float range_old;
     float DEPTH_SAT = 1;
-   
+    float DT=.005;
 
 	// accumulated range error for integral control //
 	depth_sum_error += range - depth_pid.setpoint;
