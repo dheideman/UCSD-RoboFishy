@@ -162,16 +162,16 @@ int main()
 	pthread_attr_setschedparam (&tattrhigh, &param);*/
 
 	// Thread handles
-	pthread_t navigationThread;
-	pthread_t depthThread;
+	//pthread_t navigationThread;
+	//pthread_t depthThread;
 	pthread_t safetyThread;
-	pthread_t disarmlaserThread;
+	//pthread_t disarmlaserThread;
 
 
 	// Create threads using modified attributes
-	pthread_create (&navigationThread, &tattrmed, navigation, NULL);
+//	pthread_create (&navigationThread, &tattrmed, navigation, NULL);
 //	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
-//	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
+	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 
 //	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 //	pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
