@@ -144,12 +144,6 @@ bno055_t bno055_read(void); // read values from bno055
 void start_Py_ds18b20(void); 	// start Python background process
 ds18b20_t ds18b20_read(void);	// read values from ds18b20
 
-// Functions for protecting AUV in dangerous conditions
-sub_state_t pressure_protect(float pressure, float fdepth);
-sub_state_t temp_protection(float temperature);
-sub_state_t leak_protection(int leakState);
-sub_state_t collision_protection(float x_acc, float y_acc, float z_acc);
-
 // Startup functions
 int scripps_auv_init(void);
 

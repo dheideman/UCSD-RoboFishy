@@ -11,7 +11,7 @@
  *
  * Shut down AUV if vehicle travels deeper than 10m
  *****************************************************************************/ 
-/*sub_state_t pressure_protect(float pressure, float fdepth)
+sub_state_t pressure_protect(float pressure, float fdepth)
 {
 	// Declare variable to hold the submode
 	enum submode;
@@ -32,7 +32,7 @@
 	usleep(50000);
 
 	return submode;
-}*/
+}
 
 /******************************************************************************
  * Temperature Protection
