@@ -80,7 +80,7 @@ void *takePictures(void*)
     picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, DARK_EXPOSURE );
     
     // Turn laser on before grabbing the darkframe image
-    if(substate.laserarmed = ARMED){
+    if(substate.laserarmed == ARMED){
       digitalWrite(LASERPIN, HIGH);
     }
     
