@@ -236,7 +236,7 @@ void *navigation(void* arg)
 	float motor_percent;
 
 	// Initialize old imu data //
-	yaw_pid.oldyaw = 0;
+	yaw_pid.old = 0;
 
 	// Initialize setpoint for yaw_controller //
 	yaw_pid.setpoint = 0;
@@ -289,7 +289,7 @@ void *navigation(void* arg)
 	// Sanity test: Check if yaw control works
 	
 	//Call yaw controller function
-	yaw_controller();
+	yaw_controller(bno055, yaw_pid);
 
 	//set port motor
 	//set_motors(0,motor_percent);
