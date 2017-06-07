@@ -65,7 +65,6 @@ float yaw_controller(bno055_t bno055, pid_data_t yaw_pid)
 float depth_controller(float range)
 {
 	float vert_percent;			// vertical thruster output in a percentage
-	//float depth_sum_error = 0;	// accumulated range error for integral control
     float DEPTH_SAT = 1;
     float DT = 0.005;
 
