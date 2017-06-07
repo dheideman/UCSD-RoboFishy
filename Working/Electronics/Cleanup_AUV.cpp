@@ -37,6 +37,7 @@ int cleanup_auv()
 		usleep(10000);
 	}
 
+	// Shutdown Python interpreter
 	Py_Finalize();
 
 	return 0;
