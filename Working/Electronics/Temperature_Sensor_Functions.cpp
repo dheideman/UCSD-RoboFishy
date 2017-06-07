@@ -13,8 +13,8 @@
 ***************************************************************************/
 void start_Py_ds18b20(void)
 {
-  std::FILE* fd = fopen("temperature_sensor.py", "r");
-	PyRun_SimpleFile(fd,"temperature_sensor.py");
+  std::FILE* fd = fopen("temp_read.py", "r");
+	PyRun_SimpleFile(fd,"temp_read.py");
 	return;
 }
 
