@@ -232,7 +232,7 @@ void *navigation(void* arg)
 	//float output_starboard; // starboard motor output
 
 	// initialize Motor Percent to be returned by yaw_controller //
-	//float motor_percent;
+	float motor_percent;
 
 	// initialize old imu data //
 	yaw_pid.old = 0;
