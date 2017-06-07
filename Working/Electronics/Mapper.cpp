@@ -259,7 +259,7 @@ void *navigation(void* arg)
 	depth_pid.setpoint = 2;	// meters
 
 	// Depth controller constant initialization
-	depth_pid.kp = 0.01;
+	depth_pid.kp = 0.001;
 	depth_pid.kd = 0;
 	depth_pid.ki = 0;
 
