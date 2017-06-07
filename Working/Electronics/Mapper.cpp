@@ -123,7 +123,7 @@ int main()
 	wiringPiSetupGpio();
 
 	// Check if AUV is initialized correctly //
-	if( scripps_auv_init()<0 )
+	if( scripps_auv_init() < 0 )
 	{
 		return -1;
 	}
