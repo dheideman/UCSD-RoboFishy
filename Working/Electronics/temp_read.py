@@ -26,9 +26,15 @@ def read_temp():
         temp_c = float(temp_string) / 1000.0
         temp_f = temp_c * 9.0 / 5.0 + 32.0
         #return temp_c, temp_f
-        return temp_c
+        #return temp_c
 
 # Print out temperature	
 #while True:
 	#print(read_temp())	
 	#time.sleep(1)
+
+fifo = open("temp.fifo", "w")
+    _string = "%f" %(temp_c)
+    fifo.write(_string)
+    fifo.close()
+    #print "%f\n" %(temp_c)
