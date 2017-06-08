@@ -51,5 +51,5 @@ while True:
     _string = "%f" %(temp_c)
     fifo.write(_string)
     fifo.close()
-    print "%f\n" %(temp_c)
+#    print "%f\n" %(temp_c)
     time.sleep(1)

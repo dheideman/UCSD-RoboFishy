@@ -13,8 +13,8 @@
 ***************************************************************************/
 void start_Py_ds18b20(void)
 {
-  std::FILE* fd = fopen("temp_read.py", "r");
-	PyRun_SimpleFile(fd,"temp_read.py");
+  std::FILE* fd = fopen("read_temp.py", "r");
+	PyRun_SimpleFile(fd,"read_temp.py");
 	return;
 }
 
