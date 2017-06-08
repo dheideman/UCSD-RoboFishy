@@ -57,8 +57,10 @@ pressure_calib_t init_pressure_sensor(void)
 
 void start_read_pressure(void)
 {
+	Py_Initialize();
 	FILE* fd = fopen("python read_pressure.py", "r");
 	PyRun_SimpleFile(fd,"python read_pressure.py");
+	Py_Finalize();
 	return;
 }
 
