@@ -79,8 +79,8 @@ pressure_calib_t pressure_calib;
 // Holds the latest pressure value from the MS5837 pressure sensor
 ms5837_t ms5837;
 
-// Holds the latest temperature value from the DS18B20 temperature sensor
-float ds18b20;
+// Holds the latest temperature value from the temperature temperature sensor
+float temperature;
 
 // Holds the constants and latest errors of the yaw pid controller
 pid_data_t yaw_pid;
@@ -200,12 +200,9 @@ void *depth_thread(void* arg)
  *
  * For yaw control
  *****************************************************************************/
-void *navigation(void* arg)
+/*void *navigation(void* arg)
 {
 	initialize_motors(motor_channels, HERTZ);
-
-	//float output_port;	  // port motor output
-	//float output_starboard; // starboard motor output
 
 	float yaw = 0; 			  //Local variable for if statements
 
@@ -260,20 +257,10 @@ void *navigation(void* arg)
 		motor_percent = marchPID(substate.imu, yaw);
 
 		// Set port motor
-		set_motor(0,motor_percent);
+		set_motor(0, motor_percent);
 
 		// Set starboard motor
 		set_motor(1, motor_percent);
-
-		// Sleep for 5 ms //
-	  if (substate.imu.yaw < 180)
-		{
-			yaw_pid.err = abs(substate.imu.yaw - yaw_pid.setpoint);
-		}
-		else
-		{
-			yaw_pid.err =abs((substate.imu.yaw - 360) - yaw_pid.setpoint);
-		}
 
 		// Set port motor
 		//set_motor(0,motor_percent);
@@ -314,8 +301,8 @@ void *safety_thread(void* arg)
 	int leakState;	// holds the state (HIGH or LOW) of the LEAKPIN
 
 	// Test if temp sensor reads anything
-	ds18b20 = read_temp_fifo();
-	printf("Temperature: %f degC\n", ds18b20.temperature);
+	temperature = read_temp_fifo();
+	printf("Temperature: %f degC\n", temperature);
 
 	while( substate.mode != STOPPED )
 	{
@@ -335,7 +322,11 @@ void *safety_thread(void* arg)
 		// Check temperature
 		// Shut down AUV if housing temperature gets too high
 
-		if( ds18b20.temperature > TEMP_STOP )
+<<<<<<< HEAD
+		if( ds18b20 > TEMP_STOP )
+=======
+		if( temperature.temperature > TEMP_STOP )
+>>>>>>> 3e21b22cb420a006408bdb4dfd7dd11a05c0615d
 		{
 			substate.mode = STOPPED;
 			printf("It's too hot! Shutting down...\n");
@@ -349,7 +340,7 @@ void *safety_thread(void* arg)
 
 
 		// Check for leak
-		/*leakState = digitalRead(LEAKPIN);	// check the state of LEAKPIN
+		leakState = digitalRead(LEAKPIN);	// check the state of LEAKPIN
 		if( leakState == HIGH )
 		{
 			substate.mode = STOPPED;
