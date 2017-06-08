@@ -96,9 +96,11 @@ while True:
     fifo.write(_string)
     fifo.close()
 
+    # wtf does this do?
     #out, err = cproc.communicate(input)
+
     # Print everything out.
-    print('Heading={0:0.2F} Roll={1:0.2F} Pitch={2:0.2F}\tSys_cal={3} Gyro_cal={4} Accel_cal={5} Mag_cal={6}'.format(heading, roll, pitch, sys, gyro, accel, mag))
+    #print('Heading={0:0.2F} Roll={1:0.2F} Pitch={2:0.2F}\tSys_cal={3} Gyro_cal={4} Accel_cal={5} Mag_cal={6}'.format(heading, roll, pitch, sys, gyro, accel, mag))
 
     # Other values you can optionally read:
     # Orientation as a quaternion:
