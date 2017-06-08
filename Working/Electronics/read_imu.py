@@ -87,7 +87,11 @@ while True:
     # Read the calibration status, 0=uncalibrated and 3=fully calibrated.
     sys, gyro, accel, mag = bno.get_calibration_status()
 
-    _string = "%f %f %f %f %f %f %i %i %i %i" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
+    # Linear acceleration data (i.e. acceleration from movement, not gravity--
+    # returned in meters per second squared):
+    x_acc,y_acc,z_acc = bno.read_linear_acceleration()
+
+    _string = "%f %f %f %f %f %f %i %i %i %i %f %f %f" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag, x_acc, y_acc, z_acc)
     fifo = open("imu.fifo", "w")
     fifo.write(_string)
     fifo.close()
@@ -109,7 +113,7 @@ while True:
     #x,y,z = bno.read_accelerometer()
     # Linear acceleration data (i.e. acceleration from movement, not gravity--
     # returned in meters per second squared):
-    x_acc,y_acc,z_acc = bno.read_linear_acceleration()
+    # x_acc,y_acc,z_acc = bno.read_linear_acceleration()
     # Gravity acceleration data (i.e. acceleration just from gravity--returned
     # in meters per second squared):
     #x,y,z = bno.read_gravity()

@@ -353,6 +353,8 @@ void *safety_thread(void* arg)
 		}*/
 
 		// Check IMU accelerometer for collision (1+ g detected)
+		printf("x_acc: %f\n y_acc: %f\n z_acc: %f\n",
+			substate.imu.x_acc, substate.imu.y_acc, substate.imu.z_acc);
 		if( (float)fabs(substate.imu.x_acc) > 1.0*GRAVITY
 			|| (float)fabs(substate.imu.y_acc) > 1.0*GRAVITY
 			|| (float)fabs(substate.imu.z_acc) > 1.0*GRAVITY )
@@ -367,6 +369,8 @@ void *safety_thread(void* arg)
 			substate.mode = RUNNING;
 		}
 
+		// Sleep a little
+		usleep(100000);
 	}
     pthread_exit(NULL);
 
