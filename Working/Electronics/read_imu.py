@@ -63,7 +63,7 @@ None will be returned for the self test result.  Note that running a
 self test requires going into config mode which will stop the fusion
 engine from running.
 """
-status, self_test, error = bno.get_system_status
+status, self_test, error = bno.get_system_status()
 print('IMU status: {0}'.format(status))
 print('IMU Self test result (0x0F is normal): 0x{0:02X}'.format(self_test))
 
@@ -96,9 +96,11 @@ while True:
     fifo.write(_string)
     fifo.close()
 
-    out, err = cproc.communicate(input)
+    # wtf does this do?
+    #out, err = cproc.communicate(input)
+
     # Print everything out.
-    print('Heading={0:0.2F} Roll={1:0.2F} Pitch={2:0.2F}\tSys_cal={3} Gyro_cal={4} Accel_cal={5} Mag_cal={6}'.format(heading, roll, pitch, sys, gyro, accel, mag))
+    #print('Heading={0:0.2F} Roll={1:0.2F} Pitch={2:0.2F}\tSys_cal={3} Gyro_cal={4} Accel_cal={5} Mag_cal={6}'.format(heading, roll, pitch, sys, gyro, accel, mag))
 
     # Other values you can optionally read:
     # Orientation as a quaternion:
