@@ -390,7 +390,7 @@ void *safety_thread(void* arg)
 		{
 			// We're still good
 			substate.mode = RUNNING;
-		}*/
+		}
 
 		// Check temperature
 		// Shut down AUV if housing temperature gets too high
@@ -405,7 +405,7 @@ void *safety_thread(void* arg)
 		{
 			// We're still good
 			substate.mode = RUNNING;
-		}
+		}//*/
 
 
 		// Check for leak
@@ -420,7 +420,7 @@ void *safety_thread(void* arg)
 		{
 			// We're still good
 			substate.mode = RUNNING;
-		}
+		}*/
 
 		// Check IMU accelerometer for collision (1+ g detected)
 		if( (float)fabs(substate.imuorientation.x_acc) > 1.0*GRAVITY
@@ -435,7 +435,7 @@ void *safety_thread(void* arg)
 		{
 			// We're still good
 			substate.mode = RUNNING;
-		}*/
+		}
 
 	}
 
