@@ -37,13 +37,13 @@ void start_read_imu(void)
 }
 
 /***************************************************************************
- * bno055_t read_imu_fifo
+ * imu_t read_imu_fifo
  *
  * Reads IMU values from imu.fifo
 ***************************************************************************/
-bno055_t read_imu_fifo(void)
+imu_t read_imu_fifo(void)
 {
-	bno055_t imu;
+	imu_t imu;
 	char buf[1000];
 	FILE *fd = fopen( "imu.fifo", "r");
 

@@ -137,7 +137,7 @@ ms5837_t read_pressure(pressure_calib_t pressure_calib);
 
 // Functions for reading BNO055 IMU
 void start_read_imu(void); 					// start Python background process
-bno055_t read_imu_fifo(void); 			// read values from bno055
+imu_t read_imu_fifo(void); 			// read values from bno055
 
 // Functions for reading DS18B20 temperature sensor
 void start_read_temp(void); 				// start Python background process
