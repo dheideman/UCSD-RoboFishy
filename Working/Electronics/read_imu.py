@@ -1,22 +1,18 @@
-# Simple Adafruit BNO055 sensor reading example.  Will print the orientation
-# and calibration data every second.
+# Simple Adafruit BNO055 sensor reading example.
+# Prints the orientation and calibration data to a fifo every second.
 
 import logging
 import sys
 import time
 import os
 from Adafruit_BNO055 import BNO055
-#import BNO055
 print "Imported everything"
 
-# Create and configure the BNO sensor connection.  Make sure only ONE of the
-# below 'bno = ...' lines is uncommented:
+# Create and configure the BNO sensor connection.
 # Raspberry Pi configuration with serial UART and RST connected to GPIO 18:
 bno = BNO055.BNO055(serial_port='/dev/ttyAMA0', rst=18)
-#fifo_path = "/tmp/bno055_fifo2.fifo"
-#fifo_path = "/home/pi/Documents/156b/feedback2/bno055_fifo.fifo"
-#os.mkfifo(fifo_path)
 
+# what does this do?
 #cproc = subprocess.Popen("./new_test", stdin=PIPE, stdout=PIPE)
 
 # Enable verbose debug logging if -v is passed as a parameter.

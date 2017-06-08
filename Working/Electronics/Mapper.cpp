@@ -73,9 +73,6 @@ void *safety_thread(void* arg);
 // Holds the setpoint data structure with current setpoints
 //setpoint_t setpoint;
 
-// Holds the system state structure with current system statesystem_state_t sstate;
-//system_state_t sstate;
-
 // Holds the calibration values for the MS5837 pressure sensor
 pressure_calib_t pressure_calib;
 

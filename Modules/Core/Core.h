@@ -58,7 +58,7 @@ typedef struct sub_state_t
   double        fdepth;         // Filtered depth below surface
   cv::Point3f   pose;           // Location + Yaw of sub
   armed_t       laserarmed;     // Whether the laser can be turned on or not
-  bno055_t      imuorientation; // Orientation as determined by IMU
+  bno055_t      imu; // Orientation as determined by IMU
 } sub_state_t;
 
 /////////////////////////

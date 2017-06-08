@@ -28,6 +28,9 @@ void start_read_imu(void)
   fifo = fopen("imu.fifo","r");
 
   // insert check here //
+
+  // if it isn't printing values, restart initialization
+
   fclose(fifo);
 
   return;
@@ -36,21 +39,21 @@ void start_read_imu(void)
 /***************************************************************************
  * bno055_t read_imu_fifo
  *
- * Reads IMU values from bno055_fifo.txt
+ * Reads IMU values from imu.fifo
 ***************************************************************************/
 bno055_t read_imu_fifo(void)
 {
-	bno055_t bno055;
+	bno055_t imu;
 	char buf[1000];
 	FILE *fd = fopen( "imu.fifo", "r");
 
 	fgets(buf,1000,fd);
 	fclose(fd);
 	sscanf(buf,"%f %f %f %f %f %f %i %i %i %i",
-				 &bno055.yaw,&bno055.roll,&bno055.pitch,
-				 &bno055.q, &bno055.p, &bno055.r,
-				 &bno055.sys,&bno055.gyro,&bno055.accel,
-				 &bno055.mag);
+				 &imu.yaw,&imu.roll,&imu.pitch,
+				 &imu.q, &imu.p, &imu.r,
+				 &imu.sys,&imu.gyro,&imu.accel,
+				 &imu.mag);
 
-	return bno055;
+	return imu;
 }
