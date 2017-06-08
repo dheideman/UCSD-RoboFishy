@@ -50,12 +50,6 @@
 // Depth Start Value
 #define DEPTH_START 50 // starting depth (mm)
 
-// Depth Threshold Value
-#define DEPTH_STOP 2000	// threshold depth (mm)
-
-// Temperature Threshold Value
-#define TEMP_STOP 25	// deg C
-
 // Stop Timer
 #define STOP_TIME 4		// seconds
 
@@ -131,35 +125,9 @@ int main()
 	printf("\nAll components are initialized\n");
 	substate.mode = INITIALIZING;
     substate.laserarmed = ARMED;
+
+	printf("Starting Threads\n");
 	initializeTAttr();
-
-	// Initialize threads
-	/*sched_param param;
-	int policy, maxpriority;
-
-	// Initialize priorities
-	pthread_attr_init(&tattrlow);
-	pthread_attr_init(&tattrmed);
-	pthread_attr_init(&tattrhigh);
-
-	// Get max priority
-	pthread_attr_getschedpolicy(&tattrlow, &policy);
-	maxpriority = sched_get_priority_max(policy);
-
-	// Extract scheduling parameter
-	pthread_attr_getschedparam (&tattrlow, &param);
-
-	// Set up low priority
-	param.sched_priority = maxpriority/4;
-	pthread_attr_setschedparam (&tattrlow, &param);
-
-	// Set up medium priority
-	param.sched_priority = maxpriority/2;
-	pthread_attr_setschedparam (&tattrmed, &param);
-
-	// Set up high priority
-	param.sched_priority = maxpriority-1;
-	pthread_attr_setschedparam (&tattrhigh, &param);*/
 
 	// Thread handles
 	//pthread_t navigationThread;
@@ -169,17 +137,13 @@ int main()
 
 
 	// Create threads using modified attributes
-//	pthread_create (&navigationThread, &tattrmed, navigation, NULL);
-//	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
-	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
+/*	pthread_create (&navigationThread, &tattrmed, navigation, NULL);
+	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
+	pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
+*/	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 
-//	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
-//	pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
+// Destroy the thread attributes
  	destroyTAttr();
-	// Destroy the thread attributes
-	/*pthread_attr_destroy(&tattrlow);
-	pthread_attr_destroy(&tattrmed);
-	pthread_attr_destroy(&tattrhigh);*/
 
 	// Start timer!
 	time_t start = time(0);
@@ -205,7 +169,7 @@ int main()
 *
 * For Recording Depth & Determining If AUV is in Water or Not
 ******************************************************************************/
-/*void *depth_thread(void* arg)
+void *depth_thread(void* arg)
 {
 	// Initialize pressure sensor
 	pressure_calib = init_pressure_sensor();
@@ -224,15 +188,14 @@ int main()
 	}
 
 	pthread_exit(NULL);
-}*/
+}//*/
 
 /******************************************************************************
  * Navigation Thread
  *
  * For yaw control
  *****************************************************************************/
-/*
-void *navigation(void* arg)
+/*void *navigation(void* arg)
 {
 	
 
@@ -247,16 +210,16 @@ void *navigation(void* arg)
 	yaw_pid.old = 0;	    // Initialize old imu data
 	yaw_pid.setpoint = 0;   // Initialize setpoint for yaw_controller
 
-	yaw_pid.derr = 0;	   
+	yaw_pid.derr = 0;
 	yaw_pid.ierr = 0;	    // Initialize yaw_controller error values
 	yaw_pid.kerr = 0;
-	
+
 	yaw_pid.kp = 0.01;
 	yaw_pid.kd = 1;		    // Initialize yaw_controller gain values
 	yaw_pid.ki = .1;
 
 	yaw_pid.isat = 1;	    // Initialize saturation values
-	yaw_pid.SAT  = .2;	  
+	yaw_pid.SAT  = .2;
 
 	yaw_pid.DT   = .005;    // initialize time step
 
@@ -274,7 +237,7 @@ void *navigation(void* arg)
 	depth_pid.derr = 0;
 
 	depth_pid.isat = 1; 	//Depth controller saturation values
-	depth_pid.SAT  = .4 	
+	depth_pid.SAT  = .4
 
 	while(substate.mode!=STOPPED)
 	{
@@ -300,7 +263,7 @@ void *navigation(void* arg)
 
 
 		//calculate yaw controller output
-/*		motor_percent = marchPID(substate.imuorientation, yaw_pid)
+/*		motor_percent = marchPID(substate.imuorientation, yaw);
 
 		// Set port motor
 		//set_motor(0,motor_percent);
@@ -309,27 +272,27 @@ void *navigation(void* arg)
 		//set_motor(1, motor_percent);
 
 		// Sleep for 5 ms //
-	    if (substate.imuorientation.yaw < 180)
+	  if (substate.imuorientation.yaw < 180)
 		{
-		yaw_pid.err = abs(substate.imuorientation.yaw - yaw_pid.setpoint);
+			yaw_pid.err = abs(substate.imuorientation.yaw - yaw_pid.setpoint);
 		}
 		else
 		{
-		yaw_pid.err =abs((substate.imuorientation.yaw - 360) - yaw_pid.setpoint);
+			yaw_pid.err =abs((substate.imuorientation.yaw - 360) - yaw_pid.setpoint);
 		}
 
 		// Write captured values to screen
-	    //printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
+	  printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
 					 bno055.yaw, bno055.pitch, bno055.roll,
 					 bno055.p, bno055.q, bno055.r,
 					 bno055.sys, bno055.gyro, bno055.accel,
-					 bno055.mag);*/
+					 bno055.mag);
 
 		//printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
 
 
 		// Sanity test: Check if yaw control works
-		/*
+
 		// Call yaw controller function
 		yaw_controller();
 
@@ -340,18 +303,18 @@ void *navigation(void* arg)
 		set_motor(1, motor_percent);
 
 
-		*/
 
-		// Sleep for 5 ms //
-//		usleep(5000);
-//	}
 
-	//set_motor(0, 0);
-	//set_motor(1, 0);
-    //set_motor(2, 0);
+		// Sleep for 5 ms
+		usleep(5000);
+	}
 
-//	pthread_exit(NULL);
-//}
+	set_motor(0, 0);
+	set_motor(1, 0);
+	set_motor(2, 0);
+
+	pthread_exit(NULL);
+}//*/
 
 
 /******************************************************************************
@@ -390,7 +353,7 @@ void *safety_thread(void* arg)
 		{
 			// We're still good
 			substate.mode = RUNNING;
-		}*/
+		}
 
 		// Check temperature
 		// Shut down AUV if housing temperature gets too high
@@ -405,7 +368,7 @@ void *safety_thread(void* arg)
 		{
 			// We're still good
 			substate.mode = RUNNING;
-		}
+		}//*/
 
 
 		// Check for leak
@@ -420,7 +383,7 @@ void *safety_thread(void* arg)
 		{
 			// We're still good
 			substate.mode = RUNNING;
-		}
+		}*/
 
 		// Check IMU accelerometer for collision (1+ g detected)
 		if( (float)fabs(substate.imuorientation.x_acc) > 1.0*GRAVITY
@@ -435,11 +398,11 @@ void *safety_thread(void* arg)
 		{
 			// We're still good
 			substate.mode = RUNNING;
-		}*/
-	}
-	
+		}
 
+	}
     pthread_exit(NULL);
+
 }
 
 

@@ -35,7 +35,7 @@
 
 // Protection Constants
 #define DEPTH_STOP 2000	// threshold depth (mm)
-#define TEMP_STOP 25		// deg C
+#define TEMP_STOP 30	// deg C
 
 
 /***************************************************************************
