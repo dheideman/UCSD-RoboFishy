@@ -193,7 +193,7 @@ void *depth_thread(void* arg)
  *
  * For yaw control
  *****************************************************************************/
-/*void *navigation(void* arg)
+void *navigation(void* arg)
 {
 
 
@@ -204,16 +204,16 @@ void *depth_thread(void* arg)
 
 	float yaw = 0; 			  //Local variable for if statements
 
-	//////////////yaw controller initialization////////////////////////////////
-	yaw_pid.old = 0;	    // Initialize old imu data
+	/////////////////yaw controller initialization////////////////////////////////
+	yaw_pid.old = 0;	    	// Initialize old imu data
 	yaw_pid.setpoint = 0;   // Initialize setpoint for yaw_controller
 
 	yaw_pid.derr = 0;
-	yaw_pid.ierr = 0;	    // Initialize yaw_controller error values
+	yaw_pid.ierr = 0;	    	// Initialize yaw_controller error values
 	yaw_pid.kerr = 0;
 
 	yaw_pid.kp = KP_YAW;
-	yaw_pid.kd = KD_YAW;	// Initialize yaw_controller gain values
+	yaw_pid.kd = KD_YAW;		// Initialize yaw_controller gain values
 	yaw_pid.ki = KI_YAW;
 
 	yaw_pid.isat = INT_SAT;	// Initialize saturation values
@@ -221,10 +221,10 @@ void *depth_thread(void* arg)
 
 	yaw_pid.dt   = DT;      // initialize time step
 
-	/////////////depth controller initialization///////////////////////////////
+	////////////////depth controller initialization///////////////////////////////
 	depth_pid.setpoint = 2; 	// Range-from-bottom setpoint (meters)
-	depth_pid.old	   = 0; 	// Initialize old depth
-	depth_pid.dt 	   = DT;	// Initialize depth controller time step
+	depth_pid.old	   = 0; 		// Initialize old depth
+	depth_pid.dt 	   = DT;		// Initialize depth controller time step
 
 	depth_pid.kp = KP_DEPTH;
 	depth_pid.kd = KD_DEPTH;	// Depth controller gain initialization
@@ -234,34 +234,33 @@ void *depth_thread(void* arg)
 	depth_pid.ierr = 0;	    	// Initialize depth controller error values
 	depth_pid.derr = 0;
 
-	depth_pid.isat = INT_SAT; 	//Depth controller saturation values
+	depth_pid.isat = INT_SAT; 	// Depth controller saturation values
 	depth_pid.sat  = DEPTH_SAT;
 
 	while(substate.mode!=STOPPED)
 	{
 		// read IMU values from fifo file
-		//bno055 = read_imu_fifo();
 		substate.imu = read_imu_fifo();
 
-	    if (substate.imu.yaw < 180) //AUV pointed right
+	  if (substate.imu.yaw < 180) // AUV pointed right
 		{
 			yaw = substate.imu.yaw;
 		}
-		else //AUV pointed left
+		else // AUV pointed left
 		{
 			yaw =(substate.imu.yaw-360);
 		}
 
 		// Write captured values to screen
-	    //printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
+		printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
 			 bno055.yaw, bno055.pitch, bno055.roll,
 			 bno055.p, bno055.q, bno055.r,
 			 bno055.sys, bno055.gyro, bno055.accel,
-			 bno055.mag);*/
+			 bno055.mag);
 
 
 		//calculate yaw controller output
-/*		motor_percent = marchPID(substate.imu, yaw);
+		motor_percent = marchPID(substate.imu, yaw);
 
 		// Set port motor
 		//set_motor(0,motor_percent);
@@ -279,15 +278,7 @@ void *depth_thread(void* arg)
 			yaw_pid.err =abs((substate.imu.yaw - 360) - yaw_pid.setpoint);
 		}
 
-		// Write captured values to screen
-	  printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
-					 bno055.yaw, bno055.pitch, bno055.roll,
-					 bno055.p, bno055.q, bno055.r,
-					 bno055.sys, bno055.gyro, bno055.accel,
-					 bno055.mag);
-
-		//printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
-
+		printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
 
 		// Call yaw controller function
 		yaw_controller();
