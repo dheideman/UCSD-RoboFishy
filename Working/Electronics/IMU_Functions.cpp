@@ -36,7 +36,7 @@ void start_read_imu(void)
 /***************************************************************************
  * bno055_t read_imu_fifo
  *
- * Reads IMU values from bno055_fifo.txt
+ * Reads IMU values from imu.fifo
 ***************************************************************************/
 bno055_t read_imu_fifo(void)
 {
