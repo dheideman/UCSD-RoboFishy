@@ -99,34 +99,6 @@ int main(int argc, char** argv)
 
   initializeTAttr();
   
-  // Initialize threads
-  /*sched_param param;
-  int policy, maxpriority;
-
-  // Initialize priorities
-  pthread_attr_init(&tattrlow);
-  pthread_attr_init(&tattrmed);
-  pthread_attr_init(&tattrhigh);
-
-  // Get max priority
-  pthread_attr_getschedpolicy(&tattrlow, &policy);
-  maxpriority = sched_get_priority_max(policy);
-
-  // Extract scheduling parameter
-  pthread_attr_getschedparam (&tattrlow, &param);
-
-  // Set up low priority
-  param.sched_priority = maxpriority/4;
-  pthread_attr_setschedparam (&tattrlow, &param);
-
-  // Set up medium priority
-  param.sched_priority = maxpriority/2;
-  pthread_attr_setschedparam (&tattrmed, &param);
-
-  // Set up high priority
-  param.sched_priority = maxpriority-1;
-  pthread_attr_setschedparam (&tattrhigh, &param);*/
-
   // Start multithreading!
   pthread_t cameraThread;
   pthread_t rangeThread;
@@ -138,8 +110,8 @@ int main(int argc, char** argv)
   
   // Pause for 4 seconds to let everything initialize
 
-  // Do we need to sleep here? test
-  //sleep(4);  
+  // Temporary sleep to let camera capture images
+  sleep(4);  
 
 
   // Create the RangeFinder thread
@@ -155,6 +127,9 @@ int main(int argc, char** argv)
   // Set mode to RUNNING
   substate.mode = RUNNING;
   cout << "RUNNING" << endl;
+  
+  // Turn on laser
+  substate.laserarmed = ARMED;
 
   // initialize key command
   int key = 0; 

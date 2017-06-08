@@ -55,7 +55,7 @@
 #define FRAME_HEIGHT      720   // 720 HD
 
 // Laser Pin
-#define LASERPIN      4
+#define LASERPIN      3
 
 
 //////////////////////
@@ -79,7 +79,7 @@ typedef struct sub_images_t
 
 // Thread
 void *takePictures(void*);
-void disarmLaser(void* arg);
+void *disarmLaser(void* arg);
 
 // Mutex Lock Initializer
 int initializeSubImagesLock(sub_images_t *_subimages);
