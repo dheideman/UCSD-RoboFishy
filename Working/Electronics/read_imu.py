@@ -30,9 +30,42 @@ if not bno.begin():
 print "IMU Initialized"
 
 # Print system status and self test result.
-status, self_test, error = bno.get_system_status
-#print('System status: {0}'.format(status))
-#print('Self test result (0x0F is normal): 0x{0:02X}'.format(self_test))
+"""Return a tuple with status information.  Three values will be returned:
+  - System status register value with the following meaning:
+      0 = Idle
+      1 = System Error
+      2 = Initializing Peripherals
+      3 = System Initialization
+      4 = Executing Self-Test
+      5 = Sensor fusion algorithm running
+      6 = System running without fusion algorithms
+  - Self test result register value with the following meaning:
+      Bit value: 1 = test passed, 0 = test failed
+      Bit 0 = Accelerometer self test
+      Bit 1 = Magnetometer self test
+      Bit 2 = Gyroscope self test
+      Bit 3 = MCU self test
+      Value of 0x0F = all good!
+  - System error register value with the following meaning:
+      0 = No error
+      1 = Peripheral initialization error
+      2 = System initialization error
+      3 = Self test result failed
+      4 = Register map value out of range
+      5 = Register map address out of range
+      6 = Register map write error
+      7 = BNO low power mode not available for selected operation mode
+      8 = Accelerometer power mode not available
+      9 = Fusion algorithm configuration error
+     10 = Sensor configuration error
+If run_self_test is passed in as False then no self test is performed and
+None will be returned for the self test result.  Note that running a
+self test requires going into config mode which will stop the fusion
+engine from running.
+"""
+status, self_test, error = bno.get_system_status()
+print('IMU status: {0}'.format(status))
+print('IMU Self test result (0x0F is normal): 0x{0:02X}'.format(self_test))
 
 # Print out an error if system status is in error mode.
 if status == 0x01:
@@ -62,11 +95,12 @@ while True:
     fifo = open("imu.fifo", "w")
     fifo.write(_string)
     fifo.close()
-    #print "%f %f %f %f %f %f %i %i %i %i\n" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag)
 
-    out, err = cproc.communicate(input)
+    # wtf does this do?
+    #out, err = cproc.communicate(input)
+
     # Print everything out.
-    print('Heading={0:0.2F} Roll={1:0.2F} Pitch={2:0.2F}\tSys_cal={3} Gyro_cal={4} Accel_cal={5} Mag_cal={6}'.format(heading, roll, pitch, sys, gyro, accel, mag))
+    #print('Heading={0:0.2F} Roll={1:0.2F} Pitch={2:0.2F}\tSys_cal={3} Gyro_cal={4} Accel_cal={5} Mag_cal={6}'.format(heading, roll, pitch, sys, gyro, accel, mag))
 
     # Other values you can optionally read:
     # Orientation as a quaternion:
@@ -83,12 +117,6 @@ while True:
     # Gravity acceleration data (i.e. acceleration just from gravity--returned
     # in meters per second squared):
     #x,y,z = bno.read_gravity()
-
-    _string2 = "%f %f %f" %(x_acc, y_acc, z_acc)
-    acc_fifo = open("accelerometer.fifo", "w")
-    acc_fifo.write(_string2)
-    acc_fifo.close()
-    #print "%f %f %f" %(x_acc, y_acc, z_acc)
 
     # Sleep until the next reading.
     time.sleep(0.01)

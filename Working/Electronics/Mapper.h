@@ -14,7 +14,7 @@
 #include "../../Modules/Core/Core.h"
 
 
-#define  DEBUG
+#define DEBUG
 
 #define PCA9685_ADDR 0x40
 #define PIN_BASE 300
@@ -87,9 +87,7 @@ typedef struct pid_data_t
 
 
 /***************************************************************************
-*
 * Global Variables
-*
 ***************************************************************************/
 
 // Holds the setpoint data structure with current setpoints
@@ -100,9 +98,6 @@ extern pressure_calib_t pressure_calib;
 
 // Holds the latest pressure value from the MS5837 pressure sensor
 extern ms5837_t ms5837;
-
-// Create structure for storing IMU data
-//extern bno055_t bno055; //moved to the core
 
 // Holds the latest temperature value from the DS18B20 temperature sensor
 extern ds18b20_t ds18b20;
@@ -122,9 +117,7 @@ extern float depth;
 
 
 /******************************************************************************
-*
 * Function Prototypes
-*
 ******************************************************************************/
 
 // Functions for setting motor PWM with PCA9685

@@ -383,10 +383,10 @@ void *safety_thread(void* arg)
 	ds18b20 = read_temp_fifo();
 	printf("Temperature: %f degC\n", ds18b20.temperature);
 
-	/*while( substate.mode != STOPPED )
+	while( substate.mode != STOPPED )
 	{
 		// Check if depth threshold has been exceeded
-		if( substate.fdepth > DEPTH_STOP )
+		/*if( substate.fdepth > DEPTH_STOP )
 		{
 			substate.mode = STOPPED;
 			printf("We're too deep! Shutting down...\n");
@@ -396,7 +396,7 @@ void *safety_thread(void* arg)
 		{
 			// We're still good
 			substate.mode = RUNNING;
-		}
+		}*/
 
 		// Check temperature
 		// Shut down AUV if housing temperature gets too high
@@ -415,7 +415,7 @@ void *safety_thread(void* arg)
 
 
 		// Check for leak
-		leakState = digitalRead(LEAKPIN);	// check the state of LEAKPIN
+		/*leakState = digitalRead(LEAKPIN);	// check the state of LEAKPIN
 		if( leakState == HIGH )
 		{
 			substate.mode = STOPPED;
@@ -441,9 +441,9 @@ void *safety_thread(void* arg)
 		{
 			// We're still good
 			substate.mode = RUNNING;
-		}
-
-	}*/
+		}*/
+	}
+	
 
     pthread_exit(NULL);
 }
