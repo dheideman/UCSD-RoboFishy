@@ -63,12 +63,12 @@ void start_read_pressure(void)
 }
 
 /***************************************************************************
- * ms5837_t ms5837_read
+ * ms5837_t read_pressure
  *
  * Read pressure values from MS5837 pressure sensor
 ***************************************************************************/
 
-ms5837_t ms5837_read(pressure_calib_t pressure_calib)
+ms5837_t read_pressure(pressure_calib_t pressure_calib)
 {
 	// Initialize Python interpreter
 	Py_Initialize();
