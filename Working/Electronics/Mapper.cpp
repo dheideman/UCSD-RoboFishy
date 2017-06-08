@@ -79,8 +79,8 @@ pressure_calib_t pressure_calib;
 // Holds the latest pressure value from the MS5837 pressure sensor
 ms5837_t ms5837;
 
-// Holds the latest temperature value from the DS18B20 temperature sensor
-float ds18b20;
+// Holds the latest temperature value from the temperature temperature sensor
+float temperature;
 
 // Holds the constants and latest errors of the yaw pid controller
 pid_data_t yaw_pid;
@@ -314,8 +314,8 @@ void *safety_thread(void* arg)
 	int leakState;	// holds the state (HIGH or LOW) of the LEAKPIN
 
 	// Test if temp sensor reads anything
-	ds18b20 = read_temp_fifo();
-	printf("Temperature: %f degC\n", ds18b20.temperature);
+	temperature = read_temp_fifo();
+	printf("Temperature: %f degC\n", temperature);
 
 	while( substate.mode != STOPPED )
 	{
@@ -335,7 +335,7 @@ void *safety_thread(void* arg)
 		// Check temperature
 		// Shut down AUV if housing temperature gets too high
 
-		if( ds18b20.temperature > TEMP_STOP )
+		if( temperature.temperature > TEMP_STOP )
 		{
 			substate.mode = STOPPED;
 			printf("It's too hot! Shutting down...\n");
@@ -349,7 +349,7 @@ void *safety_thread(void* arg)
 
 
 		// Check for leak
-		/*leakState = digitalRead(LEAKPIN);	// check the state of LEAKPIN
+		leakState = digitalRead(LEAKPIN);	// check the state of LEAKPIN
 		if( leakState == HIGH )
 		{
 			substate.mode = STOPPED;
