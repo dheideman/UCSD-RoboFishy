@@ -181,8 +181,7 @@ void *depth_thread(void* arg)
 		// 1013: ambient pressure (mbar)
 		// 10.197*p_mbar = p_mmH20
 
-		printf(depth);
-		printf("\n");
+    printf("Current Depth:\t %.3f\n",depth);
 		usleep(1000000);
 	}
 
