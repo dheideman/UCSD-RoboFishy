@@ -245,7 +245,7 @@ void *navigation(void* arg)
 	depth_pid.isat = INT_SAT; 	//Depth controller saturation values
 	depth_pid.SAT  = DEPTH_SAT;
 
-	while(substate.mode!=STOPPED)
+	while( substate.mode != STOPPED )
 	{
 		// read IMU values from fifo file
 		//bno055 = read_imu_fifo();
@@ -257,7 +257,7 @@ void *navigation(void* arg)
 		}
 		else //AUV pointed left
 		{
-			yaw =(substate.imu.yaw-360);
+			yaw = (substate.imu.yaw-360);
 		}
 
 		
