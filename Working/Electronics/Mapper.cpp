@@ -180,8 +180,18 @@ void *depth_thread(void* arg)
 		// 1013: ambient pressure (mbar)
 		// 10.197*p_mbar = p_mmH20
 
+
 		printf("Current Depth:\t %.3f\n",depth);
 		usleep(1000000);
+
+		// Write IMU values to screen
+	  printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
+					 bno055.yaw, bno055.pitch, bno055.roll,
+					 bno055.p, bno055.q, bno055.r,
+					 bno055.sys, bno055.gyro, bno055.accel,
+					 bno055.mag);
+
+	  //printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.perr, motor_percent);
 	}
 
 	pthread_exit(NULL);
@@ -190,11 +200,10 @@ void *depth_thread(void* arg)
 /******************************************************************************
  * Navigation Thread
  *
- * For yaw control
+ * For yaw and depth control
  *****************************************************************************/
-/*void *navigation(void* arg)
+void *navigation(void* arg)
 {
-
 
 	initialize_motors(motor_channels, HERTZ);
 
@@ -251,59 +260,22 @@ void *depth_thread(void* arg)
 			yaw =(substate.imu.yaw-360);
 		}
 
-		// Write captured values to screen
-	    //printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
-			 bno055.yaw, bno055.pitch, bno055.roll,
-			 bno055.p, bno055.q, bno055.r,
-			 bno055.sys, bno055.gyro, bno055.accel,
-			 bno055.mag);*/
-
-
+		
 		//calculate yaw controller output
-/*		motor_percent = marchPID(substate.imu, yaw);
+		motor_percent = marchPID(substate.imu, yaw);
 
-		// Set port motor
-		//set_motor(0,motor_percent);
+		
+		//set_motor(0,motor_percent);	// Set port motor
+		//set_motor(1, motor_percent);	// Set starboard motor
 
-		// Set starboard motor
-		//set_motor(1, motor_percent);
+		
 
-		// Sleep for 5 ms //
-	  if (substate.imu.yaw < 180)
-		{
-			yaw_pid.err = abs(substate.imu.yaw - yaw_pid.setpoint);
-		}
-		else
-		{
-			yaw_pid.err =abs((substate.imu.yaw - 360) - yaw_pid.setpoint);
-		}
-
-		// Write captured values to screen
-	  printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
-					 bno055.yaw, bno055.pitch, bno055.roll,
-					 bno055.p, bno055.q, bno055.r,
-					 bno055.sys, bno055.gyro, bno055.accel,
-					 bno055.mag);
-
-		//printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
-
-
-		// Call yaw controller function
-		yaw_controller();
-
-		// Set port motor
-		set_motor(0,motor_percent);
-
-		// Set starboard motor
-		set_motor(1, motor_percent);
-
-
-
+		
 
 		// Sleep for 5 ms
 		usleep(5000);
 	}
-
+	//Turn motors off; Exit cleanly
 	set_motor(0, 0);
 	set_motor(1, 0);
 	set_motor(2, 0);
@@ -381,6 +353,8 @@ void *safety_thread(void* arg)
 		}*/
 
 		// Check IMU accelerometer for collision (1+ g detected)
+		printf("x_acc: %f\n y_acc: %f\n z_acc: %f\n",
+			substate.imu.x_acc, substate.imu.y_acc, substate.imu.z_acc);
 		if( (float)fabs(substate.imu.x_acc) > 1.0*GRAVITY
 			|| (float)fabs(substate.imu.y_acc) > 1.0*GRAVITY
 			|| (float)fabs(substate.imu.z_acc) > 1.0*GRAVITY )
@@ -395,6 +369,8 @@ void *safety_thread(void* arg)
 			substate.mode = RUNNING;
 		}
 
+		// Sleep a little
+		usleep(100000);
 	}
     pthread_exit(NULL);
 
