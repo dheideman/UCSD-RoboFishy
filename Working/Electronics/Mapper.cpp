@@ -239,35 +239,39 @@ void *navigation(void* arg)
 	//float output_port;		// port motor output
 	//float output_starboard; // starboard motor output
 
-	// Initialize motor percent to be returned by yaw_controller
-	//float motor_percent;
 
-	// Initialize old imu data
-	yaw_pid.old = 0;
+	//////////////yaw controller initialization////////////////////////////////
+	yaw_pid.old = 0;	    // Initialize old imu data
+	yaw_pid.setpoint = 0;   // Initialize setpoint for yaw_controller
 
-	// Initialize setpoint for yaw_controller
-	yaw_pid.setpoint = 0;
-
-	// Initialize error values to be used in yaw_controller
-	yaw_pid.err = 0;
-	yaw_pid.i_err = 0;
-
-	// Yaw controller constant initialization
+	yaw_pid.derr = 0;	   
+	yaw_pid.ierr = 0;	    // Initialize yaw_controller error values
+	yaw_pid.kerr = 0;
+	
 	yaw_pid.kp = 0.01;
-	yaw_pid.kd = 1;
+	yaw_pid.kd = 1;		    // Initialize yaw_controller gain values
 	yaw_pid.ki = .1;
 
-	// Range-from-bottom setpoint
-	depth_pid.setpoint = 2;	// meters
+	yaw_pid.isat = 1;	    // Initialize saturation values
+	yaw_pid.SAT  = .2;	  
 
-	// Depth controller constant initialization
+	yaw_pid.DT   = .005;    // initialize time step
+
+	/////////////depth controller initialization///////////////////////////////
+	depth_pid.setpoint = 2; 	// Range-from-bottom setpoint (meters)
+	depth_pid.old	   = 0; 	// Initialize old depth
+	depth_pid.DT 	   = .005;	// Initialize depth controller time step
+
 	depth_pid.kp = 0.001;
-	depth_pid.kd = 0;
-	depth_pid.ki = 0;
+	depth_pid.kd = 1.0;		// Depth controller gain initialization
+	depth_pid.ki = 0.01;
 
-	// Initialize error values to be used in depth_controller
-	depth_pid.err = 0;
-	depth_pid.i_err = 0;
+	depth_pid.kerr = 0;
+	depth_pid.ierr = 0;	    // Initialize depth controller error values
+	depth_pid.derr = 0;
+
+	depth_pid.isat = 1; 	//Depth controller saturation values
+	depth_pid.SAT  = .4 	
 
 	// Hard set motor speed
 	// pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
