@@ -128,16 +128,15 @@ int main()
 
 	// Thread handles
 	//pthread_t navigationThread;
-	//pthread_t depthThread;
+	pthread_t depthThread;
 	pthread_t safetyThread;
 	//pthread_t disarmlaserThread;
 
 
 	// Create threads using modified attributes
-/*	pthread_create (&navigationThread, &tattrmed, navigation, NULL);
+	//pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
+	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
-	pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
-*/	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 
 // Destroy the thread attributes
  	destroyTAttr();
@@ -181,7 +180,7 @@ void *depth_thread(void* arg)
 		// 1013: ambient pressure (mbar)
 		// 10.197*p_mbar = p_mmH20
 
-    printf("Current Depth:\t %.3f\n",depth);
+		printf("Current Depth:\t %.3f\n",depth);
 		usleep(1000000);
 	}
 
@@ -226,16 +225,16 @@ void *depth_thread(void* arg)
 	depth_pid.old	   = 0; 	// Initialize old depth
 	depth_pid.DT 	   = DT;	// Initialize depth controller time step
 
-	depth_pid.kp = 0.001;
-	depth_pid.kd = 1.0;		// Depth controller gain initialization
-	depth_pid.ki = 0.01;
+	depth_pid.kp = KP_DEPTH;
+	depth_pid.kd = KD_DEPTH;	// Depth controller gain initialization
+	depth_pid.ki = KI_DEPTH;
 
 	depth_pid.kerr = 0;
-	depth_pid.ierr = 0;	    // Initialize depth controller error values
+	depth_pid.ierr = 0;	    	// Initialize depth controller error values
 	depth_pid.derr = 0;
 
-	depth_pid.isat = 1; 	//Depth controller saturation values
-	depth_pid.SAT  = .4
+	depth_pid.isat = INT_SAT; 	//Depth controller saturation values
+	depth_pid.SAT  = DEPTH_SAT;
 
 	while(substate.mode!=STOPPED)
 	{
@@ -288,8 +287,6 @@ void *depth_thread(void* arg)
 
 		//printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
 
-
-		// Sanity test: Check if yaw control works
 
 		// Call yaw controller function
 		yaw_controller();
