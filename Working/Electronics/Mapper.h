@@ -126,7 +126,7 @@ int saturate_number(float* val, float min, float max);
 int set_motor(int motor_num, float speed);
 
 // Yaw controller declaration function
-float marchPID(bno055_t controller, float input);
+float marchPID(pid_data_t controller, float input);
 
 // Functions for reading MS5837 Pressure Sensor
 void start_read_pressure(void);			// start Python background process
