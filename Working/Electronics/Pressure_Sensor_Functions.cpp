@@ -27,7 +27,7 @@ pressure_calib_t init_pressure_sensor(void)
 
 	// Stuff
 	PyRun_SimpleString("import sys");
-	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/Mapper\")");
+	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/\")");
 	pModule = PyImport_Import(pName);
 	pDict = PyModule_GetDict(pModule);
 	pFunc = PyDict_GetItemString(pDict, "init_press");
