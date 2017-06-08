@@ -54,7 +54,7 @@
 #define DEPTH_STOP 2000	// threshold depth (mm)
 
 // Temperature Threshold Value
-#define TEMP_STOP 25	// deg C
+#define TEMP_STOP 30	// deg C
 
 // Stop Timer
 #define STOP_TIME 4		// seconds
