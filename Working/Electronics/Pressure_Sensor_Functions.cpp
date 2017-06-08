@@ -107,4 +107,4 @@ ms5837_t read_pressure(pressure_calib_t pressure_calib)
 	Py_DECREF(pName);
 	Py_Finalize();
 	return ms5837;
-};
+}
