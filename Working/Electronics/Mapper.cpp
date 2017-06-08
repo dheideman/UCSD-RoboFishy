@@ -215,7 +215,7 @@ void *navigation(void* arg)
 
 	yaw_pid.derr = 0;
 	yaw_pid.ierr = 0;	    	// Initialize error values
-	yaw_pid.kerr = 0;
+	yaw_pid.perr = 0;
 
 	yaw_pid.kp = KP_YAW;
 	yaw_pid.kd = KD_YAW;		// Initialize gain values
