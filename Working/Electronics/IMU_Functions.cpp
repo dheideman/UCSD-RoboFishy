@@ -19,6 +19,12 @@ void start_read_imu(void)
 
   // Start up the Python
   std::FILE* fd = fopen("read_imu.py", "r");
+
+  if ( fd == NULL )
+  {
+    printf("line 25: imu.fifo couldn't be open for reading.\n");
+  }
+
   PyRun_SimpleFile(fd,"read_imu.py");
 
   // Wait 2 seconds to let the python script start up
@@ -27,7 +33,11 @@ void start_read_imu(void)
   // Check whether the python script wrote anything
   fifo = fopen("imu.fifo","r");
 
-  // insert check here //
+  // Insert check here //
+  if ( fifo == NULL )
+  {
+    printf("line 39: imu.fifo couldn't be open for reading.\n");
+  }
 
   // if it isn't printing values, restart initialization
 

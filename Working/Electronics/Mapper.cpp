@@ -335,7 +335,7 @@ void *safety_thread(void* arg)
 		// Check temperature
 		// Shut down AUV if housing temperature gets too high
 
-		if( temperature.temperature > TEMP_STOP )
+		if( temperature > TEMP_STOP )
 		{
 			substate.mode = STOPPED;
 			printf("It's too hot! Shutting down...\n");
