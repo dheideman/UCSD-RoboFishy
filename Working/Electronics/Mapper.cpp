@@ -73,9 +73,6 @@ void *safety_thread(void* arg);
 // Holds the setpoint data structure with current setpoints
 //setpoint_t setpoint;
 
-// Holds the system state structure with current system statesystem_state_t sstate;
-//system_state_t sstate;
-
 // Holds the calibration values for the MS5837 pressure sensor
 pressure_calib_t pressure_calib;
 
@@ -184,7 +181,9 @@ void *depth_thread(void* arg)
 		// 1013: ambient pressure (mbar)
 		// 10.197*p_mbar = p_mmH20
 
-		usleep(10000);
+		printf(depth);
+		printf("\n");
+		usleep(1000000);
 	}
 
 	pthread_exit(NULL);
@@ -197,7 +196,7 @@ void *depth_thread(void* arg)
  *****************************************************************************/
 /*void *navigation(void* arg)
 {
-	
+
 
 	initialize_motors(motor_channels, HERTZ);
 
@@ -243,15 +242,15 @@ void *depth_thread(void* arg)
 	{
 		// read IMU values from fifo file
 		//bno055 = read_imu_fifo();
-		substate.imuorientation = read_imu_fifo();
+		substate.imu = read_imu_fifo();
 
-	    if (substate.imuorientation.yaw < 180) //AUV pointed right
+	    if (substate.imu.yaw < 180) //AUV pointed right
 		{
-			yaw = substate.imuorientation.yaw;
+			yaw = substate.imu.yaw;
 		}
 		else //AUV pointed left
 		{
-			yaw =(substate.imuorientation.yaw-360);
+			yaw =(substate.imu.yaw-360);
 		}
 
 		// Write captured values to screen
@@ -263,7 +262,7 @@ void *depth_thread(void* arg)
 
 
 		//calculate yaw controller output
-/*		motor_percent = marchPID(substate.imuorientation, yaw);
+/*		motor_percent = marchPID(substate.imu, yaw);
 
 		// Set port motor
 		//set_motor(0,motor_percent);
@@ -272,13 +271,13 @@ void *depth_thread(void* arg)
 		//set_motor(1, motor_percent);
 
 		// Sleep for 5 ms //
-	  if (substate.imuorientation.yaw < 180)
+	  if (substate.imu.yaw < 180)
 		{
-			yaw_pid.err = abs(substate.imuorientation.yaw - yaw_pid.setpoint);
+			yaw_pid.err = abs(substate.imu.yaw - yaw_pid.setpoint);
 		}
 		else
 		{
-			yaw_pid.err =abs((substate.imuorientation.yaw - 360) - yaw_pid.setpoint);
+			yaw_pid.err =abs((substate.imu.yaw - 360) - yaw_pid.setpoint);
 		}
 
 		// Write captured values to screen
@@ -384,9 +383,9 @@ void *safety_thread(void* arg)
 		}*/
 
 		// Check IMU accelerometer for collision (1+ g detected)
-		if( (float)fabs(substate.imuorientation.x_acc) > 1.0*GRAVITY
-			|| (float)fabs(substate.imuorientation.y_acc) > 1.0*GRAVITY
-			|| (float)fabs(substate.imuorientation.z_acc) > 1.0*GRAVITY )
+		if( (float)fabs(substate.imu.x_acc) > 1.0*GRAVITY
+			|| (float)fabs(substate.imu.y_acc) > 1.0*GRAVITY
+			|| (float)fabs(substate.imu.z_acc) > 1.0*GRAVITY )
 		{
 			substate.mode = STOPPED;
 			printf("Collision detected. Shutting down...");

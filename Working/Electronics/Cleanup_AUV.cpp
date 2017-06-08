@@ -24,8 +24,6 @@ int cleanup_auv()
 	// Delete fifo files
 	remove("imu.fifo");
 	printf("imu.fifo deleted successfully\n");
-	remove("pressure.fifo");
-	printf("pressure.fifo deleted successfully\n");
 	remove("temp.fifo");
 	printf("temp.fifo deleted successfully\n");
 
