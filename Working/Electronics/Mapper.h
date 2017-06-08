@@ -70,8 +70,8 @@ typedef struct pid_data_t
 	float setpoint;
 	float output;
 	float old;
-	float SAT;
-	float DT;
+	float sat;
+	float dt;
 	float isat;
 }pid_data_t;
 
