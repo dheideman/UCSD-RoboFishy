@@ -180,8 +180,18 @@ void *depth_thread(void* arg)
 		// 1013: ambient pressure (mbar)
 		// 10.197*p_mbar = p_mmH20
 
+
 		printf("Current Depth:\t %.3f\n",depth);
 		usleep(1000000);
+
+		// Write IMU values to screen
+	  printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
+					 bno055.yaw, bno055.pitch, bno055.roll,
+					 bno055.p, bno055.q, bno055.r,
+					 bno055.sys, bno055.gyro, bno055.accel,
+					 bno055.mag);
+
+	  //printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.perr, motor_percent);
 	}
 
 	pthread_exit(NULL);
@@ -190,11 +200,10 @@ void *depth_thread(void* arg)
 /******************************************************************************
  * Navigation Thread
  *
- * For yaw control
+ * For yaw and depth control
  *****************************************************************************/
-/*void *navigation(void* arg)
+void *navigation(void* arg)
 {
-
 
 	initialize_motors(motor_channels, HERTZ);
 
@@ -251,34 +260,22 @@ void *depth_thread(void* arg)
 			yaw =(substate.imu.yaw-360);
 		}
 
-		// Write captured values to screen
-	    //printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
-			 bno055.yaw, bno055.pitch, bno055.roll,
-			 bno055.p, bno055.q, bno055.r,
-			 bno055.sys, bno055.gyro, bno055.accel,
-			 bno055.mag);*/
-
-
+		
 		//calculate yaw controller output
-/*		motor_percent = marchPID(substate.imu, yaw);
+		motor_percent = marchPID(substate.imu, yaw);
 
 		
 		//set_motor(0,motor_percent);	// Set port motor
 		//set_motor(1, motor_percent);	// Set starboard motor
 
-		// Write captured values to screen
-	  printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
-					 bno055.yaw, bno055.pitch, bno055.roll,
-					 bno055.p, bno055.q, bno055.r,
-					 bno055.sys, bno055.gyro, bno055.accel,
-					 bno055.mag);
+		
 
-		//printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.perr, motor_percent);
+		
 
 		// Sleep for 5 ms
 		usleep(5000);
 	}
-
+	//Turn motors off; Exit cleanly
 	set_motor(0, 0);
 	set_motor(1, 0);
 	set_motor(2, 0);
