@@ -45,7 +45,7 @@ typedef enum armed_t
 // Struct for holding BNO055 return values
 typedef struct
 {
-  float yaw, roll, pitch, p, q, r;
+  float yaw, roll, pitch, p, q, r, x_acc, y_acc, z_acc;
   int sys, gyro, accel, mag;
 } bno055_t;
 
