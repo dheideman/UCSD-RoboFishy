@@ -70,8 +70,8 @@ typedef struct pid_data_t
 	float setpoint;
 	float output;
 	float old;
-	float SAT;
-	float DT;
+	float sat;
+	float dt;
 	float isat;
 }pid_data_t;
 
@@ -126,7 +126,7 @@ int saturate_number(float* val, float min, float max);
 int set_motor(int motor_num, float speed);
 
 // Yaw controller declaration function
-float yaw_controller(bno055_t bno055, pid_data_t yaw_pid);
+float marchPID(bno055_t controller, float input);
 
 // Functions for reading MS5837 Pressure Sensor
 void start_read_pressure(void);			// start Python background process
