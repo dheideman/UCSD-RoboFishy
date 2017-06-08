@@ -227,7 +227,7 @@ void *navigation(void* arg)
 	yaw_pid.isat = INT_SAT;	// Initialize saturation values
 	yaw_pid.SAT  = YAW_SAT;
 
-	yaw_pid.DT   = DY;      // initialize time step
+	yaw_pid.DT   = DT;      // initialize time step
 
 	/////////////depth controller initialization///////////////////////////////
 	depth_pid.setpoint = 2; 	// Range-from-bottom setpoint (meters)
