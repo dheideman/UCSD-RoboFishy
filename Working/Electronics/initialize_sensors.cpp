@@ -13,11 +13,11 @@
 
 int initialize_sensors(void)
 {
-	start_Py_bno055();			// start IMU
+	start_read_imu();			// start IMU
 	usleep(100000);
-	start_Py_ms5837();			// start pressure sensor
+	start_read_pressure();			// start pressure sensor
 	usleep(100000);
-	start_Py_ds18b20();			// start temperature sensor
+	start_read_temp();			// start temperature sensor
 	usleep(100000);
 	signal(SIGINT, ctrl_c);	// capture ctrl+c and exit
 	return 0;

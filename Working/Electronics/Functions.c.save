@@ -40,7 +40,7 @@ int saturate_number(float* val, float min, float max){
 
 // MS5837 FUNCTIONS //
 
-calib_t init_ms5837(void){
+calib_t init_pressure_sensor(void){
 	Py_Initialize();
 	calib_t calib; // create struct to hold calibration data
 	PyObject *pName, *pModule, *pDict, *pFunc, *pValue;
@@ -107,7 +107,7 @@ ms5837_t ms5837_read(calib_t arg_in){
 
 // BNO055 FUNCTIONS //
 
-void start_Py_bno055(void){
+void start_read_imu(void){
     char cmd[50];
     strcpy(cmd,"python bno055_read.py & exit");
     system(cmd);

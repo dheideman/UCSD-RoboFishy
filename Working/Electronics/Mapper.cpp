@@ -128,7 +128,7 @@ int main()
 	{
 		return -1;
 	}
-	printf("\nAll components are initializated\n");
+	printf("\nAll components are initialized\n");
 	substate.mode = INITIALIZING;
     substate.laserarmed = ARMED;
 	initializeTAttr();
@@ -208,7 +208,7 @@ int main()
 /*void *depth_thread(void* arg)
 {
 	// Initialize pressure sensor
-	pressure_calib = init_ms5837();
+	pressure_calib = init_pressure_sensor();
 
 	while(substate.mode!=STOPPED)
 	{
@@ -278,8 +278,8 @@ void *navigation(void* arg)
 	while(substate.mode!=STOPPED)
 	{
 		// read IMU values from fifo file
-		//bno055 = bno055_read();
-		substate.imuorientation = bno055_read();
+		//bno055 = read_imu_fifo();
+		substate.imuorientation = read_imu_fifo();
 
 	    if (substate.imuorientation.yaw < 180) //AUV pointed right
 		{

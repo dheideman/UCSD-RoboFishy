@@ -7,11 +7,11 @@
 
 
 /***************************************************************************
- * void start_Py_bno055
+ * void start_read_imu
  *
- * Starts bno055_read.py code
+ * Starts read_imu.py code
 ***************************************************************************/
-void start_Py_bno055(void)
+void start_read_imu(void)
 {
   // clear fifo file //
   std::FILE* fifo = fopen("imu.fifo","w");
@@ -34,11 +34,11 @@ void start_Py_bno055(void)
 }
 
 /***************************************************************************
- * bno055_t bno055_read
+ * bno055_t read_imu_fifo
  *
  * Reads IMU values from bno055_fifo.txt
 ***************************************************************************/
-bno055_t bno055_read(void)
+bno055_t read_imu_fifo(void)
 {
 	bno055_t bno055;
 	char buf[1000];

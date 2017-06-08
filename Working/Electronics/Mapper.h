@@ -137,19 +137,22 @@ int set_motor(int motor_num, float speed);
 float yaw_controller(bno055_t bno055, pid_data_t yaw_pid);
 
 // Functions for reading MS5837 Pressure Sensor
-pressure_calib_t init_ms5837(void); 		   // initialize ms5837
-ms5837_t ms5837_read(pressure_calib_t arg_in); // read values from ms5837
+void start_read_pressure(void);			// start Python background process
+pressure_calib_t init_pressure_sensor(void);	// initialize ms5837
+// read values from ms5837
+// need to pass calibration values to it
+ms5837_t ms5837_read(pressure_calib_t arg_in);
 
 // Functions for reading BNO055 IMU
-void start_Py_bno055(void); // start Python background process
-bno055_t bno055_read(void); // read values from bno055
+void start_read_imu(void); 					// start Python background process
+bno055_t read_imu_fifo(void); 				// read values from bno055
 
 // Functions for reading DS18B20 temperature sensor
-void start_Py_ds18b20(void); 	// start Python background process
-ds18b20_t read_temp_fifo(void);	// read values from ds18b20
+void start_read_temp(void); 				// start Python background process
+ds18b20_t read_temp_fifo(void);			// read values from ds18b20
 
 // Startup functions
-int scripps_auv_init(void);
+int initialize_sensors(void);
 
 // Cleanup and shutdown
 void ctrl_c(int signo); // signal catcher

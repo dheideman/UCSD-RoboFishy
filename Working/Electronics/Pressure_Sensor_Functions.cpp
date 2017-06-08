@@ -6,12 +6,12 @@
 #include "Mapper.h"
 
 /***************************************************************************
- * pressure_calib_t init_ms5837
+ * pressure_calib_t init_pressure_sensor
  *
  * Initializes pressure sensor and returns structure of 6 coefficients
 ***************************************************************************/
 
-pressure_calib_t init_ms5837(void)
+pressure_calib_t init_pressure_sensor(void)
 {
 	// Initialize Python interpreter
 	Py_Initialize();
@@ -48,6 +48,19 @@ pressure_calib_t init_ms5837(void)
 	Py_Finalize();
 	return pressure_calib;
 };
+
+/***************************************************************************
+ * void start_read_pressure
+ *
+ * Starts pressure reading python program
+***************************************************************************/
+
+void start_read_pressure(void)
+{
+	FILE* fd = fopen("python read_pressure.py", "r");
+	PyRun_SimpleFile(fd,"python read_pressure.py");
+	return;
+}
 
 /***************************************************************************
  * ms5837_t ms5837_read
@@ -95,16 +108,3 @@ ms5837_t ms5837_read(pressure_calib_t pressure_calib)
 	Py_Finalize();
 	return ms5837;
 };
-
-/***************************************************************************
- * void start_Py_ms5837
- *
- * Starts pressure reading python program
-***************************************************************************/
-
-void start_Py_ms5837(void)
-{
-	FILE* fd = fopen("python read_pressure.py", "r");
-	PyRun_SimpleFile(fd,"python read_pressure.py");
-	return;
-}
