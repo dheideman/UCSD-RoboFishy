@@ -30,7 +30,7 @@ if not bno.begin():
 print "IMU Initialized"
 
 # Print system status and self test result.
-status, self_test, error = bno.get_system_status
+status, self_test, error = bno.get_system_status()
 #print('System status: {0}'.format(status))
 #print('Self test result (0x0F is normal): 0x{0:02X}'.format(self_test))
 
