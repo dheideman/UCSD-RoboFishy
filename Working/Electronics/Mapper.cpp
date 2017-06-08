@@ -80,7 +80,7 @@ pressure_calib_t pressure_calib;
 ms5837_t ms5837;
 
 // Holds the latest temperature value from the DS18B20 temperature sensor
-ds18b20_t ds18b20;
+float ds18b20;
 
 // Holds the constants and latest errors of the yaw pid controller
 pid_data_t yaw_pid;
@@ -202,8 +202,6 @@ void *depth_thread(void* arg)
  *****************************************************************************/
 void *navigation(void* arg)
 {
-
-
 	initialize_motors(motor_channels, HERTZ);
 
 	//float output_port;	  // port motor output
@@ -237,7 +235,7 @@ void *navigation(void* arg)
 	depth_pid.kd = KD_DEPTH;	// Depth controller gain initialization
 	depth_pid.ki = KI_DEPTH;
 
-	depth_pid.kerr = 0;
+	depth_pid.perr = 0;
 	depth_pid.ierr = 0;	    	// Initialize depth controller error values
 	depth_pid.derr = 0;
 
@@ -287,7 +285,7 @@ void *navigation(void* arg)
 		usleep(5000);
 	}
 
-	// Turn motors off 
+	// Turn motors off
 	set_motor(0, 0);
 	set_motor(1, 0);
 	set_motor(2, 0);
@@ -332,7 +330,7 @@ void *safety_thread(void* arg)
 		{
 			// We're still good
 			substate.mode = RUNNING;
-		}
+		}//*/
 
 		// Check temperature
 		// Shut down AUV if housing temperature gets too high
@@ -347,7 +345,7 @@ void *safety_thread(void* arg)
 		{
 			// We're still good
 			substate.mode = RUNNING;
-		}//*/
+		}
 
 
 		// Check for leak
@@ -362,7 +360,7 @@ void *safety_thread(void* arg)
 		{
 			// We're still good
 			substate.mode = RUNNING;
-		}*/
+		}
 
 		// Check IMU accelerometer for collision (1+ g detected)
 		if( (float)fabs(substate.imu.x_acc) > 1.0*GRAVITY
@@ -378,8 +376,8 @@ void *safety_thread(void* arg)
 			// We're still good
 			substate.mode = RUNNING;
 		}
-
-	}
+		//*/
+	}//*/
     pthread_exit(NULL);
 
 }

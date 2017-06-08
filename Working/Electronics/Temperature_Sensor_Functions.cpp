@@ -19,21 +19,21 @@ void start_read_temp(void)
 }
 
 /***************************************************************************
- * ds18b20_t read_temp_fifo(void)
+ * float read_temp_fifo(void)
  *
  * Reads temperature values from temp.fifo
 ***************************************************************************/
-ds18b20_t read_temp_fifo(void)
+float read_temp_fifo(void)
 {
 	// Create struct to hold temperature data
-	ds18b20_t ds18b20;
+	float ds18b20;
 
 	// Read temperature values from temp.fifo
 	char buf[1000];
     std::FILE *fd = fopen("temp.fifo", "r");
 	fgets(buf,1000,fd);
 	fclose(fd);
-	sscanf(buf,"%f",&ds18b20.temperature);
+	sscanf(buf,"%f",&ds18b20);
 
 	// Return a temperature value
 	return ds18b20;

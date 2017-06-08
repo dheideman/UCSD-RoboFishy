@@ -35,13 +35,11 @@
 
 // Protection Constants
 #define DEPTH_STOP 2000	// threshold depth (mm)
-#define TEMP_STOP 30	// deg C
+#define TEMP_STOP 50	// deg C
 
 
 /***************************************************************************
-*
 * Create Structs
-*
 ***************************************************************************/
 
 // Struct for hold ms5837 calibration values
@@ -55,12 +53,6 @@ typedef struct
 {
 	float pressure;
 }ms5837_t;
-
-// Struct for holding DS18B20 temperature sensor return values
-typedef struct
-{
-	float temperature;
-}ds18b20_t;
 
 // Struct for PID Controllers
 typedef struct pid_data_t
@@ -100,7 +92,7 @@ extern pressure_calib_t pressure_calib;
 extern ms5837_t ms5837;
 
 // Holds the latest temperature value from the DS18B20 temperature sensor
-extern ds18b20_t ds18b20;
+extern float ds18b20;
 
 // Holds the constants and latest errors of the yaw pid controller
 extern pid_data_t yaw_pid;
@@ -141,7 +133,7 @@ imu_t read_imu_fifo(void); 			// read values from bno055
 
 // Functions for reading DS18B20 temperature sensor
 void start_read_temp(void); 				// start Python background process
-ds18b20_t read_temp_fifo(void);			// read values from ds18b20
+float read_temp_fifo(void);			// read values from ds18b20
 
 // Startup functions
 int initialize_sensors(void);
