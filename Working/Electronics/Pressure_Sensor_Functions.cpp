@@ -27,7 +27,7 @@ pressure_calib_t init_pressure_sensor(void)
 
 	// Stuff
 	PyRun_SimpleString("import sys");
-	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/Mapper\")");
+	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/\")");
 	pModule = PyImport_Import(pName);
 	pDict = PyModule_GetDict(pModule);
 	pFunc = PyDict_GetItemString(pDict, "init_press");
@@ -57,8 +57,10 @@ pressure_calib_t init_pressure_sensor(void)
 
 void start_read_pressure(void)
 {
+	Py_Initialize();
 	FILE* fd = fopen("python read_pressure.py", "r");
 	PyRun_SimpleFile(fd,"python read_pressure.py");
+	Py_Finalize();
 	return;
 }
 
@@ -80,9 +82,9 @@ ms5837_t read_pressure(pressure_calib_t pressure_calib)
 	PyObject *pName, *pModule, *pDict, *pFunc, *pArgs, *pValue;
 
 	// Input name of Python source file
-	pName = PyString_FromString("MS5837_example");
+	pName = PyString_FromString("MS5837");
 	PyRun_SimpleString("import sys");
-	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/Mapper\")");
+	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/\")");
 	pModule = PyImport_Import(pName);
 	pDict = PyModule_GetDict(pModule);
 	pFunc = PyDict_GetItemString(pDict, "read_press");
@@ -105,6 +107,6 @@ ms5837_t read_pressure(pressure_calib_t pressure_calib)
 
 	Py_DECREF(pModule);
 	Py_DECREF(pName);
-	Py_Finalize();
+	Py_Finalize(); //*/
 	return ms5837;
-};
+}
