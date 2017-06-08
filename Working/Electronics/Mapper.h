@@ -121,7 +121,7 @@ int set_motor(int motor_num, float speed);
 float marchPID(pid_data_t controller, float input);
 
 // Functions for reading MS5837 Pressure Sensor
-void start_read_pressure(void);			// start Python background process
+void start_read_pressure(void);								// start Python background process
 pressure_calib_t init_pressure_sensor(void);	// initialize ms5837
 // read values from ms5837
 // need to pass calibration values to it
@@ -129,11 +129,11 @@ ms5837_t read_pressure(pressure_calib_t pressure_calib);
 
 // Functions for reading BNO055 IMU
 void start_read_imu(void); 					// start Python background process
-imu_t read_imu_fifo(void); 			// read values from bno055
+imu_t read_imu_fifo(void); 					// read values from bno055
 
 // Functions for reading DS18B20 temperature sensor
 void start_read_temp(void); 				// start Python background process
-float read_temp_fifo(void);			// read values from ds18b20
+float read_temp_fifo(void);					// read values from ds18b20
 
 // Startup functions
 int initialize_sensors(void);

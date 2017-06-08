@@ -166,7 +166,7 @@ int main()
 
 void *depth_thread(void* arg)
 {
-	printf("Depth Thread Started");
+	printf("Depth Thread Started\n");
 	// Initialize pressure sensor
 	pressure_calib = init_pressure_sensor();
 
@@ -189,11 +189,8 @@ void *depth_thread(void* arg)
 			 substate.imu.p, substate.imu.q, substate.imu.r,
 			 substate.imu.sys, substate.imu.gyro, substate.imu.accel,
 			 substate.imu.mag);
-
 	 	//printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
-
 	}
-
 	pthread_exit(NULL);
 }//*/
 
@@ -204,7 +201,7 @@ void *depth_thread(void* arg)
  *****************************************************************************/
 /*void *navigation(void* arg)
 {
-	printf("Nav Thread Started");
+	printf("Nav Thread Started\n");
 
 	initialize_motors(motor_channels, HERTZ);
 
@@ -287,7 +284,7 @@ void *depth_thread(void* arg)
  *****************************************************************************/
 void *safety_thread(void* arg)
 {
-	printf("Safety Thread Started");
+	printf("Safety Thread Started\n");
 
 	// Set up WiringPi for use // (not sure if actually needed)
 	wiringPiSetup();
