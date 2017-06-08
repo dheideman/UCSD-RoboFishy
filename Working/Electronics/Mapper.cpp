@@ -193,7 +193,7 @@ void *depth_thread(void* arg)
  *
  * For yaw control
  *****************************************************************************/
-void *navigation(void* arg)
+/*void *navigation(void* arg)
 {
 
 
@@ -340,7 +340,7 @@ void *safety_thread(void* arg)
 		{
 			// We're still good
 			substate.mode = RUNNING;
-		}
+		}//*/
 
 		// Check temperature
 		// Shut down AUV if housing temperature gets too high
@@ -355,7 +355,7 @@ void *safety_thread(void* arg)
 		{
 			// We're still good
 			substate.mode = RUNNING;
-		}//*/
+		}
 
 
 		// Check for leak
@@ -370,7 +370,7 @@ void *safety_thread(void* arg)
 		{
 			// We're still good
 			substate.mode = RUNNING;
-		}*/
+		}
 
 		// Check IMU accelerometer for collision (1+ g detected)
 		if( (float)fabs(substate.imu.x_acc) > 1.0*GRAVITY
@@ -387,7 +387,7 @@ void *safety_thread(void* arg)
 			substate.mode = RUNNING;
 		}
 
-	}
+	}//*/
     pthread_exit(NULL);
 
 }
