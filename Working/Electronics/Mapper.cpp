@@ -262,12 +262,6 @@ void *depth_thread(void* arg)
 		// Set starboard motor
 		set_motor(1, motor_percent);
 
-		// Set port motor
-		//set_motor(0,motor_percent);
-
-		// Set starboard motor
-		//set_motor(1, motor_percent);
-
 		// Sleep for 5 ms
 		usleep(5000);
 	}
