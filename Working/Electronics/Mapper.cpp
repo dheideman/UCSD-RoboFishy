@@ -264,21 +264,9 @@ void *depth_thread(void* arg)
 		//calculate yaw controller output
 /*		motor_percent = marchPID(substate.imu, yaw);
 
-		// Set port motor
-		//set_motor(0,motor_percent);
-
-		// Set starboard motor
-		//set_motor(1, motor_percent);
-
-		// Sleep for 5 ms //
-	  if (substate.imu.yaw < 180)
-		{
-			yaw_pid.err = abs(substate.imu.yaw - yaw_pid.setpoint);
-		}
-		else
-		{
-			yaw_pid.err =abs((substate.imu.yaw - 360) - yaw_pid.setpoint);
-		}
+		
+		//set_motor(0,motor_percent);	// Set port motor
+		//set_motor(1, motor_percent);	// Set starboard motor
 
 		// Write captured values to screen
 	  printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
