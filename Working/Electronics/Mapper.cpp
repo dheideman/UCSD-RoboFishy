@@ -128,16 +128,15 @@ int main()
 
 	// Thread handles
 	//pthread_t navigationThread;
-	//pthread_t depthThread;
+	pthread_t depthThread;
 	pthread_t safetyThread;
 	//pthread_t disarmlaserThread;
 
 
 	// Create threads using modified attributes
-/*	pthread_create (&navigationThread, &tattrmed, navigation, NULL);
+	//pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
+	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
-	pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
-*/	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 
 // Destroy the thread attributes
  	destroyTAttr();
@@ -181,8 +180,7 @@ void *depth_thread(void* arg)
 		// 1013: ambient pressure (mbar)
 		// 10.197*p_mbar = p_mmH20
 
-		printf(depth);
-		printf("\n");
+		printf("Current Depth:\t %.3f\n",depth);
 		usleep(1000000);
 	}
 
