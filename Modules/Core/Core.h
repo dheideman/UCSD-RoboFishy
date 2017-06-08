@@ -10,7 +10,7 @@
 
 //#include <cv.hpp>
 #include <opencv2/opencv.hpp>
-
+#include <signal.h>   
 
 ///////////////
 // Constants //
@@ -71,6 +71,8 @@ void initializeTAttr();
 // PThread Priority Attributes Destroyer
 void destroyTAttr();
 
+// signal catcher
+void ctrl_c(int signo);     
 
 //////////////////////
 // Global Variables //

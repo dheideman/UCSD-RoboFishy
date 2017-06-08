@@ -6,11 +6,11 @@
 #include "Mapper.h"
 
 
-/***************************************************************************
+/******************************************************************************
  * void start_read_imu
  *
  * Starts read_imu.py code
-***************************************************************************/
+******************************************************************************/
 void start_read_imu(void)
 {
   // clear fifo file //
@@ -19,10 +19,6 @@ void start_read_imu(void)
 
   // Start up the Python
   std::FILE* fd = fopen("read_imu.py", "r");
-  if (fd==NULL)
-  {
-    printf("line 24: problem opening read_imu.py\n");
-  }
   PyRun_SimpleFile(fd,"read_imu.py");
 
   // Wait 2 seconds to let the python script start up
@@ -50,11 +46,11 @@ void start_read_imu(void)
   return;
 }
 
-/***************************************************************************
+/******************************************************************************
  * imu_t read_imu_fifo
  *
  * Reads IMU values from imu.fifo
-***************************************************************************/
+******************************************************************************/
 imu_t read_imu_fifo(void)
 {
 	imu_t imu;

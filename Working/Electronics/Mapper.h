@@ -139,7 +139,7 @@ float read_temp_fifo(void);					// read values from ds18b20
 int initialize_sensors(void);
 
 // Cleanup and shutdown
-void ctrl_c(int signo); 		// signal catcher
+
 int cleanup_auv();					// call at the very end of main()
 
 #endif

@@ -11,7 +11,7 @@
 
 // Sampling Values
 #define SAMPLE_RATE 200 // sample rate of main control loop (Hz)
-#define DT 0.005				// timestep; make sure this is equal to 1/SAMPLE_RATE!
+#define DT 0.005		// timestep; make sure this is equal to 1/SAMPLE_RATE!
 
 // Conversion Factors
 #define UNITS_KPA 0.1 // converts pressure from mbar to kPa
