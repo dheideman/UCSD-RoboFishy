@@ -185,11 +185,11 @@ void *depth_thread(void* arg)
 		usleep(1000000);
 
 		// Write IMU values to screen
-	  printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
+	 /* printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
 					 bno055.yaw, bno055.pitch, bno055.roll,
 					 bno055.p, bno055.q, bno055.r,
 					 bno055.sys, bno055.gyro, bno055.accel,
-					 bno055.mag);
+					 bno055.mag);//*/
 
 	  //printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.perr, motor_percent);
 	}
@@ -218,7 +218,7 @@ void *navigation(void* arg)
 
 	yaw_pid.derr = 0;
 	yaw_pid.ierr = 0;	    // Initialize yaw_controller error values
-	yaw_pid.kerr = 0;
+	yaw_pid.perr = 0;
 
 	yaw_pid.kp = KP_YAW;
 	yaw_pid.kd = KD_YAW;	// Initialize yaw_controller gain values
@@ -227,7 +227,7 @@ void *navigation(void* arg)
 	yaw_pid.isat = INT_SAT;	// Initialize saturation values
 	yaw_pid.SAT  = YAW_SAT;
 
-	yaw_pid.DT   = DY;      // initialize time step
+	yaw_pid.DT   = DT;      // initialize time step
 
 	/////////////depth controller initialization///////////////////////////////
 	depth_pid.setpoint = 2; 	// Range-from-bottom setpoint (meters)
@@ -238,7 +238,7 @@ void *navigation(void* arg)
 	depth_pid.kd = KD_DEPTH;	// Depth controller gain initialization
 	depth_pid.ki = KI_DEPTH;
 
-	depth_pid.kerr = 0;
+	depth_pid.perr = 0;
 	depth_pid.ierr = 0;	    	// Initialize depth controller error values
 	depth_pid.derr = 0;
 
