@@ -15,8 +15,8 @@ int initialize_sensors(void)
 {
 	start_read_imu();			// start IMU
 	usleep(100000);
-	start_read_pressure();		// start pressure sensor
-	usleep(100000);
+//	start_read_pressure();		// start pressure sensor
+///	usleep(100000);
 	start_read_temp();			// start temperature sensor
 	usleep(100000);
 	signal(SIGINT, ctrl_c);		// capture ctrl+c and exit
