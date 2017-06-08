@@ -77,7 +77,7 @@ void *safety_thread(void* arg);
 ******************************************************************************/
 
 // Holds the setpoint data structure with current setpoints
-setpoint_t setpoint;
+//setpoint_t setpoint;
 
 // Holds the system state structure with current system statesystem_state_t sstate;
 //system_state_t sstate;
@@ -124,11 +124,11 @@ int main()
 	wiringPiSetupGpio();
 
 	// Check if AUV is initialized correctly
-	if( scripps_auv_init() < 0 )
+	if( initialize_sensors() < 0 )
 	{
 		return -1;
 	}
-	printf("\nAll components are initializated\n");
+	printf("\nAll components are initialized\n");
 	substate.mode = INITIALIZING;
     substate.laserarmed = ARMED;
 	initializeTAttr();
@@ -208,7 +208,7 @@ int main()
 /*void *depth_thread(void* arg)
 {
 	// Initialize pressure sensor
-	pressure_calib = init_ms5837();
+	pressure_calib = init_pressure_sensor();
 
 	while(substate.mode!=STOPPED)
 	{
@@ -278,8 +278,8 @@ void *navigation(void* arg)
 	while(substate.mode!=STOPPED)
 	{
 		// read IMU values from fifo file
-		//bno055 = bno055_read();
-		substate.imuorientation = bno055_read();
+		//bno055 = read_imu_fifo();
+		substate.imuorientation = read_imu_fifo();
 
 	    if (substate.imuorientation.yaw < 180) //AUV pointed right
 		{
@@ -328,7 +328,7 @@ void *navigation(void* arg)
 					 bno055.mag);*/
 
 		//printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
-    
+
 
 		// Sanity test: Check if yaw control works
 		/*
@@ -376,7 +376,7 @@ void *safety_thread(void* arg)
 	int leakState;	// holds the state (HIGH or LOW) of the LEAKPIN
 
 	// Test if temp sensor reads anything
-	ds18b20 = ds18b20_read();
+	ds18b20 = read_temp_fifo();
 	printf("Temperature: %f degC\n", ds18b20.temperature);
 
 	/*while( substate.mode != STOPPED )
@@ -395,7 +395,7 @@ void *safety_thread(void* arg)
 		}
 
 		// Check temperature
-		// Shut down AUV if housing temperature gets too high 
+		// Shut down AUV if housing temperature gets too high
 
 		if( ds18b20.temperature > TEMP_STOP )
 		{
@@ -420,13 +420,13 @@ void *safety_thread(void* arg)
 		}
 		else if (leakState == LOW)
 		{
-			// We're still good 
+			// We're still good
 			substate.mode = RUNNING;
 		}
 
-		// Check IMU accelerometer for collision (1+ g detected) 
-		if( (float)fabs(substate.imuorientation.x_acc) > 1.0*GRAVITY 
-			|| (float)fabs(substate.imuorientation.y_acc) > 1.0*GRAVITY 
+		// Check IMU accelerometer for collision (1+ g detected)
+		if( (float)fabs(substate.imuorientation.x_acc) > 1.0*GRAVITY
+			|| (float)fabs(substate.imuorientation.y_acc) > 1.0*GRAVITY
 			|| (float)fabs(substate.imuorientation.z_acc) > 1.0*GRAVITY )
 		{
 			substate.mode = STOPPED;

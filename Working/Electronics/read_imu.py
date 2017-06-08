@@ -5,8 +5,8 @@ import logging
 import sys
 import time
 import os
-#from Adafruit_BNO055 import BNO055
-import BNO055
+from Adafruit_BNO055 import BNO055
+#import BNO055
 print "Imported everything"
 
 # Create and configure the BNO sensor connection.  Make sure only ONE of the
@@ -85,9 +85,9 @@ while True:
     #x,y,z = bno.read_gravity()
 
     _string2 = "%f %f %f" %(x_acc, y_acc, z_acc)
-    fifo2 = open("accelerometer.fifo", "w")
-    fifo2.write(_string2)
-    fifo2.close()
+    acc_fifo = open("accelerometer.fifo", "w")
+    acc_fifo.write(_string2)
+    acc_fifo.close()
     #print "%f %f %f" %(x_acc, y_acc, z_acc)
 
     # Sleep until the next reading.

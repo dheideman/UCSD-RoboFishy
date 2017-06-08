@@ -6,24 +6,24 @@
 #include "Mapper.h"
 
 /***************************************************************************
- * void start_Py_ds18b20(void)
+ * void start_read_temp(void)
  *
  * Writes temperature values from the DS18B20 temperature sensor into
  * temp.fifo
 ***************************************************************************/
-void start_Py_ds18b20(void)
+void start_read_temp(void)
 {
-  std::FILE* fd = fopen("temp_read.py", "r");
-	PyRun_SimpleFile(fd,"temp_read.py");
+  std::FILE* fd = fopen("read_temp.py", "r");
+	PyRun_SimpleFile(fd,"read_temp.py");
 	return;
 }
 
 /***************************************************************************
- * ds18b20_t ds18b20_read(void)
+ * ds18b20_t read_temp_fifo(void)
  *
  * Reads temperature values from temp.fifo
 ***************************************************************************/
-ds18b20_t ds18b20_read(void)
+ds18b20_t read_temp_fifo(void)
 {
 	// Create struct to hold temperature data
 	ds18b20_t ds18b20;

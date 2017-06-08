@@ -7,38 +7,38 @@
 
 
 /***************************************************************************
- * void start_Py_bno055
+ * void start_read_imu
  *
- * Starts bno055_read.py code
+ * Starts read_imu.py code
 ***************************************************************************/
-void start_Py_bno055(void)
+void start_read_imu(void)
 {
-	// clear fifo file //
-    std::FILE* fifo = fopen("imu.fifo","w");
-    fclose(fifo);
+  // clear fifo file //
+  std::FILE* fifo = fopen("imu.fifo","w");
+  fclose(fifo);
 
-    // Start up the Python
-    std::FILE* fd = fopen("bno055_read.py", "r");
-	PyRun_SimpleFile(fd,"bno055_read.py");
-	
-    // Wait 2 seconds to let the python script start up
-    usleep(2000000);
+  // Start up the Python
+  std::FILE* fd = fopen("read_imu.py", "r");
+  PyRun_SimpleFile(fd,"read_imu.py");
 
-    // Check whether the python script wrote anything
-	fifo = fopen("imu.fifo","r");
+  // Wait 2 seconds to let the python script start up
+  usleep(2000000);
 
-    // insert check here //
-	fclose(fifo);
+  // Check whether the python script wrote anything
+  fifo = fopen("imu.fifo","r");
 
-	return;
+  // insert check here //
+  fclose(fifo);
+
+  return;
 }
 
 /***************************************************************************
- * bno055_t bno055_read
+ * bno055_t read_imu_fifo
  *
  * Reads IMU values from bno055_fifo.txt
 ***************************************************************************/
-bno055_t bno055_read(void)
+bno055_t read_imu_fifo(void)
 {
 	bno055_t bno055;
 	char buf[1000];
