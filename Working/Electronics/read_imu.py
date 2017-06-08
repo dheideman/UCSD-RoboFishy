@@ -63,7 +63,7 @@ None will be returned for the self test result.  Note that running a
 self test requires going into config mode which will stop the fusion
 engine from running.
 """
-status, self_test, error = bno.get_system_status
+status, self_test, error = bno.get_system_status()
 print('IMU status: {0}'.format(status))
 print('IMU Self test result (0x0F is normal): 0x{0:02X}'.format(self_test))
 

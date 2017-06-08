@@ -439,9 +439,10 @@ void *safety_thread(void* arg)
 			substate.mode = RUNNING;
 		}*/
 
-	
+	}
 
     pthread_exit(NULL);
+
 }
 
 
