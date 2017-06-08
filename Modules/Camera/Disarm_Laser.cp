@@ -18,7 +18,7 @@
 
 // Declare Global State Variables
 // sub_state_t substate;
-// bno055_t bno055;
+// imu_t bno055;
 
  /*******************************************************************************
  * void *takePictures(void*)
