@@ -83,12 +83,11 @@ while True:
 
     # Output data to screen
     print "Pressure : %.2f mbar" %pressure
-    #print "Temperature in Celsius : %.2f C" %cTemp
-    #print "Temperature in Fahrenheit : %.2f F" %fTemp
+    print "Temperature in Celsius : %.2f C" %cTemp
 
     # write pressure info to fifo
-    fifo = open("pressure.fifo", "w")
-    _string = "%f" %(pressure)
-    fifo.write(_string)
-    fifo.close()
-    print "%f\n" %(pressure)
+    #fifo = open("pressure.fifo", "w")
+    #_string = "%f" %(pressure)
+    #fifo.write(_string)
+    #fifo.close()
+    #print "%f\n" %(pressure)
