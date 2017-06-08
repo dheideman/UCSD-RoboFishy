@@ -66,7 +66,7 @@ typedef struct
 typedef struct pid_data_t
 {
 	float kp, ki, kd;
-	float kerr, ierr, derr;
+	float perr, ierr, derr;
 	float setpoint;
 	float output;
 	float old;

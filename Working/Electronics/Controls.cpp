@@ -15,7 +15,7 @@
 float marchPID(pid_data_t controller, float input)
 {
 	//Calculating errors
-	controller.kerr = input - controller.setpoint;
+	controller.perr = input - controller.setpoint;
 	controller.derr = (input - controller.old)/(controller.DT);
 	controller.ierr += controller.DT * (input - controller.setpoint);
 
@@ -29,7 +29,7 @@ float marchPID(pid_data_t controller, float input)
 		controller.ierr = - controller.isat;
 	}
 
-	controller.output =   controller.kp * controller.kerr
+	controller.output =   controller.kp * controller.perr
 						+ controller.ki * controller.ierr
 						+ controller.kd * controller.derr;
 
