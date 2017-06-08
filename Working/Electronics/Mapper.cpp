@@ -50,12 +50,6 @@
 // Depth Start Value
 #define DEPTH_START 50 // starting depth (mm)
 
-// Depth Threshold Value
-#define DEPTH_STOP 2000	// threshold depth (mm)
-
-// Temperature Threshold Value
-#define TEMP_STOP 30	// deg C
-
 // Stop Timer
 #define STOP_TIME 4		// seconds
 
