@@ -13,24 +13,24 @@
 ***************************************************************************/
 void start_Py_bno055(void)
 {
-	// clear fifo file //
-    std::FILE* fifo = fopen("imu.fifo","w");
-    fclose(fifo);
+  // clear fifo file //
+  std::FILE* fifo = fopen("imu.fifo","w");
+  fclose(fifo);
 
-    // Start up the Python
-    std::FILE* fd = fopen("read_imu.py", "r");
-	PyRun_SimpleFile(fd,"read_imu.py");
+  // Start up the Python
+  std::FILE* fd = fopen("read_imu.py", "r");
+  PyRun_SimpleFile(fd,"read_imu.py");
 
-    // Wait 2 seconds to let the python script start up
-    usleep(2000000);
+  // Wait 2 seconds to let the python script start up
+  usleep(2000000);
 
-    // Check whether the python script wrote anything
-	fifo = fopen("imu.fifo","r");
+  // Check whether the python script wrote anything
+  fifo = fopen("imu.fifo","r");
 
-    // insert check here //
-	fclose(fifo);
+  // insert check here //
+  fclose(fifo);
 
-	return;
+  return;
 }
 
 /***************************************************************************

@@ -21,9 +21,11 @@ int cleanup_auv()
 	// Let final threads clean up
 	usleep(500000);
 
-	// Delete fifo file
-	remove("bno055_fifo.txt");
-	printf("\nbno055_fifo.txt deleted successfully\n");
+	// Delete fifo files
+	remove("imu.fifo");
+	printf("imu.fifo deleted successfully\n");
+	remove("pressure.fifo");
+	printf("pressure.fifo deleted successfully\n");
 
 	// Set all motors to zero
 	int channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3};
@@ -36,7 +38,7 @@ int cleanup_auv()
 		// Sleep...just cuz
 		usleep(10000);
 	}
-	
+
 	// Shutdown Python interpreter
 	Py_Finalize();
 

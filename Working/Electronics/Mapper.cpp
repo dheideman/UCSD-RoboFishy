@@ -124,7 +124,7 @@ int main()
 	wiringPiSetupGpio();
 
 	// Check if AUV is initialized correctly
-	if( scripps_auv_init() < 0 )
+	if( initialize_sensors() < 0 )
 	{
 		return -1;
 	}
@@ -328,7 +328,7 @@ void *navigation(void* arg)
 					 bno055.mag);*/
 
 		//printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
-    
+
 
 		// Sanity test: Check if yaw control works
 		/*
@@ -395,7 +395,7 @@ void *safety_thread(void* arg)
 		}
 
 		// Check temperature
-		// Shut down AUV if housing temperature gets too high 
+		// Shut down AUV if housing temperature gets too high
 
 		if( ds18b20.temperature > TEMP_STOP )
 		{
@@ -420,13 +420,13 @@ void *safety_thread(void* arg)
 		}
 		else if (leakState == LOW)
 		{
-			// We're still good 
+			// We're still good
 			substate.mode = RUNNING;
 		}
 
-		// Check IMU accelerometer for collision (1+ g detected) 
-		if( (float)fabs(substate.imuorientation.x_acc) > 1.0*GRAVITY 
-			|| (float)fabs(substate.imuorientation.y_acc) > 1.0*GRAVITY 
+		// Check IMU accelerometer for collision (1+ g detected)
+		if( (float)fabs(substate.imuorientation.x_acc) > 1.0*GRAVITY
+			|| (float)fabs(substate.imuorientation.y_acc) > 1.0*GRAVITY
 			|| (float)fabs(substate.imuorientation.z_acc) > 1.0*GRAVITY )
 		{
 			substate.mode = STOPPED;
