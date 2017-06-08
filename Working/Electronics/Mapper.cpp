@@ -200,7 +200,7 @@ void *depth_thread(void* arg)
  *
  * For yaw control
  *****************************************************************************/
-void *navigation(void* arg)
+/*void *navigation(void* arg)
 {
 	initialize_motors(motor_channels, HERTZ);
 
