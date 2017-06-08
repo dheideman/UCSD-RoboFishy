@@ -214,19 +214,19 @@ void *depth_thread(void* arg)
 	yaw_pid.ierr = 0;	    // Initialize yaw_controller error values
 	yaw_pid.kerr = 0;
 
-	yaw_pid.kp = 0.01;
-	yaw_pid.kd = 1;		    // Initialize yaw_controller gain values
-	yaw_pid.ki = .1;
+	yaw_pid.kp = KP_YAW;
+	yaw_pid.kd = KD_YAW;	// Initialize yaw_controller gain values
+	yaw_pid.ki = KI_YAW;
 
-	yaw_pid.isat = 1;	    // Initialize saturation values
-	yaw_pid.SAT  = .2;
+	yaw_pid.isat = INT_SAT;	// Initialize saturation values
+	yaw_pid.SAT  = YAW_SAT;
 
-	yaw_pid.DT   = .005;    // initialize time step
+	yaw_pid.DT   = DY;      // initialize time step
 
 	/////////////depth controller initialization///////////////////////////////
 	depth_pid.setpoint = 2; 	// Range-from-bottom setpoint (meters)
 	depth_pid.old	   = 0; 	// Initialize old depth
-	depth_pid.DT 	   = .005;	// Initialize depth controller time step
+	depth_pid.DT 	   = DT;	// Initialize depth controller time step
 
 	depth_pid.kp = 0.001;
 	depth_pid.kd = 1.0;		// Depth controller gain initialization
