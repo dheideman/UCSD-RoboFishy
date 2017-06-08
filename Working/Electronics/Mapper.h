@@ -146,7 +146,7 @@ bno055_t bno055_read(void); // read values from bno055
 
 // Functions for reading DS18B20 temperature sensor
 void start_Py_ds18b20(void); 	// start Python background process
-ds18b20_t ds18b20_read(void);	// read values from ds18b20
+ds18b20_t read_temp_fifo(void);	// read values from ds18b20
 
 // Startup functions
 int scripps_auv_init(void);

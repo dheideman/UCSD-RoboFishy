@@ -19,11 +19,11 @@ void start_Py_ds18b20(void)
 }
 
 /***************************************************************************
- * ds18b20_t ds18b20_read(void)
+ * ds18b20_t read_temp_fifo(void)
  *
  * Reads temperature values from temp.fifo
 ***************************************************************************/
-ds18b20_t ds18b20_read(void)
+ds18b20_t read_temp_fifo(void)
 {
 	// Create struct to hold temperature data
 	ds18b20_t ds18b20;

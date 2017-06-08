@@ -376,7 +376,7 @@ void *safety_thread(void* arg)
 	int leakState;	// holds the state (HIGH or LOW) of the LEAKPIN
 
 	// Test if temp sensor reads anything
-	ds18b20 = ds18b20_read();
+	ds18b20 = read_temp_fifo();
 	printf("Temperature: %f degC\n", ds18b20.temperature);
 
 	/*while( substate.mode != STOPPED )

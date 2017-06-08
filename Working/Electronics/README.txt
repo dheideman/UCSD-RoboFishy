@@ -1,9 +1,9 @@
 Software Hierarchy:
-(1) MainScript.c
-(2) Functions.c
-(3) Libraries.h
+(1) Mapper.cpp
+(2) Functions.cpp
+(3) Mapper.h
 
-To run MainScript.c, do the following in the directory of interest:
+To run Mapper.c, do the following in the directory of interest:
 (1) make clean
 (2) make
-(3) ./MainScript
+(3) ./Mapper
