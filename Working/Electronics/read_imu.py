@@ -78,6 +78,7 @@ sw, bl, accel, mag, gyro = bno.get_revision()
 
 print('Reading BNO055 data, press Ctrl-C to quit...')
 while True:
+  print('in the while loop')
     # Read the Euler angles for heading, roll, pitch (all in degrees).
     heading, roll, pitch = bno.read_euler()
 
