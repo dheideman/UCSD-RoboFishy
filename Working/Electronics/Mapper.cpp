@@ -135,9 +135,10 @@ int main()
 	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 
-// Destroy the thread attributes
+  // Destroy the thread attributes
  	destroyTAttr();
 
+  printf("Threads started\n");
 	// Start timer!
 	time_t start = time(0);
 
@@ -322,11 +323,7 @@ void *safety_thread(void* arg)
 		// Check temperature
 		// Shut down AUV if housing temperature gets too high
 
-<<<<<<< HEAD
-		if( ds18b20 > TEMP_STOP )
-=======
-		if( temperature.temperature > TEMP_STOP )
->>>>>>> 3e21b22cb420a006408bdb4dfd7dd11a05c0615d
+		if( temperature > TEMP_STOP )
 		{
 			substate.mode = STOPPED;
 			printf("It's too hot! Shutting down...\n");
