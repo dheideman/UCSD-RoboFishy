@@ -80,9 +80,9 @@ ms5837_t read_pressure(pressure_calib_t pressure_calib)
 	PyObject *pName, *pModule, *pDict, *pFunc, *pArgs, *pValue;
 
 	// Input name of Python source file
-	pName = PyString_FromString("MS5837_example");
+	pName = PyString_FromString("MS5837");
 	PyRun_SimpleString("import sys");
-	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/Mapper\")");
+	PyRun_SimpleString("sys.path.append(\"/home/pi/UCSD-RoboFishy/Working/Electronics/\")");
 	pModule = PyImport_Import(pName);
 	pDict = PyModule_GetDict(pModule);
 	pFunc = PyDict_GetItemString(pDict, "read_press");
