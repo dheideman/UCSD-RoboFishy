@@ -234,11 +234,14 @@ int main()
 /*
 void *navigation(void* arg)
 {
+	
+
 	initialize_motors(motor_channels, HERTZ);
 
-	//float output_port;		// port motor output
+	//float output_port;	  // port motor output
 	//float output_starboard; // starboard motor output
 
+	float yaw = 0; 			  //Local variable for if statements
 
 	//////////////yaw controller initialization////////////////////////////////
 	yaw_pid.old = 0;	    // Initialize old imu data
@@ -273,12 +276,6 @@ void *navigation(void* arg)
 	depth_pid.isat = 1; 	//Depth controller saturation values
 	depth_pid.SAT  = .4 	
 
-	// Hard set motor speed
-	// pwmWrite(PIN_BASE+motor_channels[1], output_starboard)
-	//set_motor(0, -0.2);  // right
-	//set_motor(1, 0.2); // left
-    //set_motor(2, 0.0);
-
 	while(substate.mode!=STOPPED)
 	{
 		// read IMU values from fifo file
@@ -287,11 +284,11 @@ void *navigation(void* arg)
 
 	    if (substate.imuorientation.yaw < 180) //AUV pointed right
 		{
-			yaw_pid.err = substate.imuorientation.yaw - yaw_pid.setpoint;
+			yaw = substate.imuorientation.yaw;
 		}
 		else //AUV pointed left
 		{
-			yaw_pid.err =(substate.imuorientation.yaw-360) - yaw_pid.setpoint;
+			yaw =(substate.imuorientation.yaw-360);
 		}
 
 		// Write captured values to screen
@@ -302,11 +299,8 @@ void *navigation(void* arg)
 			 bno055.mag);*/
 
 
-
-		// Sanity test: Check if yaw control works
-
-		//Call yaw controller function
-/*		marchPID(substate.imuorientation, yaw_pid);
+		//calculate yaw controller output
+/*		motor_percent = marchPID(substate.imuorientation, yaw_pid)
 
 		// Set port motor
 		//set_motor(0,motor_percent);
