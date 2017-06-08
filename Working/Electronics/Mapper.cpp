@@ -225,14 +225,14 @@ void *navigation(void* arg)
 	yaw_pid.ki = KI_YAW;
 
 	yaw_pid.isat = INT_SAT;	// Initialize saturation values
-	yaw_pid.SAT  = YAW_SAT;
+	yaw_pid.sat  = YAW_SAT;
 
-	yaw_pid.DT   = DT;      // initialize time step
+	yaw_pid.dt   = DT;      // initialize time step
 
 	/////////////depth controller initialization///////////////////////////////
 	depth_pid.setpoint = 2; 	// Range-from-bottom setpoint (meters)
 	depth_pid.old	   = 0; 	// Initialize old depth
-	depth_pid.DT 	   = DT;	// Initialize depth controller time step
+	depth_pid.dt 	   = DT;	// Initialize depth controller time step
 
 	depth_pid.kp = KP_DEPTH;
 	depth_pid.kd = KD_DEPTH;	// Depth controller gain initialization
@@ -243,7 +243,7 @@ void *navigation(void* arg)
 	depth_pid.derr = 0;
 
 	depth_pid.isat = INT_SAT; 	//Depth controller saturation values
-	depth_pid.SAT  = DEPTH_SAT;
+	depth_pid.sat  = DEPTH_SAT;
 
 	while(substate.mode!=STOPPED)
 	{
