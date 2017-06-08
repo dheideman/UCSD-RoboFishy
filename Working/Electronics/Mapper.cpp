@@ -135,9 +135,10 @@ int main()
 	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 
-// Destroy the thread attributes
+  // Destroy the thread attributes
  	destroyTAttr();
 
+  printf("Threads started\n");
 	// Start timer!
 	time_t start = time(0);
 
@@ -204,9 +205,6 @@ void *depth_thread(void* arg)
 {
 	initialize_motors(motor_channels, HERTZ);
 
-	//float output_port;	  // port motor output
-	//float output_starboard; // starboard motor output
-
 	float yaw = 0; 			  //Local variable for if statements
 
 	/////////////////yaw controller initialization////////////////////////////////
@@ -215,7 +213,7 @@ void *depth_thread(void* arg)
 
 	yaw_pid.derr = 0;
 	yaw_pid.ierr = 0;	    	// Initialize error values
-	yaw_pid.kerr = 0;
+	yaw_pid.perr = 0;
 
 	yaw_pid.kp = KP_YAW;
 	yaw_pid.kd = KD_YAW;		// Initialize gain values
@@ -260,26 +258,10 @@ void *depth_thread(void* arg)
 		motor_percent = marchPID(substate.imu, yaw);
 
 		// Set port motor
-		set_motor(0,motor_percent);
+		set_motor(0, motor_percent);
 
 		// Set starboard motor
 		set_motor(1, motor_percent);
-
-		// Sleep for 5 ms //
-	  if (substate.imu.yaw < 180)
-		{
-			yaw_pid.err = abs(substate.imu.yaw - yaw_pid.setpoint);
-		}
-		else
-		{
-			yaw_pid.err =abs((substate.imu.yaw - 360) - yaw_pid.setpoint);
-		}
-
-		// Set port motor
-		//set_motor(0,motor_percent);
-
-		// Set starboard motor
-		//set_motor(1, motor_percent);
 
 		// Sleep for 5 ms
 		usleep(5000);
