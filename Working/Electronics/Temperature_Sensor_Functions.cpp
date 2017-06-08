@@ -15,7 +15,7 @@ void start_read_temp(void)
 {
   std::FILE* fd = fopen("read_temp.py", "r");
 	PyRun_SimpleFile(fd,"read_temp.py");
-	return;
+  return;
 }
 
 /***************************************************************************
