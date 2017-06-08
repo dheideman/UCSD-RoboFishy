@@ -16,8 +16,8 @@ float marchPID(pid_data_t controller, float input)
 {
 	//Calculating errors
 	controller.perr = input - controller.setpoint;
-	controller.derr = (input - controller.old)/(controller.DT);
-	controller.ierr += controller.DT * (input - controller.setpoint);
+	controller.derr = (input - controller.old)/(controller.dt);
+	controller.ierr += controller.dt * (input - controller.setpoint);
 
 	if(controller.ierr > controller.isat)
 	{
@@ -33,15 +33,15 @@ float marchPID(pid_data_t controller, float input)
 						+ controller.ki * controller.ierr
 						+ controller.kd * controller.derr;
 
-	if(controller.output > controller.SAT)
+	if(controller.output > controller.sat)
 	{
-		controller.output = controller.SAT;
+		controller.output = controller.sat;
 	}
 
 
-	if(controller.output < -controller.SAT)
+	if(controller.output < -controller.sat)
 	{
-		controller.output = -controller.SAT;
+		controller.output = -controller.sat;
 	}
 	// set current input to be the old input //
 	controller.old = input;
