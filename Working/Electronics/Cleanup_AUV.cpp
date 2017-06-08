@@ -26,8 +26,6 @@ int cleanup_auv()
 	printf("imu.fifo deleted successfully\n");
 	remove("pressure.fifo");
 	printf("pressure.fifo deleted successfully\n");
-	remove("accelerometer.fifo");
-	printf("accelerometer.fifo deleted successfully\n");
 	remove("temp.fifo");
 	printf("temp.fifo deleted successfully\n");
 
