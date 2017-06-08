@@ -28,6 +28,8 @@ int cleanup_auv()
 	printf("pressure.fifo deleted successfully\n");
 	remove("accelerometer.fifo");
 	printf("accelerometer.fifo deleted successfully\n");
+	remove("temp.fifo");
+	printf("temp.fifo deleted successfully\n");
 
 	// Set all motors to zero
 	int channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3};
