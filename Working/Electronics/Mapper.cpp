@@ -166,6 +166,7 @@ int main()
 
 void *depth_thread(void* arg)
 {
+	printf("Depth Thread Started");
 	// Initialize pressure sensor
 	pressure_calib = init_pressure_sensor();
 
@@ -203,6 +204,8 @@ void *depth_thread(void* arg)
  *****************************************************************************/
 /*void *navigation(void* arg)
 {
+	printf("Nav Thread Started");
+
 	initialize_motors(motor_channels, HERTZ);
 
 	float yaw = 0; 			  //Local variable for if statements
@@ -284,6 +287,8 @@ void *depth_thread(void* arg)
  *****************************************************************************/
 void *safety_thread(void* arg)
 {
+	printf("Safety Thread Started");
+
 	// Set up WiringPi for use // (not sure if actually needed)
 	wiringPiSetup();
 
