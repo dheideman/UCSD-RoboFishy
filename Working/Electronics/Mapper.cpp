@@ -165,6 +165,7 @@ int main()
 *
 * For Recording Depth & Determining If AUV is in Water or Not
 ******************************************************************************/
+
 void *depth_thread(void* arg)
 {
 	// Initialize pressure sensor
@@ -173,25 +174,15 @@ void *depth_thread(void* arg)
 	while(substate.mode!=STOPPED)
 	{
 		// Read pressure sensor by passing calibration structure
-		ms5837 = ms5837_read(pressure_calib);
+		ms5837 = read_pressure(pressure_calib);
 
 		// Calculate depth (no idea what the magic numbers are)
 		depth = (ms5837.pressure-1013)*10.197-88.8; // units?
 		// 1013: ambient pressure (mbar)
 		// 10.197*p_mbar = p_mmH20
 
-
 		printf("Current Depth:\t %.3f\n",depth);
 		usleep(1000000);
-
-		// Write IMU values to screen
-	 /* printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
-					 bno055.yaw, bno055.pitch, bno055.roll,
-					 bno055.p, bno055.q, bno055.r,
-					 bno055.sys, bno055.gyro, bno055.accel,
-					 bno055.mag);//*/
-
-	  //printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.perr, motor_percent);
 	}
 
 	pthread_exit(NULL);
@@ -200,10 +191,11 @@ void *depth_thread(void* arg)
 /******************************************************************************
  * Navigation Thread
  *
- * For yaw and depth control
+ * For yaw control
  *****************************************************************************/
 void *navigation(void* arg)
 {
+
 
 	initialize_motors(motor_channels, HERTZ);
 
@@ -212,16 +204,16 @@ void *navigation(void* arg)
 
 	float yaw = 0; 			  //Local variable for if statements
 
-	//////////////yaw controller initialization////////////////////////////////
-	yaw_pid.old = 0;	    // Initialize old imu data
+	/////////////////yaw controller initialization////////////////////////////////
+	yaw_pid.old = 0;	    	// Initialize old imu data
 	yaw_pid.setpoint = 0;   // Initialize setpoint for yaw_controller
 
 	yaw_pid.derr = 0;
-	yaw_pid.ierr = 0;	    // Initialize yaw_controller error values
-	yaw_pid.perr = 0;
+	yaw_pid.ierr = 0;	    	// Initialize yaw_controller error values
+	yaw_pid.kerr = 0;
 
 	yaw_pid.kp = KP_YAW;
-	yaw_pid.kd = KD_YAW;	// Initialize yaw_controller gain values
+	yaw_pid.kd = KD_YAW;		// Initialize yaw_controller gain values
 	yaw_pid.ki = KI_YAW;
 
 	yaw_pid.isat = INT_SAT;	// Initialize saturation values
@@ -229,53 +221,81 @@ void *navigation(void* arg)
 
 	yaw_pid.dt   = DT;      // initialize time step
 
-	/////////////depth controller initialization///////////////////////////////
+	////////////////depth controller initialization///////////////////////////////
 	depth_pid.setpoint = 2; 	// Range-from-bottom setpoint (meters)
-	depth_pid.old	   = 0; 	// Initialize old depth
-	depth_pid.dt 	   = DT;	// Initialize depth controller time step
+	depth_pid.old	   = 0; 		// Initialize old depth
+	depth_pid.dt 	   = DT;		// Initialize depth controller time step
 
 	depth_pid.kp = KP_DEPTH;
 	depth_pid.kd = KD_DEPTH;	// Depth controller gain initialization
 	depth_pid.ki = KI_DEPTH;
 
-	depth_pid.perr = 0;
+	depth_pid.kerr = 0;
 	depth_pid.ierr = 0;	    	// Initialize depth controller error values
 	depth_pid.derr = 0;
 
-	depth_pid.isat = INT_SAT; 	//Depth controller saturation values
+	depth_pid.isat = INT_SAT; 	// Depth controller saturation values
 	depth_pid.sat  = DEPTH_SAT;
 
 	while( substate.mode != STOPPED )
 	{
 		// read IMU values from fifo file
-		//bno055 = read_imu_fifo();
 		substate.imu = read_imu_fifo();
 
-	    if (substate.imu.yaw < 180) //AUV pointed right
+	  if (substate.imu.yaw < 180) // AUV pointed right
 		{
 			yaw = substate.imu.yaw;
 		}
-		else //AUV pointed left
+		else // AUV pointed left
 		{
 			yaw = (substate.imu.yaw-360);
 		}
 
-		
+		// Write captured values to screen
+		printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: %i Accel: %i Mag: %i\n ",
+			 bno055.yaw, bno055.pitch, bno055.roll,
+			 bno055.p, bno055.q, bno055.r,
+			 bno055.sys, bno055.gyro, bno055.accel,
+			 bno055.mag);
+
+
 		//calculate yaw controller output
 		motor_percent = marchPID(substate.imu, yaw);
 
-		
-		//set_motor(0,motor_percent);	// Set port motor
-		//set_motor(1, motor_percent);	// Set starboard motor
+		// Set port motor
+		//set_motor(0,motor_percent);
 
-		
+		// Set starboard motor
+		//set_motor(1, motor_percent);
 
-		
+		// Sleep for 5 ms //
+	  if (substate.imu.yaw < 180)
+		{
+			yaw_pid.err = abs(substate.imu.yaw - yaw_pid.setpoint);
+		}
+		else
+		{
+			yaw_pid.err =abs((substate.imu.yaw - 360) - yaw_pid.setpoint);
+		}
+
+		printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
+
+		// Call yaw controller function
+		yaw_controller();
+
+		// Set port motor
+		set_motor(0,motor_percent);
+
+		// Set starboard motor
+		set_motor(1, motor_percent);
+
+
+
 
 		// Sleep for 5 ms
 		usleep(5000);
 	}
-	//Turn motors off; Exit cleanly
+
 	set_motor(0, 0);
 	set_motor(1, 0);
 	set_motor(2, 0);
@@ -353,8 +373,6 @@ void *safety_thread(void* arg)
 		}*/
 
 		// Check IMU accelerometer for collision (1+ g detected)
-		printf("x_acc: %f\n y_acc: %f\n z_acc: %f\n",
-			substate.imu.x_acc, substate.imu.y_acc, substate.imu.z_acc);
 		if( (float)fabs(substate.imu.x_acc) > 1.0*GRAVITY
 			|| (float)fabs(substate.imu.y_acc) > 1.0*GRAVITY
 			|| (float)fabs(substate.imu.z_acc) > 1.0*GRAVITY )
@@ -369,8 +387,6 @@ void *safety_thread(void* arg)
 			substate.mode = RUNNING;
 		}
 
-		// Sleep a little
-		usleep(100000);
 	}
     pthread_exit(NULL);
 
