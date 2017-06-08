@@ -39,12 +39,12 @@ echo:
 	echo $(MOD_OBJECTS)
 
 # compiling command
-$(OBJECTS): %.o : %.cpp %.h
+$(OBJECTS): %.o : %.cpp $(INCLUDES)
 	@$(TOUCH) $(CC) $(CFLAGS) -c $< -o $(@)
 	@echo "Compiled "$<" successfully!"
 	
 # module compiling command
-$(MOD_OBJECTS): %.o : %.cpp %.h
+$(MOD_OBJECTS): %.o : %.cpp $(MOD_INCLUDES)
 	@$(TOUCH) $(CC) $(CFLAGS) -c $< -o $(@)
 	@echo "Compiled "$<" successfully!"
 
