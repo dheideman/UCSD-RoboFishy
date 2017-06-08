@@ -1,11 +1,8 @@
 ### Camera Calibration
-This is run in order to calibrate rangefinder.
+This is run in order to calculate correct white balance for the environment.
 
 ### Electronics
 Mostly sensor stuff.
-
-### Electronics2
-Testing?
 
 ### Feature Tracker
 Visual Odometry: integrating distance moved between taking two pictures will get you velocity. This 
