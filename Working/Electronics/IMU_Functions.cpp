@@ -24,8 +24,9 @@ void start_read_imu(void)
 
   // Start up the Python
   std::FILE* fd = fopen("read_imu.py", "r");
-  PyRun_SimpleFile(fd,"read_imu.py");
   printf("Started up Python\n");
+  PyRun_SimpleFile(fd,"read_imu.py");
+  printf("Ran PyRun_SimpleFile\n");
 
   // Wait 2 seconds to let the python script start up
   usleep(2000000);
