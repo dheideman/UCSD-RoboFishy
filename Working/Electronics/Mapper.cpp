@@ -184,8 +184,8 @@ void *depth_thread(void* arg)
 		usleep(1000000);
 
 		// Write IMU data
-		printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: 
-			%i Accel: %i Mag: %i X_acc: %f Y_acc: %f Z_acc: %f\n ",
+		printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: "
+			"%i Accel: %i Mag: %i X_acc: %f Y_acc: %f Z_acc: %f\n ",
 			 substate.imu.yaw, substate.imu.pitch, substate.imu.roll,
 			 substate.imu.p, substate.imu.q, substate.imu.r,
 			 substate.imu.sys, substate.imu.gyro, substate.imu.accel,
