@@ -110,6 +110,7 @@ float marchPID(pid_data_t controller, float input);
 
 // Functions for reading MS5837 Pressure Sensor
 void start_read_pressure(void);								// start Python background process
+ms5837_t read_pressure_fifo(void);    // read values from ms5837
 
 // Functions for reading BNO055 IMU
 void start_read_imu(void); 					// start Python background process
