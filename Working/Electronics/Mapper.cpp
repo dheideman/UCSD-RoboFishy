@@ -180,8 +180,8 @@ void *depth_thread(void* arg)
 		// 1013: ambient pressure (mbar)
 		// 10.197*p_mbar = p_mmH20
 
-		printf("Current Depth:\t %.3f\n",depth);
-		usleep(1000000);
+		//printf("Current Depth:\t %.3f\n",depth);
+		//usleep(1000000);
 
 		// Write IMU data
 		printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: "

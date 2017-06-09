@@ -13,7 +13,6 @@
 
 int initialize_sensors(void)
 {
-  
 	start_read_imu();					// start IMU
 	printf("IMU FIFO has started\n");
 	usleep(100000);
