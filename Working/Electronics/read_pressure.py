@@ -49,6 +49,7 @@ while True:
         fifo.write(_string)
         fifo.close()
 
+#        print("Depth: {:2f} m, Temp:{:2f} C".format(sensor.depth(), sensor.temperature()))
         time.sleep(0.1)
 
     else:
