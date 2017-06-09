@@ -5,8 +5,8 @@ import logging
 import sys
 import time
 import os
-#from Adafruit_BNO055 import BNO055
-import BNO055
+from Adafruit_BNO055 import BNO055
+#import BNO055
 print "Imported everything"
 
 # Create and configure the BNO sensor connection.
