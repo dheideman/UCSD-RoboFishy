@@ -67,7 +67,7 @@ imu_t read_imu_fifo(void)
 				 &imu.yaw,&imu.roll,&imu.pitch,
 				 &imu.q, &imu.p, &imu.r,
 				 &imu.sys,&imu.gyro,&imu.accel,
-				 &imu.mag,&x_acc,&y_acc,&z_acc);
+				 &imu.mag,imu.x_acc,&imu.y_acc,&imu.z_acc);
 
 	return imu;
 }
