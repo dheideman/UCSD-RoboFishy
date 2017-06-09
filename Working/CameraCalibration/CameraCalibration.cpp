@@ -62,9 +62,6 @@ void mouseCallback(int event, int x, int y, int flags, void* userdata)
 //////////
 int main(int argc, char** argv)
 {
-  // Open the camera!
-  picamctrl.open("/dev/video0");
-
   // Start thread stuff
   initializeTAttr();
   
@@ -73,23 +70,8 @@ int main(int argc, char** argv)
 
   destroyTAttr();
 
-  // Set framerate (OpenCV capture property)
-  cap.set(CV_CAP_PROP_FPS,2);
-    
-  // Set camera exposure control to manual (driver property)
-  picamctrl.set(V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_MANUAL);
-  
-  // Set camera autowhitebalance to manual
-  picamctrl.set(V4L2_CID_AUTO_N_PRESET_WHITE_BALANCE,V4L2_WHITE_BALANCE_MANUAL);
-  
-  // Disable scene mode
-  picamctrl.set(V4L2_CID_SCENE_MODE, V4L2_SCENE_MODE_NONE);
-  
   // Open window on your monitor
   namedWindow( sourcewindow, CV_WINDOW_AUTOSIZE );
-  
-  // Create trackbar for exposure setting
-//   createTrackbar( " Exposure:", source_window, &exposure, 100, NULL);
   
   // set the callback function for any mouse event
   setMouseCallback(sourcewindow, mouseCallback, NULL);
@@ -115,12 +97,6 @@ int main(int argc, char** argv)
   // Generate points for bounds of balancing box
   Point b1 = Point(balancexmin, balanceymin);
   Point b2 = Point(balancexmax, balanceymax);
-  
-  // Grab all 5 images from the frame buffer in order to clear the buffer
-//   for(int i=0; i<5; i++)
-//   {
-//     cap.grab();
-//   }
   
   // Let camera capture some pictures
   sleep(4);

@@ -29,17 +29,17 @@ void start_read_imu(void)
 
   // Check whether the python script wrote anything
   fd = fopen("imu.fifo","r");
-  printf("Python \n");
-
+  printf("imu.fifo opened successfully \n");
+  
   // Insert check here //
   fseek(fd, 0, SEEK_END); // goto end of file
   if (ftell(fd) == 0)
   {
-    printf("file is empty\n");
+    printf("imu.fifo is NOT being written to\n");
   }
   else
   {
-    printf("file is not empty\n");
+    printf("imu.fifo is being written to\n");
   }
   fseek(fd, 0, SEEK_SET); // go to begin of file
 
@@ -62,7 +62,19 @@ imu_t read_imu_fifo(void)
 	char buf[1000];
 	printf("Before file open line in read_im_fifo\n");
 	FILE *fd = fopen( "imu.fifo", "r");
-  printf("imu.fifo opened/n");
+
+// Insert check here //
+  fseek(fd, 0, SEEK_END); // goto end of file
+  if (ftell(fd) == 0)
+  {
+    printf("imu.fifo DOES NOT have stuff in it\n");
+  }
+  else
+  {
+    printf("imu.fifo has stuff in it\n");
+  }
+  fseek(fd, 0, SEEK_SET); // go to begin of file
+
 	fgets(buf,1000,fd);
 	fclose(fd);
 	sscanf(buf,"%f %f %f %f %f %f %i %i %i %i %f %f %d",
