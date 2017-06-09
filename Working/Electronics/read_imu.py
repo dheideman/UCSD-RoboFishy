@@ -78,46 +78,45 @@ sw, bl, accel, mag, gyro = bno.get_revision()
 
 print('Reading BNO055 data, press Ctrl-C to quit...')
 while True:
-  print('in the while loop')
-    # Read the Euler angles for heading, roll, pitch (all in degrees).
-    heading, roll, pitch = bno.read_euler()
+  # Read the Euler angles for heading, roll, pitch (all in degrees).
+  heading, roll, pitch = bno.read_euler()
 
-    # Gyroscope data (in degrees per second):
-    p,q,r = bno.read_gyroscope()
+  # Gyroscope data (in degrees per second):
+  p,q,r = bno.read_gyroscope()
 
-    # Read the calibration status, 0=uncalibrated and 3=fully calibrated.
-    sys, gyro, accel, mag = bno.get_calibration_status()
+  # Read the calibration status, 0=uncalibrated and 3=fully calibrated.
+  sys, gyro, accel, mag = bno.get_calibration_status()
 
-    # Linear acceleration data (i.e. acceleration from movement, not gravity--
-    # returned in meters per second squared):
-    x_acc,y_acc,z_acc = bno.read_linear_acceleration()
+  # Linear acceleration data (i.e. acceleration from movement, not gravity--
+  # returned in meters per second squared):
+  x_acc,y_acc,z_acc = bno.read_linear_acceleration()
 
-    _string = "%f %f %f %f %f %f %i %i %i %i %f %f %f" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag, x_acc, y_acc, z_acc)
-    fifo = open("imu.fifo", "w")
-    fifo.write(_string)
-    fifo.close()
+  _string = "%f %f %f %f %f %f %i %i %i %i %f %f %f" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag, x_acc, y_acc, z_acc)
+  fifo = open("imu.fifo", "w")
+  fifo.write(_string)
+  fifo.close()
 
-    # wtf does this do?
-    #out, err = cproc.communicate(input)
+  # wtf does this do?
+  #out, err = cproc.communicate(input)
 
-    # Print everything out.
-    #print('Heading={0:0.2F} Roll={1:0.2F} Pitch={2:0.2F}\tSys_cal={3} Gyro_cal={4} Accel_cal={5} Mag_cal={6}'.format(heading, roll, pitch, sys, gyro, accel, mag))
+  # Print everything out.
+  #print('Heading={0:0.2F} Roll={1:0.2F} Pitch={2:0.2F}\tSys_cal={3} Gyro_cal={4} Accel_cal={5} Mag_cal={6}'.format(heading, roll, pitch, sys, gyro, accel, mag))
 
-    # Other values you can optionally read:
-    # Orientation as a quaternion:
-    #x,y,z,w = bno.read_quaterion()
-    # Sensor temperature in degrees Celsius:
-    #temp_c = bno.read_temp()
-    # Magnetometer data (in micro-Teslas):
-    #x,y,z = bno.read_magnetometer()
-    # Accelerometer data (in meters per second squared):
-    #x,y,z = bno.read_accelerometer()
-    # Linear acceleration data (i.e. acceleration from movement, not gravity--
-    # returned in meters per second squared):
-    # x_acc,y_acc,z_acc = bno.read_linear_acceleration()
-    # Gravity acceleration data (i.e. acceleration just from gravity--returned
-    # in meters per second squared):
-    #x,y,z = bno.read_gravity()
+  # Other values you can optionally read:
+  # Orientation as a quaternion:
+  #x,y,z,w = bno.read_quaterion()
+  # Sensor temperature in degrees Celsius:
+  #temp_c = bno.read_temp()
+  # Magnetometer data (in micro-Teslas):
+  #x,y,z = bno.read_magnetometer()
+  # Accelerometer data (in meters per second squared):
+  #x,y,z = bno.read_accelerometer()
+  # Linear acceleration data (i.e. acceleration from movement, not gravity--
+  # returned in meters per second squared):
+  # x_acc,y_acc,z_acc = bno.read_linear_acceleration()
+  # Gravity acceleration data (i.e. acceleration just from gravity--returned
+  # in meters per second squared):
+  #x,y,z = bno.read_gravity()
 
-    # Sleep until the next reading.
-    time.sleep(0.01)
+  # Sleep until the next reading.
+  time.sleep(0.01)

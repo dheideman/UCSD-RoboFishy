@@ -59,11 +59,11 @@ imu_t read_imu_fifo(void)
 
 	fgets(buf,1000,fd);
 	fclose(fd);
-	sscanf(buf,"%f %f %f %f %f %f %i %i %i %i",
+	sscanf(buf,"%f %f %f %f %f %f %i %i %i %i %f %f %f",
 				 &imu.yaw,&imu.roll,&imu.pitch,
 				 &imu.q, &imu.p, &imu.r,
 				 &imu.sys,&imu.gyro,&imu.accel,
-				 &imu.mag);
+				 &imu.mag,&x_acc,&y_acc,&z_acc);
 
 	return imu;
 }
