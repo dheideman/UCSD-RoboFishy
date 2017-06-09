@@ -80,7 +80,9 @@ void *takePictures(void*)
     picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, DARK_EXPOSURE );
     
     // Turn laser on before grabbing the darkframe image
-    if(substate.laserarmed == ARMED){
+    if(substate.laserarmed == ARMED)
+    {
+      printf("Laser %d ON!\n",LASERPIN);
       digitalWrite(LASERPIN, HIGH);
     }
     
@@ -91,6 +93,7 @@ void *takePictures(void*)
     cap.grab();
     
     // Turn laser off                               Check the timing on this...
+    printf("Laser off...\n");
     digitalWrite(LASERPIN, LOW);
     
     // Set exposure now (rather than later)
