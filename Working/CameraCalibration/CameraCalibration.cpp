@@ -15,7 +15,7 @@ using namespace std;
 ////////////////
 
 #define EXPOSURE        100
-#define ISO_VALUE       1
+//#define ISO_VALUE       1
 
 // Balancing Region
 #define BALANCE_WIDTH     0.2
@@ -31,7 +31,7 @@ string sourcewindow = "Current Image";
 int redbalance = 1600;
 int bluebalance = 1600;
 int exposure = 5;
-Mat bgrframe, yuvframe;
+Mat bgrframe;
 
 
 ////////////////////////
@@ -63,16 +63,16 @@ void mouseCallback(int event, int x, int y, int flags, void* userdata)
 int main(int argc, char** argv)
 {
   // Open the camera!
-  cap.open(0); // opens first video device
   picamctrl.open("/dev/video0");
 
-  // check to make sure device properly opened
-  if ( !cap.isOpened() )
-  {
-    cerr << "Error opening the camera (OpenCV)" << endl;
-    return -1;
-  }
+  // Start thread stuff
+  initializeTAttr();
   
+  pthread_t cameraThread;
+  pthread_create (&cameraThread, &tattrhigh, takePictures, NULL);
+
+  destroyTAttr();
+
   // Set framerate (OpenCV capture property)
   cap.set(CV_CAP_PROP_FPS,2);
     
@@ -85,17 +85,6 @@ int main(int argc, char** argv)
   // Disable scene mode
   picamctrl.set(V4L2_CID_SCENE_MODE, V4L2_SCENE_MODE_NONE);
   
-  // Set camera iso to manual
-  picamctrl.set(V4L2_CID_ISO_SENSITIVITY_AUTO, 0);
-  
-  // Initialize exposure, iso values
-  picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, EXPOSURE);
-  picamctrl.set(V4L2_CID_ISO_SENSITIVITY, ISO_VALUE);
-    
-  // Set capture camera size (resolution)
-  cap.set(CV_CAP_PROP_FRAME_WIDTH,FRAME_WIDTH);
-  cap.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);
-    
   // Open window on your monitor
   namedWindow( sourcewindow, CV_WINDOW_AUTOSIZE );
   
@@ -127,14 +116,15 @@ int main(int argc, char** argv)
   Point b1 = Point(balancexmin, balanceymin);
   Point b2 = Point(balancexmax, balanceymax);
   
-  
   // Grab all 5 images from the frame buffer in order to clear the buffer
 //   for(int i=0; i<5; i++)
 //   {
 //     cap.grab();
 //   }
   
-  
+  // Let camera capture some pictures
+  sleep(4);
+
   // Announce that we're done initializing
   cout << "Done Initializing." << endl;
   
@@ -179,7 +169,9 @@ int main(int argc, char** argv)
    key = waitKey(1);
   } // end while
   
-  // close camera
-  cap.release();
-  picamctrl.close();
+  // Shut down
+  substate.mode = STOPPING;
+
+  // Wait for threads to stop
+  sleep(4);
 }// end main
