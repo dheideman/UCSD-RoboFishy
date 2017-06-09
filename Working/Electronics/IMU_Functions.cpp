@@ -58,8 +58,11 @@ void start_read_imu(void)
 imu_t read_imu_fifo(void)
 {
 	imu_t imu;
+	printf("Created char buffer\n");
 	char buf[1000];
+	printf("Before file open line in read_im_fifo\n");
 	FILE *fd = fopen( "imu.fifo", "r");
+  printf("imu.fifo opened/n");
 	fgets(buf,1000,fd);
 	fclose(fd);
 	sscanf(buf,"%f %f %f %f %f %f %i %i %i %i %f %f %f",
