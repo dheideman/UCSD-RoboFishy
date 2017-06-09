@@ -173,7 +173,7 @@ void *depth_thread(void* arg)
 
 	while(substate.mode!=STOPPED)
 	{
-		printf("IN the depth thread while loop\n");
+		printf("In the depth thread while loop\n");
 		// Read pressure sensor by passing calibration structure
 		//ms5837 = read_pressure(pressure_calib);
 
