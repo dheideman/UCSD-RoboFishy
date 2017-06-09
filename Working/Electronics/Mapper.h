@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <Python.h>
 #include <time.h>
-#include <signal.h>		// capture control-c
+#include <signal.h>		// capture ctrl+c
 
 // Core Module
 #include "../../Modules/Core/Core.h"
