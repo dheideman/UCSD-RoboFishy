@@ -170,7 +170,7 @@ void *depth_thread(void* arg)
 		usleep(1000000);
 
 		// read IMU values from fifo file
-		substate.imu = read_imu_fifo();
+		//substate.imu = read_imu_fifo();
 
 		// Write IMU data
 		printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: "
