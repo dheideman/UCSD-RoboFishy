@@ -13,8 +13,10 @@
 ******************************************************************************/
 void start_read_temp(void)
 {
-  std::FILE* fd = fopen("read_temp.py", "r");
-	PyRun_SimpleFile(fd,"read_temp.py");
+char cmd[50];
+  strcpy(cmd, "python read_temp.py & exit");
+  system(cmd);
+  printf("Started read_temp.py using system('python read_temp.py & exit')");
   return;
 }
 
@@ -25,16 +27,15 @@ void start_read_temp(void)
 ******************************************************************************/
 float read_temp_fifo(void)
 {
-	// Create struct to hold temperature data
-	float ds18b20;
+	float temp;
 
 	// Read temperature values from temp.fifo
-	char buf[1000];
-    std::FILE *fd = fopen("temp.fifo", "r");
-	fgets(buf,1000,fd);
+	char buf[100];
+  std::FILE *fd = fopen("temp.fifo", "r");
+	fgets(buf, 100, fd);
 	fclose(fd);
-	sscanf(buf,"%f",&ds18b20);
+	sscanf(buf, "%f", &temp);
 
 	// Return a temperature value
-	return ds18b20;
+	return temp;
 }

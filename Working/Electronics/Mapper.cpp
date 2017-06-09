@@ -155,7 +155,7 @@ int main()
 /******************************************************************************
 * Depth Thread
 *
-* For Recording Depth & Determining If AUV is in Water or Not
+* For Recording Depth & Determining If AUV is in Water or not
 ******************************************************************************/
 
 void *depth_thread(void* arg)
@@ -166,8 +166,9 @@ void *depth_thread(void* arg)
 	{
 		ms5837 = read_pressure_fifo();
 
-		printf("Current Depth:\t %.3f\n", ms5837.depth);
-		usleep(1000000);
+		printf("Current Depth:\t %.3f m, Current water temp:\t %.3f C\n", ms5837.depth, ms5837.water_temp);
+
+		printf("Current battery temp;\t %.2f\n", temperature);
 
 		// read IMU values from fifo file
 		substate.imu = read_imu_fifo();
@@ -182,7 +183,7 @@ void *depth_thread(void* arg)
 			 substate.imu.z_acc);
 
 		sleep(1);
-	 	printf("\nYawPID_perr: %f Motor Percent: %f ", yaw_pid.perr, motor_percent);
+	 	//printf("\nYawPID_perr: %f Motor Percent: %f ", yaw_pid.perr, motor_percent);
 	}
 
 	pthread_exit(NULL);
