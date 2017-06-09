@@ -22,8 +22,8 @@ void start_read_imu(void)
     printf("\nCreated and cleared imu.fifo\n");
 
     printf("Starting read_imu.py, then waiting 3 seconds\n");
-    char cmd[50];
-    strcpy(cmd,"python read_imu.py & exit");
+    char cmd[100];
+    strcpy(cmd,"nohup python -u read_imu.py > read_imu.log 2>&1 < /dev/null & exit");
     system(cmd);
     printf("Started IMU using system(cmd)\n");
     // Wait 2 seconds to let the python script start up
