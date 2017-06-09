@@ -13,7 +13,7 @@
 ******************************************************************************/
 void start_read_imu(void)
 {
-  char cmd[];
+  char cmd[50];
   strcpy(cmd,"python bno055_read.py & exit");
   system(cmd);
 
