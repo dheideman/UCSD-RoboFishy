@@ -14,7 +14,7 @@
 void start_read_imu(void)
 {
   char cmd[50];
-  strcpy(cmd,"python read_imu.py &; exit");
+  strcpy(cmd,"python read_imu.py & exit");
   system(cmd);
   printf("%s\n", "Started IMU using system(cmd)");
 
@@ -30,7 +30,7 @@ void start_read_imu(void)
   // Check whether the python script wrote anything
   fd = fopen("imu.fifo","r");
   printf("Python \n");
-  
+
   // Insert check here //
   fseek(fd, 0, SEEK_END); // goto end of file
   if (ftell(fd) == 0)
@@ -65,7 +65,7 @@ imu_t read_imu_fifo(void)
   printf("imu.fifo opened/n");
 	fgets(buf,1000,fd);
 	fclose(fd);
-	sscanf(buf,"%f %f %f %f %f %f %i %i %i %i %f %f %f",
+	sscanf(buf,"%f %f %f %f %f %f %i %i %i %i %f %f %d",
 				 &imu.yaw,&imu.roll,&imu.pitch,
 				 &imu.q, &imu.p, &imu.r,
 				 &imu.sys,&imu.gyro,&imu.accel,

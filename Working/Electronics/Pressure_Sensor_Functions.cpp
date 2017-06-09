@@ -16,12 +16,8 @@ void start_read_pressure(void)
 	char cmd[50];
   strcpy(cmd, "python read_pressure.py & exit");
   system(cmd);
-  printf("started read_pressure.py using system(cmd)");
-/*  Py_Initialize();
-	FILE* fd = fopen("python read_pressure.py", "r");
-	PyRun_SimpleFile(fd,"python read_pressure.py");
-	Py_Finalize();
-*/	return;
+  printf("started read_pressure.py using system(cmd)\n");
+	return;
 }
 
 /******************************************************************************

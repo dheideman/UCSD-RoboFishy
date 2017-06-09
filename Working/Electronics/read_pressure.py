@@ -18,10 +18,10 @@ if not sensor.read():
     print "Sensor read failed!"
     exit(1)
 
-#print("Pressure: %.2f atm  %.2f Torr  %.2f psi") % (
-#sensor.pressure(ms5837.UNITS_atm),
-#sensor.pressure(ms5837.UNITS_Torr),
-#sensor.pressure(ms5837.UNITS_psi))
+# print("Pressure: %.2f atm  %.2f Torr  %.2f psi") % (
+# sensor.pressure(ms5837.UNITS_atm),
+# sensor.pressure(ms5837.UNITS_Torr),
+# sensor.pressure(ms5837.UNITS_psi))
 
 #print("Temperature: %.2f C  %.2f F  %.2f K") % (
 #sensor.temperature(ms5837.UNITS_Centigrade),
@@ -48,7 +48,7 @@ while True:
 
         fifo.write(_string)
         fifo.close()
-        
+
         time.sleep(0.1)
 
     else:
