@@ -32,6 +32,6 @@ ms5837_t read_pressure_fifo(void)
 	FILE *fd = fopen( "pressure.fifo", "r");
 	fgets(buf, 1000, fd);
 	fclose(fd);
-	sscanf(buf, "%f %f", &ms5837.depth, &ms5837.water_temp)
+	sscanf(buf, "%f %f", &ms5837.depth, &ms5837.water_temp);
 	return ms5837;
 }
