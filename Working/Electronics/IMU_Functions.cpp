@@ -14,7 +14,7 @@
 void start_read_imu(void)
 {
   char cmd[50];
-  strcpy(cmd,"python imu_read.py & exit");
+  strcpy(cmd,"python read_imu.py & exit");
   system(cmd);
 
   // clear fifo file //
