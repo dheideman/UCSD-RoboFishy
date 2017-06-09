@@ -20,7 +20,7 @@ void start_read_imu(void)
 
   // clear fifo file //
   //std::FILE* fifo = fopen("imu.fifo","w");
-  std::FILE* fd = fopen("imu.txt","w");
+  std::FILE* fd = fopen("imu.fifo","w");
   fclose(fd);
   printf("Cleared fifo file\n");
 
