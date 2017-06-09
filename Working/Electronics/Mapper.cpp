@@ -146,8 +146,8 @@ int main()
 	while(substate.mode != STOPPED)
 	{
 		// Check if we've passed the stop time
-		if(difftime(time(0),start) > STOP_TIME)
-			substate.mode = STOPPED;
+		//if(difftime(time(0),start) > STOP_TIME)
+			//substate.mode = STOPPED;
 
 		// Sleep a little
 		usleep(100000);
