@@ -18,7 +18,8 @@ void start_read_imu(void)
   //system(cmd);
 
   // clear fifo file //
-  std::FILE* fifo = fopen("imu.fifo","w");
+  //std::FILE* fifo = fopen("imu.fifo","w");
+  std::FILE* fifo = fopen("imu.txt","w");
   fclose(fifo);
   printf("Cleared fifo file\n");
 
@@ -32,7 +33,8 @@ void start_read_imu(void)
   usleep(2000000);
 
   // Check whether the python script wrote anything
-  fd = fopen("imu.fifo","r");
+  //fd = fopen("imu.fifo","r");
+  fd = fopen("imu.txt","r");
   printf("Python \n");
   // Insert check here //
   fseek(fd, 0, SEEK_END); // goto end of file
