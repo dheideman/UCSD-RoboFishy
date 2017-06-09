@@ -18,8 +18,8 @@ void start_read_imu(void)
   //system(cmd);
 
   // clear fifo file //
- // std::FILE* fifo = fopen("imu.fifo","w");
-  //fclose(fifo);
+  std::FILE* fifo = fopen("imu.fifo","w");
+  fclose(fifo);
   printf("Cleared fifo file\n");
 
   // Start up the Python
