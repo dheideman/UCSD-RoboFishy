@@ -47,7 +47,7 @@ void start_read_imu(void)
 
   // if it isn't printing values, restart initialization
 
-  fclose(fifo);
+  fclose(fd);
 //*/
   return;
 }
