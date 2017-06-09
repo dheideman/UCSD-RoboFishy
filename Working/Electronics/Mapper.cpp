@@ -124,7 +124,7 @@ int main()
 	initializeTAttr();
 
 	// Thread handles
-	pthread_t navigationThread;
+	//pthread_t navigationThread;
 	pthread_t depthThread;
 	//pthread_t safetyThread;
 	//pthread_t disarmlaserThread;
@@ -134,7 +134,7 @@ int main()
 	//pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
 	//pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
-	pthread_create (&navigationThread, &tattrmed, navigation_thread, NULL);
+	//pthread_create (&navigationThread, &tattrmed, navigation_thread, NULL);
 
   // Destroy the thread attributes
  	destroyTAttr();
