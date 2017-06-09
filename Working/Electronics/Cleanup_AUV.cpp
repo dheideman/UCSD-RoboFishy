@@ -22,17 +22,19 @@ int cleanup_auv()
 	auv_usleep(500000);
 
   // kill python scripts
-  char cmd[50];
-  strcpy(cmd, "ps -ef | grep read_imu.py | grep -v grep | awk '{print $2}' | xargs kill");
-  system(cmd);
+  char imu_cmd[100];
+  strcpy(imu_cmd, "ps -ef | grep read_imu.py | grep -v grep | awk '{print $2}' | xargs kill");
+  system(imu_cmd);
   auv_usleep(100000);
 
-  strcpy(cmd, "ps -ef | grep read_temp.py | grep -v grep | awk '{print $2}' | xargs kill");
-  system(cmd);
+	char temp_cmd[100];
+  strcpy(temp_cmd, "ps -ef | grep read_temp.py | grep -v grep | awk '{print $2}' | xargs kill");
+  system(temp_cmd);
   auv_usleep(100000);
 
-  strcpy(cmd, "ps -ef | grep read_pressure.py | grep -v grep | awk '{print $2}' | xargs kill");
-  system(cmd);
+	char pres_cmd[100];
+  strcpy(pres_cmd, "ps -ef | grep read_pressure.py | grep -v grep | awk '{print $2}' | xargs kill");
+  system(pres_cmd);
 
 	// Delete fifo files
 	remove("imu.fifo");
