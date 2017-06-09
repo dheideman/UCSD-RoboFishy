@@ -146,7 +146,7 @@ int main(int argc, char** argv)
   } // end while
   
   // Shut down
-  substate.mode = STOPPING;
+  substate.mode = STOPPED;
 
   // Wait for threads to stop
   sleep(4);
