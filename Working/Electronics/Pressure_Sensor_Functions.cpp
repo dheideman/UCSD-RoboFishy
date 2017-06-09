@@ -13,10 +13,12 @@
 
 void start_read_pressure(void)
 {
+  printf("Starting read_pressure.py, then waiting 2 seconds\n");
 	char cmd[50];
-  strcpy(cmd, "python read_pressure.py &");
+  strcpy(cmd, "python read_pressure.py & exit");
   system(cmd);
   printf("started read_pressure.py using system('python read_pressure.py & exit')\n");
+  usleep(2000000);
 	return;
 }
 

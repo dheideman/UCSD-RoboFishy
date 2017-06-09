@@ -17,16 +17,16 @@ void start_read_imu(void)
   bool success = false;
   while (!success)
   {
+    // clear fifo file //
+    std::FILE* fd = fopen("imu.fifo","w");
+    fclose(fd);
+    printf("Created and cleared imu.fifo\n");
+
+    printf("Starting read_imu.py, then waiting 2 seconds\n");
     char cmd[50];
     strcpy(cmd,"python read_imu.py & exit");
     system(cmd);
     printf("Started IMU using system(cmd)\n");
-
-    // clear fifo file //
-    std::FILE* fd = fopen("imu.fifo","w");
-    fclose(fd);
-    printf("Cleared imu.fifo\n");
-
     // Wait 2 seconds to let the python script start up
     usleep(2000000);
 
@@ -39,7 +39,7 @@ void start_read_imu(void)
     }
     else
     {
-      printf("read_imu.py HAS written to imu.fifo"\n);
+      printf("read_imu.py HAS written to imu.fifo\n");
       // success! continue
       printf("IMU Initialized\n");
       success = true;
