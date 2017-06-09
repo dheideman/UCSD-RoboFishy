@@ -41,6 +41,7 @@ void start_read_imu(void)
     {
       printf("read_imu.py has written to imu.fifo");
       // success! continue
+      printf("IMU Initialized\n");
       success = true;
     }
     fclose(pFile);

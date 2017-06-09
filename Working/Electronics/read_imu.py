@@ -22,7 +22,7 @@ bno = BNO055.BNO055(serial_port='/dev/ttyAMA0', rst=18)
 print "Initializing IMU"
 if not bno.begin():
     raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')
-print "IMU Initialized"
+#print "IMU Initialized"
 
 # Print system status and self test result.
 """Return a tuple with status information.  Three values will be returned:
