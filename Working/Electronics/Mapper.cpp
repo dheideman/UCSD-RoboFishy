@@ -146,8 +146,8 @@ int main()
 	while(substate.mode != STOPPED)
 	{
 		// Check if we've passed the stop time
-		//if(difftime(time(0),start) > STOP_TIME)
-			//substate.mode = STOPPED;
+		if(difftime(time(0),start) > STOP_TIME)
+			substate.mode = STOPPED;
 
 		// Sleep a little
 		usleep(100000);
@@ -172,6 +172,7 @@ void *depth_thread(void* arg)
 
 	while(substate.mode!=STOPPED)
 	{
+		printf("IN the depth thread while loop\n");
 		// Read pressure sensor by passing calibration structure
 		//ms5837 = read_pressure(pressure_calib);
 
