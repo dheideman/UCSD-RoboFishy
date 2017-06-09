@@ -184,6 +184,9 @@ void *depth_thread(void* arg)
 		//printf("Current Depth:\t %.3f\n",depth);
 		//usleep(1000000);
 
+		// read IMU values from fifo file
+		substate.imu = read_imu_fifo();
+
 		// Write IMU data
 		printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: "
 			"%i Accel: %i Mag: %i X_acc: %f Y_acc: %f Z_acc: %f\n ",
@@ -192,8 +195,11 @@ void *depth_thread(void* arg)
 			 substate.imu.sys, substate.imu.gyro, substate.imu.accel,
 			 substate.imu.mag, substate.imu.x_acc, substate.imu.y_acc, 
 			 substate.imu.z_acc);
+
+		sleep(1);
 	 	//printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
 	}
+
 	pthread_exit(NULL);
 }//*/
 
@@ -307,7 +313,7 @@ void *depth_thread(void* arg)
 	while( substate.mode != STOPPED )
 	{
 		// Check if depth threshold has been exceeded
-		/*if( substate.fdepth > DEPTH_STOP )
+		if( substate.fdepth > DEPTH_STOP )
 		{
 			substate.mode = STOPPED;
 			printf("We're too deep! Shutting down...\n");
