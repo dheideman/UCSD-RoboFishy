@@ -18,15 +18,15 @@ void start_read_imu(void)
   //system(cmd);
 
   // clear fifo file //
-  std::FILE* fifo = fopen("imu.fifo","w");
-  fclose(fifo);
+ // std::FILE* fifo = fopen("imu.fifo","w");
+  //fclose(fifo);
   printf("Cleared fifo file\n");
 
   // Start up the Python
   std::FILE* fd = fopen("read_imu.py", "r");
   PyRun_SimpleFile(fd,"read_imu.py");
   printf("Started up Python\n");
-  
+
   // Wait 2 seconds to let the python script start up
   usleep(2000000);
 
