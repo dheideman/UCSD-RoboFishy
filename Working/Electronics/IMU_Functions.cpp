@@ -31,20 +31,19 @@ void start_read_imu(void)
     usleep(2000000);
 
     // Check whether the python script wrote anything
-    pFile = fopen("imu.fifo","r");
+    std::ifstream pFile("imu.fifo");
     if(pFile.peek() == std::ifstream::traits_type::eof())
     {
-      printf("read_imu.py has NOT writen to imu.fifo");
+      printf("read_imu.py has NOT written to imu.fifo\n");
       // if it isn't printing values, restart initialization
     }
     else
     {
-      printf("read_imu.py has written to imu.fifo");
+      printf("read_imu.py HAS written to imu.fifo"\n);
       // success! continue
       printf("IMU Initialized\n");
       success = true;
     }
-    fclose(pFile);
   }
   return;
 }
@@ -61,7 +60,7 @@ imu_t read_imu_fifo(void)
 	FILE *fd = fopen( "imu.fifo", "r");
 	fgets(buf,1000,fd);
 	fclose(fd);
-	sscanf(buf,"%f %f %f %f %f %f %i %i %i %i %f %f %d",
+	sscanf(buf,"%f %f %f %f %f %f %i %i %i %i %f %f %f",
 				 &imu.yaw,&imu.roll,&imu.pitch,
 				 &imu.q, &imu.p, &imu.r,
 				 &imu.sys,&imu.gyro,&imu.accel,

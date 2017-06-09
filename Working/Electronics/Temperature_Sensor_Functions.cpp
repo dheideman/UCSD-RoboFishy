@@ -16,7 +16,7 @@ void start_read_temp(void)
 char cmd[50];
   strcpy(cmd, "python read_temp.py & exit");
   system(cmd);
-  printf("Started read_temp.py using system('python read_temp.py & exit')");
+  printf("Started read_temp.py using system('python read_temp.py & exit')\n");
   return;
 }
 
