@@ -47,7 +47,7 @@
 #define DEPTH_START 50 // starting depth (mm)
 
 // Stop Timer
-#define STOP_TIME 4		// seconds
+#define STOP_TIME 10		// seconds
 
 // Leak Sensor Inpu and Power Pin
 #define LEAKPIN 27		// connected to GPIO 27
