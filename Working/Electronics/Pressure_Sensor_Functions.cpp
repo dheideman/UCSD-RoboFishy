@@ -16,7 +16,7 @@ void start_read_pressure(void)
 	char cmd[50];
   strcpy(cmd, "python read_pressure.py &");
   system(cmd);
-  printf("started read_pressure.py using system(cmd)\n");
+  printf("started read_pressure.py using system('python read_pressure.py & exit')\n");
 	return;
 }
 
