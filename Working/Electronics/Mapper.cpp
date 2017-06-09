@@ -36,10 +36,6 @@
 #define INT_SAT 10		// upper limit of integral windup
 #define DINT_SAT 10		// upper limit of depth integral windup
 
-// Filter Values
-#define A1 0.3			// for MS5837 pressure sensor
-#define A2 0.4			// for MS5837 pressure sensor
-
 // Fluid Densities in kg/m^3
 #define DENSITY_FRESHWATER 997
 #define DENSITY_SALTWATER 1029
@@ -72,9 +68,6 @@ void *safety_thread(void* arg);
 
 // Holds the setpoint data structure with current setpoints
 //setpoint_t setpoint;
-
-// Holds the calibration values for the MS5837 pressure sensor
-pressure_calib_t pressure_calib;
 
 // Holds the latest pressure value from the MS5837 pressure sensor
 ms5837_t ms5837;
@@ -168,16 +161,14 @@ int main()
 void *depth_thread(void* arg)
 {
 	printf("Depth Thread Started\n");
-	// Initialize pressure sensor
-	//pressure_calib = init_pressure_sensor();
 
 	while(substate.mode!=STOPPED)
 	{
 		printf("In the depth thread while loop\n");
-		// Read pressure sensor by passing calibration structure
-		//ms5837 = read_pressure();
 
-		//printf("Current Depth:\t %.3f\n", ms5837.depth);
+		ms5837 = read_pressure();
+
+		printf("Current Depth:\t %.3f\n", ms5837.depth);
 		//usleep(1000000);
 
 		// read IMU values from fifo file
