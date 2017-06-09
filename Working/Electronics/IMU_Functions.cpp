@@ -46,7 +46,7 @@ void start_read_imu(void)
   {
     printf("file is not empty\n");
   }
-  fseek(fd, 0, SEEK_SET); // goto begin of file
+  fseek(fifo, 0, SEEK_SET); // go to begin of file
 
   // if it isn't printing values, restart initialization
 
@@ -58,7 +58,7 @@ void start_read_imu(void)
 /******************************************************************************
  * imu_t read_imu_fifo
  *
- * Reads IMU values from imu.fifo and write to the imu struct 
+ * Reads IMU values from imu.fifo and write to the imu struct
 ******************************************************************************/
 imu_t read_imu_fifo(void)
 {
