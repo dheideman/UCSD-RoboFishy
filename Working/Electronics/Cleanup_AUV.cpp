@@ -46,8 +46,7 @@ int cleanup_auv()
 
 	// Set all motors to zero
 	int channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3};
-	int i;
-	for( i=0; i<3; i++ )
+	for( int i=0; i<3; i++ )
 	{
 		// Shut off motors
 		pwmWrite (PIN_BASE+channels[i], MOTOR_0);
@@ -55,9 +54,5 @@ int cleanup_auv()
 		// Sleep...just cuz
 		usleep(10000);
 	}
-
-	// Shutdown Python interpreter
-	Py_Finalize();
-
 	return 0;
 }
