@@ -268,7 +268,7 @@ void *navigation(void* arg)
 		}
 
 		//calculate yaw controller output
-		motor_percent = marchPID(substate.imu, yaw);
+		motor_percent = marchPID(yaw_pid, yaw);
 
 		// Set port motor
 		set_motor(0, motor_percent);
