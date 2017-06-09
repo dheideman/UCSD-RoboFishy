@@ -118,7 +118,7 @@ int main()
 	}
 	printf("\nAll components are initialized\n");
 	substate.mode = INITIALIZING;
-    substate.laserarmed = ARMED;
+  substate.laserarmed = ARMED;
 
 	printf("Starting Threads\n");
 	initializeTAttr();
@@ -209,7 +209,7 @@ void *depth_thread(void* arg)
  *
  * For yaw control
  *****************************************************************************/
-void *navigation(void* arg)
+void *navigation_thread(void* arg)
 {
 	printf("Nav Thread Started\n");
 
