@@ -47,7 +47,7 @@
 #define DEPTH_START 50 // starting depth (mm)
 
 // Stop Timer
-#define STOP_TIME 4		// seconds
+#define STOP_TIME 10		// seconds
 
 // Leak Sensor Inpu and Power Pin
 #define LEAKPIN 27		// connected to GPIO 27
@@ -170,10 +170,10 @@ void *depth_thread(void* arg)
 		usleep(1000000);
 
 		// read IMU values from fifo file
-		//substate.imu = read_imu_fifo();
+		substate.imu = read_imu_fifo();
 
 		// Write IMU data
-		printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: "
+		printf("\nYaw: %5.2f Roll: %5.2f Pitch: %5.2f p: %f q: %f r: %f Sys: %i Gyro: "
 			"%i Accel: %i Mag: %i X_acc: %f Y_acc: %f Z_acc: %f\n ",
 			 substate.imu.yaw, substate.imu.pitch, substate.imu.roll,
 			 substate.imu.p, substate.imu.q, substate.imu.r,
