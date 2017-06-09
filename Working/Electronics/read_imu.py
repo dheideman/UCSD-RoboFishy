@@ -6,8 +6,6 @@ import sys
 import time
 import os
 from Adafruit_BNO055 import BNO055
-#import BNO055
-print "Imported Adafruit BNO055"
 
 # Create and configure the BNO sensor connection.
 # Raspberry Pi configuration with serial UART and RST connected to GPIO 18:
