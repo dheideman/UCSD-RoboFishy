@@ -14,8 +14,7 @@
 void start_read_imu(void)
 {
   char cmd[50];
-  strcpy(cmd,"python read_imu2.py & exit");
-  //strcpy(cmd,"python read_imu.py & exit");
+  strcpy(cmd,"python read_imu.py & exit");
   printf("%s\n", "ran strcpy command");
   system(cmd);
 /*

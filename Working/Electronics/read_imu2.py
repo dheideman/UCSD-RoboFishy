@@ -1,15 +1,3 @@
-bno055_read.py
-DETAILS
-ACTIVITY
-Earlier this year
-
-Stu Man uploaded an item
-Apr 21
-Text
-bno055_read.py
-No recorded activity before April 21, 2017
-
-
 # Simple Adafruit BNO055 sensor reading example.  Will print the orientation
 # and calibration data every second.
 #
@@ -45,8 +33,7 @@ import BNO055
 # below 'bno = ...' lines is uncommented:
 # Raspberry Pi configuration with serial UART and RST connected to GPIO 18:
 bno = BNO055.BNO055(serial_port='/dev/ttyAMA0', rst=18)
-fifo_path = "/tmp/bno055_fifo.fifo"
-os.mkfifo(fifo_path)
+
 #cproc = subprocess.Popen("./new_test", stdin=PIPE, stdout=PIPE)
 # BeagleBone Black configuration with default I2C connection (SCL=P9_19, SDA=P9_20),
 # and RST connected to pin P9_12:
@@ -98,8 +85,9 @@ self test requires going into config mode which will stop the fusion
 engine from running.
 """
 status, self_test, error = bno.get_system_status()
-print('System status: {0}'.format(status))
-print('Self test result (0x0F is normal): 0x{0:02X}'.format(self_test))
+print('IMU status: {0}'.format(status))
+print('IMU Self test result (0x0F is normal): 0x{0:02X}'.format(self_test))
+
 # Print out an error if system status is in error mode.
 if status == 0x01:
     print('System error: {0}'.format(error))
@@ -113,7 +101,7 @@ sw, bl, accel, mag, gyro = bno.get_revision()
 #print('Magnetometer ID:    0x{0:02X}'.format(mag))
 #print('Gyroscope ID:       0x{0:02X}\n'.format(gyro))
 
-#print('Reading BNO055 data, press Ctrl-C to quit...')
+print('Reading BNO055 data, press Ctrl-C to quit...')
 while True:
     # Read the Euler angles for heading, roll, pitch (all in degrees).
     heading, roll, pitch = bno.read_euler()
@@ -126,7 +114,7 @@ while True:
     # returned in meters per second squared):
     x_acc,y_acc,z_acc = bno.read_linear_acceleration()
 	
-    fifo = open(fifo_path, "w")
+    fifo = open("imu.ifo", "w")
     _string = "%f %f %f %f %f %f %i %i %i %i %f %f %f" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag, x_acc, y_acc, z_acc)
     fifo.write(_string)
     fifo.close()
