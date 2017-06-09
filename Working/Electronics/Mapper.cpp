@@ -161,15 +161,16 @@ int main()
 void *depth_thread(void* arg)
 {
 	printf("Depth Thread Started\n");
+	// Initialize pressure sensor
+	//pressure_calib = init_pressure_sensor();
 
 	while(substate.mode!=STOPPED)
 	{
 		printf("In the depth thread while loop\n");
-
-		ms5837 = read_pressure();
+		ms5837 = read_pressure_fifo();
 
 		printf("Current Depth:\t %.3f\n", ms5837.depth);
-		//usleep(1000000);
+		usleep(1000000);
 
 		// read IMU values from fifo file
 		substate.imu = read_imu_fifo();
