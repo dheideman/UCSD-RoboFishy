@@ -45,7 +45,7 @@
 // Struct for holding MS5837 return values
 typedef struct
 {
-	float pressure;
+	float depth;
 	float water_temp;
 }ms5837_t;
 
