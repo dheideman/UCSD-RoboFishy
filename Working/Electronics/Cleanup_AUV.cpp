@@ -42,7 +42,7 @@ int cleanup_auv()
 	}
 
 	// Shutdown Python interpreter
-	//Py_Finalize();
+	Py_Finalize();
 
 	return 0;
 }
