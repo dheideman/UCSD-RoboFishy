@@ -145,6 +145,7 @@ int main()
 	// Run main while loop, wait until it's time to stop
 	while(substate.mode != STOPPED)
 	{
+		printf("In the main while loop\n");
 		// Check if we've passed the stop time
 		if(difftime(time(0),start) > STOP_TIME)
 			substate.mode = STOPPED;
