@@ -145,7 +145,6 @@ int main()
 	// Run main while loop, wait until it's time to stop
 	while(substate.mode != STOPPED)
 	{
-		printf("In the main while loop\n");
 		// Check if we've passed the stop time
 		if(difftime(time(0),start) > STOP_TIME)
 			substate.mode = STOPPED;
@@ -169,15 +168,15 @@ void *depth_thread(void* arg)
 {
 	printf("Depth Thread Started\n");
 	// Initialize pressure sensor
-	pressure_calib = init_pressure_sensor();
+	//pressure_calib = init_pressure_sensor();
 
 	while(substate.mode!=STOPPED)
 	{
 		// Read pressure sensor by passing calibration structure
-		ms5837 = read_pressure(pressure_calib);
+		//ms5837 = read_pressure(pressure_calib);
 
 		// Calculate depth (no idea what the magic numbers are)
-		depth = (ms5837.pressure-1013)*10.197-88.8; // units?
+		//depth = (ms5837.pressure-1013)*10.197-88.8; // units?
 		// 1013: ambient pressure (mbar)
 		// 10.197*p_mbar = p_mmH20
 
