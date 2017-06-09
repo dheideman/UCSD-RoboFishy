@@ -28,7 +28,7 @@ void start_read_imu(void)
     system(cmd);
     printf("Started IMU using system(cmd)\n");
     // Wait 2 seconds to let the python script start up
-    usleep(2000000);
+    auv_usleep(2000000);
 
     // Check whether the python script wrote anything
     std::ifstream pFile("imu.fifo");

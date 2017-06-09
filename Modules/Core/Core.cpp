@@ -7,6 +7,8 @@
 
 #include "Core.h"
 #include <time.h>
+#include <errno.h>
+
 //////////////////////
 // Global Variables //
 //////////////////////
