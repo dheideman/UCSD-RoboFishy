@@ -10,7 +10,7 @@
 
 //#include <cv.hpp>
 #include <opencv2/opencv.hpp>
-#include <signal.h>   
+#include <signal.h>
 
 ///////////////
 // Constants //
@@ -72,7 +72,11 @@ void initializeTAttr();
 void destroyTAttr();
 
 // signal catcher
-void ctrl_c(int signo);     
+void ctrl_c(int signo);
+
+// time stuff
+void auv_nanosleep(uint64_t ns);
+void auv_usleep(unsigned int us);
 
 //////////////////////
 // Global Variables //

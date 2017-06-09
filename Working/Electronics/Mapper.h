@@ -99,7 +99,6 @@ extern int motor_channels[];
 /******************************************************************************
 * Function Prototypes
 ******************************************************************************/
-
 // Functions for setting motor PWM with PCA9685
 int initialize_motors(int channels[3], float freq);
 int saturate_number(float* val, float min, float max);
@@ -124,7 +123,6 @@ float read_temp_fifo(void);					// read values from ds18b20
 int initialize_sensors(void);
 
 // Cleanup and shutdown
-
 int cleanup_auv();					// call at the very end of main()
 
 #endif
