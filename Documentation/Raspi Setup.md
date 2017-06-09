@@ -332,3 +332,20 @@ sudo modprobe w1-gpio
 sudo modprobe w1-thermo
 ```
 
+
+Setup RasPi to run and kill python scripts from within c++ programs:
+------
+
+Add this to the end of your .bashrc file in your home folder:
+```
+# Added functions to start and kill python scripts
+mynohup () {
+    [[ "$1" = "" ]] && echo "usage: mynohup python_script" && return 0
+    nohup python -u "$1" > "${1%.*}.log" 2>&1 < /dev/null &
+}
+
+mykill() {
+    ps -ef | grep "$1" | grep -v grep | awk '{print $2}' | xargs kill
+    echo "process "$1" killed"
+}
+```
