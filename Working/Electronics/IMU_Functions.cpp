@@ -31,19 +31,18 @@ void start_read_imu(void)
     usleep(2000000);
 
     // Check whether the python script wrote anything
-    pFile = fopen("imu.fifo","r");
+    std::ifstream pFile("imu.fifo");
     if(pFile.peek() == std::ifstream::traits_type::eof())
     {
-      printf("read_imu.py has NOT writen to imu.fifo");
+      printf("read_imu.py has NOT written to imu.fifo\n");
       // if it isn't printing values, restart initialization
     }
     else
     {
-      printf("read_imu.py has written to imu.fifo");
+      printf("read_imu.py HAS written to imu.fifo"\n);
       // success! continue
       success = true;
     }
-    fclose(pFile);
   }
   return;
 }
