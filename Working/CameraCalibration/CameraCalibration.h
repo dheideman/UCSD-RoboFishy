@@ -17,25 +17,26 @@
 #include <ostream>
 #include <string>
 
-// Global typedefs
-#include "../../Modules/TypeDefs.h"
-
 // Multithreading
 #include <pthread.h>
 #include <sched.h>
 #include <unistd.h>
 
-// V4L2
+// Core Module
+#include "../../Modules/Core/Core.h"
+
+// V4L2 Module
 #include <linux/videodev2.h>
 #include "../../Modules/V4L2Control/V4L2Control.h"
+
+// Camera Module
+#include "../../Modules/Camera/Camera.h"
 
 /////////////////////////
 // Function Prototypes //
 /////////////////////////
 
 // Callback Functions
-void whiteBalanceCallback(int, void*);
 void mouseCallback(int event, int x, int y, int flags, void* userdata);
 
-// Threads
-void *takePictures(void*);
+

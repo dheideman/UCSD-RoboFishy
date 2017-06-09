@@ -1,3 +1,0 @@
-/home/pi/UCSD-RoboFishy/Working/CameraCalibration/CMakeFiles/edit_cache.dir
-/home/pi/UCSD-RoboFishy/Working/CameraCalibration/CMakeFiles/rebuild_cache.dir
-/home/pi/UCSD-RoboFishy/Working/CameraCalibration/CMakeFiles/CameraCalibration.dir
