@@ -77,7 +77,7 @@ sw, bl, accel, mag, gyro = bno.get_revision()
 #print('Magnetometer ID:    0x{0:02X}'.format(mag))
 #print('Gyroscope ID:       0x{0:02X}\n'.format(gyro))
 
-print('Reading BNO055 data, press Ctrl-C to quit...')
+#print('Reading BNO055 data, press Ctrl-C to quit...')
 while True:
   # Read the Euler angles for heading, roll, pitch (all in degrees).
   heading, roll, pitch = bno.read_euler()
@@ -102,7 +102,7 @@ while True:
   #out, err = cproc.communicate(input)
 
   # Print everything out.
-  print('Heading={0:0.2F} Roll={1:0.2F} Pitch={2:0.2F}\tSys_cal={3} Gyro_cal={4} Accel_cal={5} Mag_cal={6}'.format(heading, roll, pitch, sys, gyro, accel, mag))
+  #print('Heading={0:0.2F} Roll={1:0.2F} Pitch={2:0.2F}\tSys_cal={3} Gyro_cal={4} Accel_cal={5} Mag_cal={6}'.format(heading, roll, pitch, sys, gyro, accel, mag))
 
   # Other values you can optionally read:
   # Orientation as a quaternion:
