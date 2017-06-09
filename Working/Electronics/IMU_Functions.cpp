@@ -60,6 +60,19 @@ imu_t read_imu_fifo(void)
 	imu_t imu;
 	char buf[1000];
 	FILE *fd = fopen( "imu.fifo", "r");
+
+// Insert check here //
+  fseek(fd, 0, SEEK_END); // goto end of file
+  if (ftell(fd) == 0)
+  {
+    printf("imu.fifo DOES NOT have stuff in it\n");
+  }
+  else
+  {
+    printf("imu.fifo has stuff in it\n");
+  }
+  fseek(fd, 0, SEEK_SET); // go to begin of file
+
 	fgets(buf,1000,fd);
 	fclose(fd);
 	sscanf(buf,"%f %f %f %f %f %f %i %i %i %i %f %f %f",
