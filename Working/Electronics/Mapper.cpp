@@ -161,8 +161,6 @@ int main()
 void *depth_thread(void* arg)
 {
 	printf("Depth Thread Started\n");
-	// Initialize pressure sensor
-	//pressure_calib = init_pressure_sensor();
 
 	while(substate.mode!=STOPPED)
 	{
