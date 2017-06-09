@@ -94,7 +94,7 @@ while True:
 
   _string = "%f %f %f %f %f %f %i %i %i %i %f %f %f" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag, x_acc, y_acc, z_acc)
   # fifo = open("imu.fifo", "w")
-  fifo = open("imu.txt", "w")
+  fifo = open("imu.fifo", "w")
   fifo.write(_string)
   fifo.close()
 
