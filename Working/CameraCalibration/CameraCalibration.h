@@ -17,6 +17,9 @@
 #include <ostream>
 #include <string>
 
+// WiringPi
+#include <wiringPi.h>
+
 // Multithreading
 #include <pthread.h>
 #include <sched.h>
