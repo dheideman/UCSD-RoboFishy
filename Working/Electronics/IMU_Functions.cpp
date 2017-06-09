@@ -13,45 +13,38 @@
 ******************************************************************************/
 void start_read_imu(void)
 {
-  char cmd[50];
-  strcpy(cmd,"python read_imu.py & exit");
-  system(cmd);
-  printf("Started IMU using system(cmd)\n");
-
-  // clear fifo file //
-  std::FILE* fd = fopen("imu.fifo","w");
-  fclose(fd);
-  printf("Cleared imu.fifo\n");
-
-  // Wait 2 seconds to let the python script start up
-  usleep(3000000);
-
-  // Check whether the python script wrote anything
-  pFile = fopen("imu.fifo","r");
-  if(pFile.peek() == std::ifstream::traits_type::eof())
+  // Create flag for continuing
+  bool success = false;
+  while (!success)
   {
-    printf("read_imu.py has NOT writen to imu.fifo");
-  }
-  else
-  {
-    printf("read_imu.py has written to imu.fifo");
-  }
-  fclose(pFile);
-/*  fseek(fd, 0, SEEK_END); // go to end of file
-  if (ftell(fd) == 0)
-  {
-    printf("imu.fifo is NOT being written to\n");
-  }
-  else
-  {
-    printf("imu.fifo is being written to\n");
-  }
-  fseek(fd, 0, SEEK_SET); // go to begin of file
+    char cmd[50];
+    strcpy(cmd,"python read_imu.py & exit");
+    system(cmd);
+    printf("Started IMU using system(cmd)\n");
 
-  // if it isn't printing values, restart initialization
+    // clear fifo file //
+    std::FILE* fd = fopen("imu.fifo","w");
+    fclose(fd);
+    printf("Cleared imu.fifo\n");
 
-  fclose(fd);
-//*/
+    // Wait 2 seconds to let the python script start up
+    usleep(2000000);
+
+    // Check whether the python script wrote anything
+    pFile = fopen("imu.fifo","r");
+    if(pFile.peek() == std::ifstream::traits_type::eof())
+    {
+      printf("read_imu.py has NOT writen to imu.fifo");
+      // if it isn't printing values, restart initialization
+    }
+    else
+    {
+      printf("read_imu.py has written to imu.fifo");
+      // success! continue
+      success = true;
+    }
+    fclose(pFile);
+  }
   return;
 }
 
