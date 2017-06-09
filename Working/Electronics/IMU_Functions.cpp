@@ -13,12 +13,12 @@
 ******************************************************************************/
 void start_read_imu(void)
 {
-  char cmd[50];
-  strcpy(cmd,"python read_imu.py & exit");
-  system(cmd);
+  //char cmd[50];
+  //strcpy(cmd,"python read_imu.py & exit");
+  //system(cmd);
 
   // clear fifo file //
-/*  std::FILE* fifo = fopen("imu.fifo","w");
+  std::FILE* fifo = fopen("imu.fifo","w");
   fclose(fifo);
 
   // Start up the Python
@@ -53,14 +53,13 @@ void start_read_imu(void)
 /******************************************************************************
  * imu_t read_imu_fifo
  *
- * Reads IMU values from imu.fifo
+ * Reads IMU values from imu.fifo and write to the imu struct 
 ******************************************************************************/
 imu_t read_imu_fifo(void)
 {
 	imu_t imu;
 	char buf[1000];
 	FILE *fd = fopen( "imu.fifo", "r");
-
 	fgets(buf,1000,fd);
 	fclose(fd);
 	sscanf(buf,"%f %f %f %f %f %f %i %i %i %i %f %f %f",
