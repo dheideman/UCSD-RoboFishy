@@ -42,16 +42,11 @@
 * Create Structs
 ***************************************************************************/
 
-// Struct for hold ms5837 calibration values
-typedef struct
-{
-	float C1, C2, C3, C4, C5, C6;
-}pressure_calib_t;
-
 // Struct for holding MS5837 return values
 typedef struct
 {
 	float pressure;
+	float water_temp;
 }ms5837_t;
 
 // Struct for PID Controllers
@@ -85,9 +80,6 @@ typedef struct pid_data_t
 // Holds the setpoint data structure with current setpoints
 //extern setpoint_t setpoint;
 
-// Holds the calibration values for the MS5837 pressure sensor
-extern pressure_calib_t pressure_calib;
-
 // Holds the latest pressure value from the MS5837 pressure sensor
 extern ms5837_t ms5837;
 
@@ -102,10 +94,6 @@ extern pid_data_t depth_pid;
 
 // Motor channels
 extern int motor_channels[];
-
-// Ignoring sstate
-extern float depth;
-
 
 
 /******************************************************************************
@@ -122,10 +110,6 @@ float marchPID(pid_data_t controller, float input);
 
 // Functions for reading MS5837 Pressure Sensor
 void start_read_pressure(void);								// start Python background process
-pressure_calib_t init_pressure_sensor(void);	// initialize ms5837
-// read values from ms5837
-// need to pass calibration values to it
-ms5837_t read_pressure(pressure_calib_t pressure_calib);
 
 // Functions for reading BNO055 IMU
 void start_read_imu(void); 					// start Python background process

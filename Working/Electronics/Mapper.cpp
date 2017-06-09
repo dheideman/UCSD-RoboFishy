@@ -175,14 +175,9 @@ void *depth_thread(void* arg)
 	{
 		printf("IN the depth thread while loop\n");
 		// Read pressure sensor by passing calibration structure
-		//ms5837 = read_pressure(pressure_calib);
+		//ms5837 = read_pressure();
 
-		// Calculate depth (no idea what the magic numbers are)
-		//depth = (ms5837.pressure-1013)*10.197-88.8; // units?
-		// 1013: ambient pressure (mbar)
-		// 10.197*p_mbar = p_mmH20
-
-		//printf("Current Depth:\t %.3f\n",depth);
+		//printf("Current Depth:\t %.3f\n", ms5837.depth);
 		//usleep(1000000);
 
 		// read IMU values from fifo file
@@ -194,7 +189,7 @@ void *depth_thread(void* arg)
 		//	 substate.imu.yaw, substate.imu.pitch, substate.imu.roll,
 		//	 substate.imu.p, substate.imu.q, substate.imu.r,
 		//	 substate.imu.sys, substate.imu.gyro, substate.imu.accel,
-		//	 substate.imu.mag, substate.imu.x_acc, substate.imu.y_acc, 
+		//	 substate.imu.mag, substate.imu.x_acc, substate.imu.y_acc,
 		//	 substate.imu.z_acc);
 
 		sleep(1);
@@ -374,7 +369,7 @@ void *navigation_thread(void* arg)
 			// We're still good
 			substate.mode = RUNNING;
 		}
-		
+
 	}
     pthread_exit(NULL);
 

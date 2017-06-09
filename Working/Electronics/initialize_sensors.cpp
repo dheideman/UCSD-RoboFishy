@@ -16,10 +16,10 @@ int initialize_sensors(void)
 	start_read_imu();					// start IMU
 	printf("IMU FIFO has started\n");
 	usleep(100000);
-/*	start_read_pressure();		// start pressure sensor
+	start_read_pressure();		// start pressure sensor
 	printf("Pressure is being read\n");
 	usleep(100000);
-	start_read_temp();				// start temperature sensor
+/*	start_read_temp();				// start temperature sensor
 	printf("Temp FIFO has started\n");
 	usleep(100000);
 	signal(SIGINT, ctrl_c);		// capture ctrl+c and exit
