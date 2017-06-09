@@ -62,6 +62,9 @@ void mouseCallback(int event, int x, int y, int flags, void* userdata)
 //////////
 int main(int argc, char** argv)
 {
+  // Start WiringPi
+  wiringPiSetup();
+
   // Start thread stuff
   initializeTAttr();
   
