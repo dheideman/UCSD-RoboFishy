@@ -335,7 +335,7 @@ sudo modprobe w1-thermo
 
 Setup RasPi to run and kill python scripts from within c++ programs:
 ------
-
+https://stackoverflow.com/questions/34687883/starting-stopping-a-background-python-process-wtihout-nohup-ps-aux-grep-kill
 Add this to the end of your .bashrc file in your home folder:
 ```
 # Added functions to start and kill python scripts
