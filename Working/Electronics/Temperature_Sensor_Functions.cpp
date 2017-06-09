@@ -15,7 +15,7 @@ void start_read_temp(void)
 {
 char cmd[50];
   printf("\nStarting read_temp.py, then waiting 2 seconds\n");
-  strcpy(cmd, "python read_temp.py & exit");
+  strcpy(cmd, "nohup python -u read_temp.py > read_temp.log 2>&1 < /dev/null & exit");
   system(cmd);
   printf("Started read_temp.py using system(cmd)\n");
   auv_usleep(2000000);
