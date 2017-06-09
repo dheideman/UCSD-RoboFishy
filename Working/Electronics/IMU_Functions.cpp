@@ -13,8 +13,12 @@
 ******************************************************************************/
 void start_read_imu(void)
 {
+  char cmd[];
+  strcpy(cmd,"python bno055_read.py & exit");
+  system(cmd);
+
   // clear fifo file //
-  std::FILE* fifo = fopen("imu.fifo","w");
+/*  std::FILE* fifo = fopen("imu.fifo","w");
   fclose(fifo);
 
   // Start up the Python
@@ -42,7 +46,7 @@ void start_read_imu(void)
   // if it isn't printing values, restart initialization
 
   fclose(fifo);
-
+//*/
   return;
 }
 
