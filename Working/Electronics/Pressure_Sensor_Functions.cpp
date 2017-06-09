@@ -17,8 +17,8 @@ void start_read_pressure(void)
 	char cmd[50];
   strcpy(cmd, "python read_pressure.py & exit");
   system(cmd);
-  printf("started read_pressure.py using system('python read_pressure.py & exit')\n");
-  usleep(2000000);
+  printf("started read_pressure.py using system(cmd)\n");
+  auv_usleep(2000000);
 	return;
 }
 
