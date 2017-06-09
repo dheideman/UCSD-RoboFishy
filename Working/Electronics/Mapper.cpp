@@ -194,7 +194,7 @@ void *depth_thread(void* arg)
  *
  * For yaw control
  *****************************************************************************/
-/*void *navigation_thread(void* arg)
+void *navigation_thread(void* arg)
 {
 	printf("Nav Thread Started\n");
 
