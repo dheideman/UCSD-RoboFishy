@@ -14,10 +14,9 @@
 void start_read_imu(void)
 {
   char cmd[50];
-  strcpy(cmd,"python read_imu2.py & exit");
-  //strcpy(cmd,"python read_imu.py & exit");
-  printf("%s\n", "ran strcpy command");
+  strcpy(cmd,"python read_imu.py &; exit");
   system(cmd);
+  printf("%s\n", "Started IMU using system(cmd)");
 /*
   // clear fifo file //
   //std::FILE* fifo = fopen("imu.fifo","w");

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import ms5837
+import MS5837 as ms5837
 import time
 
 sensor = ms5837.MS5837_30BA() # Default I2C bus is 1 (Raspberry Pi 3)
@@ -54,7 +54,7 @@ while True:
     else:
         print "Sensor read failed!"
         # write zeros to fifo
-        fifo = open("pressure.fifo", "w
+        fifo = open("pressure.fifo", "w")
         _fail = "%f %f" % (0, 0)
         fifo.write(_fail)
         fifo.close()

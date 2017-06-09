@@ -14,14 +14,8 @@ using namespace std;
 // Parameters //
 ////////////////
 
-#define EXPOSURE        200
+#define EXPOSURE        100
 #define ISO_VALUE       1
-
-// Image Size
-//#define FRAME_WIDTH     3280  // 8 megapixels
-//#define FRAME_HEIGHT    2464  // 8 megapixels
-#define FRAME_WIDTH       1280  // 720 HD
-#define FRAME_HEIGHT      720   // 720 HD
 
 // Balancing Region
 #define BALANCE_WIDTH     0.2
@@ -34,14 +28,10 @@ using namespace std;
 
 // Global Variables
 string sourcewindow = "Current Image";
-VideoCapture cap;
 int redbalance = 1600;
 int bluebalance = 1600;
 int exposure = 5;
 Mat bgrframe, yuvframe;
-
-// V4L2 Global Device Object
-V4L2Control picamctrl;
 
 
 ////////////////////////
@@ -64,13 +54,6 @@ void mouseCallback(int event, int x, int y, int flags, void* userdata)
     int r = bgr.val[2];
     // print out RGB values (sanity check)
     cout << "B: " << b << ",\tG:" << g << ",\tR:" << r << endl;
-    
-    Vec3b yuv = yuvframe.at<Vec3b>(y, x);
-    int y = yuv.val[0];
-    int u = yuv.val[1];
-    int v = yuv.val[2];
-    // print out YUV values (sanity check)
-    cout << "Y: " << y << ",\tU:" << u << ",\tV:" << v << endl;
   }
 }
 
@@ -146,10 +129,10 @@ int main(int argc, char** argv)
   
   
   // Grab all 5 images from the frame buffer in order to clear the buffer
-  for(int i=0; i<5; i++)
-  {
-    cap.grab();
-  }
+//   for(int i=0; i<5; i++)
+//   {
+//     cap.grab();
+//   }
   
   
   // Announce that we're done initializing
@@ -161,31 +144,26 @@ int main(int argc, char** argv)
   while(key != 27) // 27 is keycode for escape key
   {
     // 'Grab' frame from webcam's image buffer
-    cap.grab();
-    // Retrieve encodes image from grab buffer to 'frame' variable
-    cap.retrieve( bgrframe );
+    subimages.brightframe.copyTo(bgrframe);
     
-    // Convert color spaces
-    cvtColor(bgrframe, yuvframe, CV_BGR2YCrCb);
+    // Obtain average BGR values over our balancing box area.
+    Scalar bgrmean = mean(bgrframe(Rect(b1, b2)));
+    float bbar = bgrmean[0];  // blue
+    float rbar = bgrmean[2];  // red
     
-    // Obtain average YUV values over our balancing box area.
-    Scalar yuvmean = mean(yuvframe(Rect(b1, b2)));
-    float ubar = yuvmean[1];  // blue
-    float vbar = yuvmean[2];  // red
+    cout << "bbar: " << bbar << "\trbar: " << rbar << endl;
     
-    cout << "Vbar: " << vbar << "\tUBar: " << ubar << endl;
-    
-    // Check whether blue (u) or red (v) is more off.
-    if ( abs(vbar) > abs(ubar) )
+    // Check whether blue or red is more off.
+    if ( abs(bbar) > abs(rbar) )
     {
       // If red is more wrong, adjust red balance
-      redbalance += 0.5*vbar;
+      redbalance += 0.5*rbar;
       picamctrl.set(V4L2_CID_RED_BALANCE, redbalance);
     }
     else
     {
       // The blue is more wrong, so adjust blue balance
-      bluebalance += 0.5*ubar;
+      bluebalance += 0.5*bbar;
       picamctrl.set(V4L2_CID_BLUE_BALANCE, bluebalance);
     }
     
