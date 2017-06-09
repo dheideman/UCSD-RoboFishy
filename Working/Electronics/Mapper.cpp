@@ -188,16 +188,16 @@ void *depth_thread(void* arg)
 		substate.imu = read_imu_fifo();
 
 		// Write IMU data
-		printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: "
-			"%i Accel: %i Mag: %i X_acc: %f Y_acc: %f Z_acc: %f\n ",
-			 substate.imu.yaw, substate.imu.pitch, substate.imu.roll,
-			 substate.imu.p, substate.imu.q, substate.imu.r,
-			 substate.imu.sys, substate.imu.gyro, substate.imu.accel,
-			 substate.imu.mag, substate.imu.x_acc, substate.imu.y_acc, 
-			 substate.imu.z_acc);
+		//printf("\nYaw: %f Roll: %f Pitch: %f p: %f q: %f r: %f Sys: %i Gyro: "
+		//	"%i Accel: %i Mag: %i X_acc: %f Y_acc: %f Z_acc: %f\n ",
+		//	 substate.imu.yaw, substate.imu.pitch, substate.imu.roll,
+		//	 substate.imu.p, substate.imu.q, substate.imu.r,
+		//	 substate.imu.sys, substate.imu.gyro, substate.imu.accel,
+		//	 substate.imu.mag, substate.imu.x_acc, substate.imu.y_acc, 
+		//	 substate.imu.z_acc);
 
 		sleep(1);
-	 	//printf("\nYawPID_err: %f Motor Percent: %f ", yaw_pid.err, motor_percent);
+	 	printf("\nYawPID_perr: %f Motor Percent: %f ", yaw_pid.perr, motor_percent);
 	}
 
 	pthread_exit(NULL);
@@ -208,7 +208,7 @@ void *depth_thread(void* arg)
  *
  * For yaw control
  *****************************************************************************/
-/*void *navigation(void* arg)
+void *navigation(void* arg)
 {
 	printf("Nav Thread Started\n");
 
@@ -216,7 +216,9 @@ void *depth_thread(void* arg)
 
 	float yaw = 0; 			  //Local variable for if statements
 
-	/////////////////yaw controller initialization////////////////////////////////
+/******************************************************************************
+ * Yaw Control Initialization
+ *****************************************************************************/
 	yaw_pid.old = 0;	    	// Initialize old imu data
 	yaw_pid.setpoint = 0;   // Initialize setpoint
 
@@ -233,7 +235,9 @@ void *depth_thread(void* arg)
 
 	yaw_pid.dt   = DT;      // initialize time step
 
-	////////////////depth controller initialization///////////////////////////////
+/******************************************************************************
+ * Depth Control Initialization
+ *****************************************************************************/
 	depth_pid.setpoint = 2; 	// Range-from-bottom setpoint (meters)
 	depth_pid.old	   = 0; 		// Initialize old depth
 	depth_pid.dt 	   = DT;		// Initialize depth controller time step
