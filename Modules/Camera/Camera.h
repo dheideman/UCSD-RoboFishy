@@ -61,6 +61,13 @@
 //////////////////////
 // Type Definitions //
 //////////////////////
+// Bright Image and Dark image enumerated type
+typedef enum image_state_t
+{
+	BRIGHTFRAME,
+	DARKFRAME,
+	EMPTY
+} image_state_t;
 
 // Bright and Dark Frame storage struct
 typedef struct sub_images_t
@@ -68,6 +75,8 @@ typedef struct sub_images_t
   cv::Mat brightframe;  // The brighter image (used for mapping)
   cv::Mat darkframe;    // The darker image (used for range finding)
   
+  image_state_t imstate;
+
   pthread_mutex_t brightframelock;   // Mutex lock for brightframe
   pthread_mutex_t darkframelock;     // Mutex lock for darkframe
 } sub_images_t;
@@ -80,7 +89,7 @@ typedef struct sub_images_t
 // Thread
 void *takePictures(void*);
 void *disarmLaser(void* arg);
-
+void *writeImages(void* arg);
 // Mutex Lock Initializer
 int initializeSubImagesLock(sub_images_t *_subimages);
 
