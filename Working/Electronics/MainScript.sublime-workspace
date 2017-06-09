@@ -1,0 +1,845 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"moto",
+				"motor_percent"
+			],
+			[
+				"star",
+				"starboard_percent"
+			],
+			[
+				"port",
+				"port_percent"
+			],
+			[
+				"set",
+				"setpoint"
+			],
+			[
+				"yaw",
+				"yaw_pid"
+			],
+			[
+				"L",
+				"LASERPIN"
+			],
+			[
+				"da",
+				"darkframe"
+			],
+			[
+				"bri",
+				"brightframe"
+			],
+			[
+				"cro",
+				"croptop"
+			],
+			[
+				"cr",
+				"cropleft"
+			],
+			[
+				"crop",
+				"cropheight"
+			],
+			[
+				"print",
+				"printf\tprintf …"
+			],
+			[
+				"otuput",
+				"output_starboard"
+			],
+			[
+				"output",
+				"output_starboard"
+			],
+			[
+				"motor",
+				"motor_channels"
+			],
+			[
+				"esc",
+				"esc_out"
+			],
+			[
+				"PW",
+				"pwmWrite"
+			],
+			[
+				"t",
+				"temperature"
+			],
+			[
+				"calc",
+				"calcTicks"
+			],
+			[
+				"cal",
+				"calcTicks"
+			],
+			[
+				"out",
+				"outerloop_count"
+			],
+			[
+				"ou",
+				"outerloop_count"
+			],
+			[
+				"d2",
+				"d2_thread"
+			],
+			[
+				"disb",
+				"disable_motors"
+			],
+			[
+				"E",
+				"E_R"
+			],
+			[
+				"phi",
+				"phi_ref"
+			],
+			[
+				"ph",
+				"phi_k1"
+			],
+			[
+				"U",
+				"U_hi_k1"
+			],
+			[
+				"ran",
+				"rangle_k"
+			],
+			[
+				"eu",
+				"eu_gyro_k1"
+			],
+			[
+				"di",
+				"disable_motors"
+			],
+			[
+				"get",
+				"get_state"
+			],
+			[
+				"satu",
+				"sat_counter"
+			],
+			[
+				"he",
+				"help_ive_fallen_and_i_cant_get_up"
+			],
+			[
+				"pi",
+				"PI"
+			],
+			[
+				"theta",
+				"theta_ref"
+			],
+			[
+				"phi_k",
+				"phi_k"
+			],
+			[
+				"the",
+				"theta_ref"
+			],
+			[
+				"thet",
+				"theta"
+			],
+			[
+				"th",
+				"thetak2"
+			],
+			[
+				"D",
+				"D2_den"
+			],
+			[
+				"D2",
+				"D2_num"
+			],
+			[
+				"phi_st",
+				"phi_setpoint_k1"
+			],
+			[
+				"phi_",
+				"phi_k2"
+			],
+			[
+				"U_M",
+				"U_Mk1"
+			],
+			[
+				"b2",
+				"b2t"
+			],
+			[
+				"a1",
+				"a1t"
+			],
+			[
+				"eu_gyro_k",
+				"eu_gyro_k1"
+			],
+			[
+				"b1",
+				"b1l"
+			],
+			[
+				"U_l",
+				"U_low_k"
+			],
+			[
+				"ra",
+				"rangle_k1"
+			],
+			[
+				"Eu",
+				"eu_gyro_k"
+			],
+			[
+				"eugy",
+				"eu_gyro_k"
+			],
+			[
+				"eu_gyro_",
+				"eu_gyro_k1"
+			],
+			[
+				"eu_g",
+				"eu_gyro_k"
+			],
+			[
+				"high",
+				"high_pass"
+			],
+			[
+				"sample",
+				"sample_rate"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "Controls.cpp",
+			"settings":
+			{
+				"buffer_size": 2602,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Modules/Core/Core.h",
+			"settings":
+			{
+				"buffer_size": 1801,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Mapper.cpp",
+			"settings":
+			{
+				"buffer_size": 10324,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Pressure_Sensor_Functions.cpp",
+			"settings":
+			{
+				"buffer_size": 3182,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "PWM_Driver_Functions.cpp",
+			"settings":
+			{
+				"buffer_size": 2127,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Mapper.h",
+			"settings":
+			{
+				"buffer_size": 3828,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy",
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Modules",
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Modules/Core"
+	],
+	"file_history":
+	[
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Makefile",
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/PWM_Driver_Functions.cpp",
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Controls.cpp",
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Mapper.h",
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Scripps_AUV_Init.cpp",
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Mapper.cpp",
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Disarm_Laser.cp",
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Modules/Camera/Disarm_Laser.cp",
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/IMU_Functions.cpp",
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Pressure_Sensor_Functions.cpp",
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Temperature_Sensor_Functions.cpp",
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Functions.cpp",
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Libraries.h",
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/MainScript.cpp",
+		"/C/Users/Grant/AppData/Local/Temp/scp07081/home/pi/UCSD-RoboFishy/Working/Electronics/Functions.cpp",
+		"/C/Users/Grant/AppData/Local/Temp/scp20890/home/pi/UCSD-RoboFishy/Working/Electronics/MainScript.cpp",
+		"/C/Users/Grant/AppData/Local/Temp/scp20121/home/pi/UCSD-RoboFishy/Working/Electronics/Libraries.h",
+		"/C/Users/Grant/AppData/Local/Temp/scp21379/home/pi/UCSD-RoboFishy/Working/Electronics/bno055_read.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp11695/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/PoCRangefinder.cpp",
+		"/C/Users/Grant/AppData/Local/Temp/scp15987/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/PoCRangefinder.cpp",
+		"/C/Users/Grant/AppData/Local/Temp/scp37641/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/PoCRangefinder.cpp",
+		"/C/Users/Grant/AppData/Local/Temp/scp55027/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/PoCRangefinder.cpp",
+		"/C/Users/Grant/AppData/Local/Temp/scp27845/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/PoCRangefinder.cpp",
+		"/C/Users/Grant/AppData/Local/Temp/scp04812/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/PoCRangefinder.cpp",
+		"/C/Users/Grant/AppData/Local/Temp/scp05925/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/PoCRangefinder.h",
+		"/C/Users/Grant/AppData/Local/Temp/scp57465/home/pi/PoCRangefinder/PoCRangefinder.cpp",
+		"/C/Users/Grant/AppData/Local/Temp/scp34066/home/pi/UCSD-RoboFishy/Working/Electronics/MainScript.cpp",
+		"/C/Users/Grant/AppData/Local/Temp/scp37064/home/pi/UCSD-RoboFishy/Working/Electronics/Libraries.h",
+		"/C/Users/Grant/AppData/Local/Temp/scp36168/home/pi/UCSD-RoboFishy/Working/Electronics/Functions.cpp",
+		"/C/Users/Grant/AppData/Local/Temp/scp39229/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/PoCRangefinder.cpp",
+		"/C/Users/Grant/AppData/Local/Temp/scp38810/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/PoCRangefinder.h",
+		"/C/Users/Grant/AppData/Local/Temp/scp37038/home/pi/UCSD-RoboFishy/Working/Electronics/Makefile",
+		"/C/Users/Grant/AppData/Local/Temp/scp33745/home/pi/UCSD-RoboFishy/Working/Electronics2/MainScript.cpp",
+		"/C/Users/Grant/AppData/Local/Temp/scp12140/home/pi/UCSD-RoboFishy/Working/Electronics/MainScript.cpp",
+		"/C/Users/Grant/AppData/Local/Temp/scp01109/home/pi/PoCRangefinder/Makefile",
+		"/C/Users/Grant/AppData/Local/Temp/scp36757/home/pi/UCSD-RoboFishy/Working/Electronics2/Makefile",
+		"/C/Users/Grant/AppData/Local/Temp/scp51071/home/pi/UCSD-RoboFishy/Modules/V4L2Control/Makefile",
+		"/C/Users/Grant/AppData/Local/Temp/scp08083/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/PoCRangefinder.cpp",
+		"/C/Users/Grant/AppData/Local/Temp/scp19236/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/Makefile",
+		"/C/Users/Grant/AppData/Local/Temp/scp31347/home/pi/UCSD-RoboFishy/Working/Electronics/Makefile",
+		"/C/Users/Grant/AppData/Local/Temp/scp11039/home/pi/UCSD-RoboFishy/Working/Electronics2/Libraries.h",
+		"/C/Users/Grant/AppData/Local/Temp/scp31037/home/pi/UCSD-RoboFishy/Working/Electronics/Makefile",
+		"/C/Users/Grant/AppData/Local/Temp/scp37647/home/pi/UCSD-RoboFishy/Working/Electronics2/Libraries.h",
+		"/C/Users/Grant/Desktop/Temp/motors.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp10465/home/pi/UCSD-RoboFishy/Working/Electronics2/MainScript.cpp",
+		"/C/Users/Grant/AppData/Local/Temp/scp15889/home/pi/UCSD-RoboFishy/Working/Electronics/Makefile",
+		"/C/Users/Grant/Desktop/Temp/CmakeLists.txt",
+		"/C/Users/Grant/AppData/Local/Temp/scp09279/home/pi/UCSD-RoboFishy/Working/Electronics2/Functions.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp24270/home/pi/UCSD-RoboFishy/Working/Electronics/MainScript.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp31746/home/pi/UCSD-RoboFishy/Working/Electronics/Functions.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp17755/home/pi/UCSD-RoboFishy/Working/Electronics2/Makefile",
+		"/C/Users/Grant/Desktop/Temp/cmake_minimum_required(VERSION 2.8)",
+		"/C/Users/Grant/Downloads/Makefile (3)",
+		"/C/Users/Grant/AppData/Local/Temp/scp09185/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/Makefile",
+		"/C/Users/Grant/AppData/Local/Temp/scp14611/home/pi/UCSD-RoboFishy/Working/Electronics/Functions.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp13046/home/pi/UCSD-RoboFishy/Working/Electronics/MainScript.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp51210/home/pi/UCSD-RoboFishy/Working/Electronics2/Makefile",
+		"/C/Users/Grant/AppData/Local/Temp/scp30515/home/pi/UCSD-RoboFishy/Working/PoCRangefinder/PoCRangefinder.cpp",
+		"/C/Users/Grant/Desktop/Temp/feedback2.c",
+		"/C/Users/Grant/Desktop/Temp/PoCRangefinder.cpp",
+		"/C/Users/Grant/Desktop/feedback2/feedback.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp53441/home/pi/UCSD-RoboFishy/Working/Electronics/MainScript.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp01335/home/pi/pca9685-master/Motors2/motors2.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp55876/home/pi/pca9685-master/Motors/motors.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp53177/home/pi/PoCRangefinder/PoCRangefinder.cpp",
+		"/C/Users/Grant/AppData/Local/Temp/scp22363/home/pi/pca9685-master/Motors/Libraries.h",
+		"/C/Users/Grant/AppData/Local/Temp/scp20154/home/pi/pca9685-master/Motors/motors.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp04195/home/pi/UCSD-RoboFishy/Working/Electronics/Libraries.h",
+		"/C/Users/Grant/AppData/Local/Temp/scp27676/home/pi/UCSD-RoboFishy/Working/Electronics/MainScript.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp19250/home/pi/pca9685-master/Motors/Makefile",
+		"/C/Users/Grant/AppData/Local/Temp/scp33440/home/pi/UCSD-RoboFishy/Working/Electronics/Functions.c",
+		"/C/Users/Grant/Desktop/Temp/Functions.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp13059/home/pi/UCSD-RoboFishy/Working/Electronics/Functions.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp16945/home/pi/UCSD-RoboFishy/Working/Electronics/bno055_read.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp20334/home/pi/UCSD-RoboFishy/Working/Electronics/MainScript.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp12275/home/pi/UCSD-RoboFishy/Working/Electronics/MS5837_example.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp57336/home/pi/UCSD-RoboFishy/Working/Electronics/MS5837.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp58533/home/pi/UCSD-RoboFishy/Working/Electronics/MS5837.h",
+		"/C/Users/Grant/AppData/Local/Temp/scp46368/home/pi/pca9685-master/Motors/IMU.c",
+		"/C/Users/Grant/Desktop/feedback2/BNO055.py",
+		"/C/Users/Grant/Desktop/feedback2/bno055_read.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp43749/home/pi/pca9685-master/Motors/bno055_read.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp43565/home/pi/pca9685-master/Motors/BNO055.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp05171/home/pi/feedback2/scripps_auv.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp05996/home/pi/feedback2/bno055_read.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp33539/home/pi/feedback2/feedback.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp46093/home/pi/feedback2/scripps_auv.h",
+		"/C/Users/Grant/AppData/Local/Temp/scp56820/home/pi/Documents/156b/feedback2/feedback.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp15091/home/pi/Documents/156b/feedback2/scripps_auv.h",
+		"/C/Users/Grant/AppData/Local/Temp/scp29161/home/pi/Documents/156b/feedback2/bno055_read.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp01535/home/pi/Documents/156b/feedback2/scripps_auv.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp07158/home/pi/pca9685-master/Motors/Functions.c",
+		"/C/Users/Grant/Desktop/feedback2/IMU.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp19711/home/pi/pca9685-master/Motors/bno055_read.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp19643/home/pi/pca9685-master/Motors/BNO055.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp01551/home/pi/Documents/156b/feedback2/BNO055.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp21204/home/pi/Documents/156b/feedback2/bno055_read.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp20910/home/pi/Documents/156b/feedback2/feedback.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp53138/home/pi/Documents/156b/feedback2/scripps_auv.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp49869/home/pi/Documents/156b/feedback2/bno055_read.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp36531/home/pi/Documents/156b/feedback2/scripps_auv.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp20223/home/pi/Documents/156b/feedback2/bno055_read.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp24907/home/pi/Documents/156b/feedback2/BNO055.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp13090/home/pi/Documents/156b/feedback/feedback.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp16959/home/pi/Documents/156b/feedback/scripps_auv.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp16554/home/pi/Documents/156b/feedback/BNO055.pyc",
+		"/C/Users/Grant/AppData/Local/Temp/scp15436/home/pi/Documents/156b/feedback/bno055_read.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp15690/home/pi/Documents/156b/feedback/BNO055.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp07172/home/pi/Documents/156b/feedback2/feedback.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp35765/home/pi/pca9685-master/Motors/Libraries.h",
+		"/C/Users/Grant/AppData/Local/Temp/scp19287/home/pi/pca9685-master/Motors/Functions.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp19774/home/pi/pca9685-master/Motors/MainScript.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp36447/home/pi/Documents/156b/feedback2/feedback.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp10607/home/pi/Documents/156b/scripps_auv/bno055_read.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp07536/home/pi/Documents/156b/scripps_auv/scripps_auv.h",
+		"/C/Users/Grant/AppData/Local/Temp/scp31880/home/pi/Documents/156b/feedback2/bno055_read.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp08188/home/pi/Documents/156b/scripps_auv/BNO055.py",
+		"/C/Users/Grant/AppData/Local/Temp/scp58837/home/pi/Documents/156b/feedback2/scripps_auv.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp07345/home/pi/Documents/156b/scripps_auv/test_all.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp20312/home/pi/Documents/156b/feedback2/scripps_auv.h",
+		"/C/Users/Grant/AppData/Local/Temp/scp51192/home/pi/sdcard/home/pi/Documents/156b/feedback/feedback.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp49795/home/pi/pca9685-master/Motors/MS5837.py",
+		"/C/Users/Grant/Downloads/scripps_auv.h",
+		"/C/Users/Grant/Downloads/scripps_auv.c",
+		"/C/Users/Grant/Downloads/feedback.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp51212/home/pi/pca9685-master/Motors/MS5837.c",
+		"/C/Users/Grant/AppData/Local/Temp/scp49122/home/pi/pca9685-master/Motors/Libraries.h",
+		"/C/Users/Grant/AppData/Local/Temp/scp49933/home/pi/pca9685-master/Motors/Functions.c"
+	],
+	"find":
+	{
+		"height": 50.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"yaw_controller",
+			"imu",
+			"substate",
+			"read_imu",
+			"output",
+			"init",
+			"set_motor",
+			"percent",
+			"starboard",
+			"u[2]",
+			"set_mot",
+			"thread",
+			"Py_ini",
+			"captured",
+			"yaw_sat",
+			"esc_out",
+			"vision",
+			"visual",
+			"saturate",
+			"motors",
+			"board",
+			"thread",
+			"self\\",
+			"self",
+			"begin",
+			"bno",
+			"bno.begin",
+			"system",
+			"system_test",
+			"system",
+			"start_Py",
+			"bno055_read",
+			"bno055_t",
+			"fifo",
+			"system_state",
+			"traceback",
+			"tmp",
+			"fifo",
+			"/tmp/bno055_fifo.fifo",
+			"roll",
+			"sstate.roll",
+			"sstate",
+			"calib_t",
+			"print",
+			"ms5837",
+			"calcticks",
+			"calcTicks",
+			"pwmWrite",
+			".1",
+			"hertz",
+			"freq",
+			"signal",
+			"main",
+			"init_cont",
+			"scripps_auv",
+			"main",
+			"sstate.esc_out",
+			"new_esc",
+			"impulseMs",
+			"new_esc",
+			"calcTicks",
+			"impulseMs",
+			"calcTicks",
+			"motor_channels",
+			"9685",
+			"pca",
+			"motor_channels",
+			"myP",
+			"freq",
+			"pinbase",
+			"K",
+			"k2",
+			"sat_counter",
+			"outerloop",
+			"outer_loop",
+			"phi",
+			"data",
+			"ang_deg",
+			"angle_deg",
+			"rad_angle",
+			"euler_gyro",
+			"low_pass",
+			"hp",
+			"lp",
+			"imu_data",
+			"show_gyro",
+			"show_accel",
+			"sat_counter",
+			"lp",
+			"10",
+			"k2",
+			"theta",
+			"counter",
+			"time_constant"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "Controls.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2602,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								495,
+								495
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 318.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Modules/Core/Core.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1801,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 460.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "Mapper.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10324,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7171,
+								7171
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 5315.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "Pressure_Sensor_Functions.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3182,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								51,
+								51
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "PWM_Driver_Functions.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2127,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 710.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "Mapper.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3828,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3079,
+								3079
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 2466.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 31.0
+	},
+	"input":
+	{
+		"height": 43.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "MainScript.sublime-project",
+	"replace":
+	{
+		"height": 58.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 410.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
