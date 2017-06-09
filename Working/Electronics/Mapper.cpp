@@ -126,13 +126,13 @@ int main()
 	// Thread handles
 	//pthread_t navigationThread;
 	pthread_t depthThread;
-	pthread_t safetyThread;
+	//pthread_t safetyThread;
 	//pthread_t disarmlaserThread;
 
 
 	// Create threads using modified attributes
 	//pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
-	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
+	//pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 
   // Destroy the thread attributes
@@ -285,7 +285,7 @@ void *depth_thread(void* arg)
  * Shuts down AUV if vehicle goes belows 10m, temperature gets too high, or
  * water intrusion is detected
  *****************************************************************************/
-void *safety_thread(void* arg)
+/*void *safety_thread(void* arg)
 {
 	printf("Safety Thread Started\n");
 
@@ -363,11 +363,11 @@ void *safety_thread(void* arg)
 			// We're still good
 			substate.mode = RUNNING;
 		}
-		//*/
-	}//*/
+		
+	}
     pthread_exit(NULL);
 
-}
+}//*/
 
 
 /******************************************************************************
