@@ -35,6 +35,7 @@ void start_read_imu(void)
     if(pFile.peek() == std::ifstream::traits_type::eof())
     {
       printf("read_imu.py has NOT written to imu.fifo\n");
+      printf("Retrying IMU initialization\n");
       // if it isn't printing values, restart initialization
     }
     else

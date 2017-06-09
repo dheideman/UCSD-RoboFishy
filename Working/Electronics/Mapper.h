@@ -100,6 +100,10 @@ extern int motor_channels[];
 * Function Prototypes
 ******************************************************************************/
 
+// time stuff
+void auv_nanosleep(uint64_t ns);
+void auv_nanosleep(unsigned int us);
+
 // Functions for setting motor PWM with PCA9685
 int initialize_motors(int channels[3], float freq);
 int saturate_number(float* val, float min, float max);
