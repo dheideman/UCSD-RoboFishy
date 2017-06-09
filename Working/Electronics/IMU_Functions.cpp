@@ -58,9 +58,15 @@ void start_read_imu(void)
 imu_t read_imu_fifo(void)
 {
 	imu_t imu;
+<<<<<<< HEAD
 	printf("Created char buffer\n");
 	char buf[1000];
 	printf("Before file open line in read_im_fifo\n");
+=======
+  printf("Created char buffer\n");
+	char buf[1000];
+  printf("Before file open line in read_imu_fifo\n");
+>>>>>>> 07f5d8c02e14628c24183d91a539c0a17c5f6aeb
 	FILE *fd = fopen( "imu.fifo", "r");
 
 // Insert check here //
