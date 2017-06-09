@@ -14,7 +14,7 @@
 void start_read_imu(void)
 {
   char cmd[50];
-  strcpy(cmd,"python bno055_read.py & exit");
+  strcpy(cmd,"python imu_read.py & exit");
   system(cmd);
 
   // clear fifo file //
@@ -63,7 +63,7 @@ imu_t read_imu_fifo(void)
 
 	fgets(buf,1000,fd);
 	fclose(fd);
-	sscanf(buf,"%f %f %f %f %f %f %i %i %i %i %d %d %d",
+	sscanf(buf,"%f %f %f %f %f %f %i %i %i %i %f %f %f",
 				 &imu.yaw,&imu.roll,&imu.pitch,
 				 &imu.q, &imu.p, &imu.r,
 				 &imu.sys,&imu.gyro,&imu.accel,
