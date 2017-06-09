@@ -45,8 +45,10 @@ typedef enum armed_t
 // Struct for holding BNO055 return values
 typedef struct
 {
-  float yaw, roll, pitch, p, q, r, x_acc, y_acc, z_acc;
+  float yaw, roll, pitch;
+  float p, q, r;
   int sys, gyro, accel, mag;
+  float x_acc, y_acc, z_acc;
 } imu_t;
 
 // Submersible overall state type

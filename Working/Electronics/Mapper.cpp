@@ -144,7 +144,7 @@ int main()
 			substate.mode = STOPPED;
 
 		// Sleep a little
-		usleep(100000);
+		auv_usleep(100000);
 	}
 
 	// Exit cleanly
@@ -168,7 +168,7 @@ void *depth_thread(void* arg)
 
 		printf("\nCurrent Depth:\t %.3f m, Current water temp:\t %.3f C\n", ms5837.depth, ms5837.water_temp);
 
-		printf("Current battery temp;\t %.2f\n", read_temp_fifo());
+		printf("Current battery temp:\t %.2f\n", read_temp_fifo());
 
 		// read IMU values from fifo file
 		substate.imu = read_imu_fifo();

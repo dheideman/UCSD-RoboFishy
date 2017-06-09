@@ -14,10 +14,10 @@
 void start_read_temp(void)
 {
 char cmd[50];
-  printf("Starting read_temp.py, then waiting 2 seconds\n");
+  printf("\nStarting read_temp.py, then waiting 2 seconds\n");
   strcpy(cmd, "python read_temp.py & exit");
   system(cmd);
-  printf("Started read_temp.py using system('python read_temp.py & exit')\n");
+  printf("Started read_temp.py using system(cmd)\n");
   auv_usleep(2000000);
   return;
 }
