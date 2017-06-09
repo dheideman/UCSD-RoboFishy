@@ -20,23 +20,17 @@ void start_read_imu(void)
 
   // clear fifo file //
   //std::FILE* fifo = fopen("imu.fifo","w");
-  std::FILE* fifo = fopen("imu.txt","w");
-  fclose(fifo);
+  std::FILE* fd = fopen("imu.txt","w");
+  fclose(fd);
   printf("Cleared fifo file\n");
-
-  // Start up the Python
-  std::FILE* fd = fopen("read_imu.py", "r");
-  printf("Started up Python\n");
-  PyRun_SimpleFile(fd,"read_imu.py");
-  printf("Ran PyRun_SimpleFile\n");
 
   // Wait 2 seconds to let the python script start up
   usleep(2000000);
 
   // Check whether the python script wrote anything
-  //fd = fopen("imu.fifo","r");
-  fd = fopen("imu.txt","r");
+  fd = fopen("imu.fifo","r");
   printf("Python \n");
+  
   // Insert check here //
   fseek(fd, 0, SEEK_END); // goto end of file
   if (ftell(fd) == 0)
@@ -47,7 +41,7 @@ void start_read_imu(void)
   {
     printf("file is not empty\n");
   }
-  fseek(fifo, 0, SEEK_SET); // go to begin of file
+  fseek(fd, 0, SEEK_SET); // go to begin of file
 
   // if it isn't printing values, restart initialization
 
