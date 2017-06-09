@@ -317,7 +317,7 @@ void *depth_thread(void* arg)
 		{
 			// We're still good
 			substate.mode = RUNNING;
-		}//*/
+		}
 
 		// Check temperature
 		// Shut down AUV if housing temperature gets too high
