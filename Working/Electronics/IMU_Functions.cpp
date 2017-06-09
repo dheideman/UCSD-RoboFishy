@@ -13,12 +13,15 @@
 ******************************************************************************/
 void start_read_imu(void)
 {
-  //char cmd[50];
+  char cmd[50];
+  strcpy(cmd,"python read_imu2.py & exit");
   //strcpy(cmd,"python read_imu.py & exit");
-  //system(cmd);
-
+  printf("%s\n", "ran strcpy command");
+  system(cmd);
+/*
   // clear fifo file //
-  std::FILE* fifo = fopen("imu.fifo","w");
+  //std::FILE* fifo = fopen("imu.fifo","w");
+  std::FILE* fifo = fopen("imu.txt","w");
   fclose(fifo);
   printf("Cleared fifo file\n");
 
@@ -32,7 +35,8 @@ void start_read_imu(void)
   usleep(2000000);
 
   // Check whether the python script wrote anything
-  fd = fopen("imu.fifo","r");
+  //fd = fopen("imu.fifo","r");
+  fd = fopen("imu.txt","r");
   printf("Python \n");
   // Insert check here //
   fseek(fd, 0, SEEK_END); // goto end of file
@@ -44,7 +48,7 @@ void start_read_imu(void)
   {
     printf("file is not empty\n");
   }
-  fseek(fd, 0, SEEK_SET); // goto begin of file
+  fseek(fifo, 0, SEEK_SET); // go to begin of file
 
   // if it isn't printing values, restart initialization
 
@@ -56,7 +60,7 @@ void start_read_imu(void)
 /******************************************************************************
  * imu_t read_imu_fifo
  *
- * Reads IMU values from imu.fifo and write to the imu struct 
+ * Reads IMU values from imu.fifo and write to the imu struct
 ******************************************************************************/
 imu_t read_imu_fifo(void)
 {
