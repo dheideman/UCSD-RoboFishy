@@ -5,7 +5,6 @@
 ******************************************************************************/
 #include "Mapper.h"
 
-
 /******************************************************************************
  * void start_read_imu
  *
@@ -22,13 +21,13 @@ void start_read_imu(void)
     fclose(fd);
     printf("\nCreated and cleared imu.fifo\n");
 
-    printf("Starting read_imu.py, then waiting 2 seconds\n");
+    printf("Starting read_imu.py, then waiting 3 seconds\n");
     char cmd[50];
     strcpy(cmd,"python read_imu.py & exit");
     system(cmd);
     printf("Started IMU using system(cmd)\n");
     // Wait 2 seconds to let the python script start up
-    auv_usleep(2000000);
+    auv_usleep(3000000);
 
     // Check whether the python script wrote anything
     std::ifstream pFile("imu.fifo");

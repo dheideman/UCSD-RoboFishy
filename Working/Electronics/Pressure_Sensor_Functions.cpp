@@ -10,16 +10,41 @@
  *
  * Starts pressure reading python program
 ******************************************************************************/
-
 void start_read_pressure(void)
 {
-  printf("Starting read_pressure.py, then waiting 2 seconds\n");
-	char cmd[50];
-  strcpy(cmd, "python read_pressure.py & exit");
-  system(cmd);
-  printf("started read_pressure.py using system(cmd)\n");
-  auv_usleep(2000000);
-	return;
+  // Create flag for continuing
+  bool success = false;
+  while (!success)
+  {
+    // clear fifo file //
+    std::FILE* fd = fopen("pressure.fifo","w");
+    fclose(fd);
+    printf("\nCreated and cleared pressure.fifo\n");
+
+    printf("Starting read_pressure.py, then waiting 3 seconds\n");
+  	char cmd[50];
+    strcpy(cmd, "python read_pressure.py & exit");
+    system(cmd);
+    printf("Started read_pressure.py using system(cmd)\n");
+    auv_usleep(3000000);
+
+    // Check whether the python script wrote anything
+    std::ifstream pFile("pressure.fifo");
+    if(pFile.peek() == std::ifstream::traits_type::eof())
+    {
+      printf("\nERROR: -----> read_pressure.py has NOT written to pressure.fifo\n");
+      printf("Retrying Pressure Sensor initialization\n");
+      // if it isn't printing values, restart initialization
+    }
+    else
+    {
+      printf("read_pressure.py HAS written to pressure.fifo\n");
+      // success! continue
+      printf("Pressure Sensor Initialized\n");
+      success = true;
+    }
+  }
+  return;
 }
 
 /******************************************************************************
