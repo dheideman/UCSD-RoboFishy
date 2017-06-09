@@ -14,7 +14,7 @@
 
 float marchPID(pid_data_t controller, float input)
 {
-	//Calculating errors
+	// Calculating errors
 	controller.perr = input - controller.setpoint;
 	controller.derr = (input - controller.old)/(controller.dt);
 	controller.ierr += controller.dt * (input - controller.setpoint);
