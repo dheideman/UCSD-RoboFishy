@@ -284,6 +284,7 @@ void *navigation_thread(void* arg)
 		// Only tell motors to run if we are RUNNING
     if( substate.mode == RUNNING)
     {
+			std::cout << std::endl;
       // Print yaw
 	    printf("Yaw:%5.0f  ", substate.imu.yaw);
       printf("Yaw setpoint:%5.0f\n", yaw_pid.setpoint);
@@ -309,8 +310,8 @@ void *navigation_thread(void* arg)
 
       // Print motor speeds
       printf("Port Output:%5.2f  ", portmotorspeed);
-      printf("Star Output:%5.2f", starmotorspeed);
-      printf("Vertical Output: %5.2f\n", vertmotorspeed);
+      printf("Star Output:%5.2f  ", starmotorspeed);
+      printf("Vert Output: %5.2f\n", vertmotorspeed);
 		} // end if RUNNING
 		else if( substate.mode == PAUSED)
 		{
@@ -321,6 +322,7 @@ void *navigation_thread(void* arg)
 
 		  // Wipe integral error
 		  yaw_pid.ierr = 0;
+			depth_pid.ierr = 0;
 
 		  // Sleep a while (we're not doing anything anyways)
 		  auv_msleep(100);
@@ -439,7 +441,7 @@ void *safety_thread(void* arg)
   while(substate.mode == INITIALIZING)
   {
     // Waiting...
-    auv_usleep(100000);
+    auv_msleep(100);
   }
 
   // Prompt user for values continuously until the program exits
@@ -478,11 +480,15 @@ void *safety_thread(void* arg)
     // Start RUNNING again
     substate.mode = RUNNING;
 
+		// Wait for mode to pause again
+		while (substate.mode == RUNNING) {
+			auv_msleep(100);
+		}
     // Restart timer!
 	  start = time(0);
 
     // Aaaaaaand, WAIT!
-    auv_usleep(12*1000000);
+    auv_msleep(12000);
   }
 
   // Exit thread
