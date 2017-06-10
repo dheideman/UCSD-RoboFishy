@@ -100,6 +100,9 @@ time_t start;
 
 int main()
 {
+	// capture ctrl+c and exit
+	signal(SIGINT, ctrl_c);
+
 	// Set up RasPi GPIO pins through wiringPi
 	wiringPiSetupGpio();
 
@@ -134,7 +137,7 @@ int main()
  	destroyTAttr();
 
   printf("Threads started\n");
-  
+
 	// Start timer!
 	start = time(0);
 
@@ -185,9 +188,7 @@ void *depth_thread(void* arg)
 			 substate.imu.z_acc);
 
 		auv_usleep(1000000);
-	 	//printf("\nYawPID_perr: %f Motor Percent: %f ", yaw_pid.perr, motor_percent);
 	}
-
 	pthread_exit(NULL);
 }//*/
 
@@ -254,7 +255,7 @@ void *navigation_thread(void* arg)
 		{
 			yaw =(substate.imu.yaw-360);
 		}
-    
+
     // Only tell motors to run if we are RUNNING
     if( substate.mode == RUNNING)
     {
@@ -266,20 +267,20 @@ void *navigation_thread(void* arg)
 
       // Set starboard motor
       set_motor(1, motor_percent);
-		  
-		} // end if RUNNING 
+
+		} // end if RUNNING
 		else if( substate.mode == PAUSED)
 		{
 		  // Stop horizontal motors
 		  set_motor(0, 0);
 		  set_motor(1, 0);
-		  
+
 		  // Wipe integral error
 		  yaw_pid.ierr = 0;
-		  
+
 		  // Sleep a while (we're not doing anything anyways)
 		  auv_usleep(100000);
-		  
+
 		} // end if PAUSED
 
 		// Sleep for 5 ms
@@ -420,49 +421,49 @@ PI_THREAD (logging_thread)
  {
   // Declare local constant variables
   float _kp, _ki, _kd;
-  
+
   // Wait a until everything is initialized before starting
   while(substate.mode == INITIALIZING)
   {
     // Waiting...
     auv_usleep(100000);
   }
-  
+
   // Prompt user for values continuously until the program exits
   while(substate.mode != STOPPED)
-  { 
+  {
     // Prompt for kp
     std::cout << "Kp: ";
     std::cin >> _kp;
-    
+
     // Prompt for ki
     std::cout << "Ki: ";
     std::cin >> _ki;
-    
+
     // Prompt for kd
     std::cout << "Kd: ";
     std::cin >> _kd;
-    
+
     // Give a newline
     std::cout << std::endl;
-    
+
     // Reset gain values
     yaw_pid.kp = _kp;
     yaw_pid.ki = _ki;
     yaw_pid.kd = _kd;
-    
+
     // Clear errors
     yaw_pid.perr = 0;
     yaw_pid.ierr = 0;
     yaw_pid.derr = 0;
-    
+
     // Start RUNNING again
     substate.mode = RUNNING;
-    
+
     // Restart timer!
 	  start = time(0);
   }
-  
+
   // Exit thread
   pthread_exit(NULL);
  }
