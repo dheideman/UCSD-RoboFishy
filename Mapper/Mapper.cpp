@@ -236,6 +236,7 @@ void *navigation_thread(void* arg)
 
 	yaw_pid.dt   = DT;				// initialize time step
 
+	yaw_pid.period = 360;			//set period for yaw controller
   //////////////////////////////////
   // Depth Control Initialization //
   //////////////////////////////////
@@ -253,14 +254,18 @@ void *navigation_thread(void* arg)
 
 	depth_pid.isat = INT_SAT;		// Depth controller saturation values
 	depth_pid.sat  = DEPTH_SAT;
+	depth_pid.period = -1; 			//not cyclical controller
 
-	while(substate.mode!=STOPPED)
-	{
 		// read IMU values from fifo file
 		substate.imu = read_imu_fifo();
 
 		// Set setpoint to current heading
 		yaw_pid.setpoint = yaw;
+
+	while(substate.mode!=STOPPED)
+	{
+		// read IMU values from fifo file
+		substate.imu = read_imu_fifo();
 
 		if (substate.imu.yaw < 180) // AUV pointed right
 		{
@@ -278,7 +283,7 @@ void *navigation_thread(void* arg)
 		  printf("Yaw:\t%f\n", substate.imu.yaw);
 
       //calculate yaw controller output
-      motorpercent = marchPID(yaw_pid, yaw);
+      motorpercent = marchPID(yaw_pid, substate.imu.yaw);
 
       // Set port and starboard
       portmotorspeed = basespeed + motorpercent;

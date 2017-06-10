@@ -58,6 +58,7 @@ typedef struct pid_data_t
 	float sat;
 	float dt;
 	float isat;
+	float period;
 }pid_data_t;
 
 /***************************************************************************

@@ -14,11 +14,19 @@
 
 float marchPID(pid_data_t PID, float input)
 {
-	// Calculating errors
-	PID.perr = input - PID.setpoint;
-	PID.derr = (input - PID.old)/(PID.dt);
-	PID.ierr += PID.dt * (input - PID.setpoint);
+	float err = input - PID.setpoint;
 
+	if(PID.period > 0 && err > PID.period/2)
+	{
+		err -= period;
+	}
+
+	// Calculating errors
+	PID.perr = err;
+	PID.derr = (err - PID.old)/(PID.dt);
+	PID.ierr += PID.dt * (err);
+
+	//Check for integrator saturation
 	if(PID.ierr > PID.isat)
 	{
 		PID.ierr = PID.isat;
@@ -28,11 +36,11 @@ float marchPID(pid_data_t PID, float input)
 	{
 		PID.ierr = - PID.isat;
 	}
-
+	//Calculate motor output
 	PID.output =   PID.kp * PID.perr
 						+ PID.ki * PID.ierr
 						+ PID.kd * PID.derr;
-
+	//Check for output saturation
 	if(PID.output > PID.sat)
 	{
 		PID.output = PID.sat;
@@ -44,7 +52,7 @@ float marchPID(pid_data_t PID, float input)
 		PID.output = -PID.sat;
 	}
 	// set current input to be the old input //
-	PID.old = input;
+	PID.old = err;
 
 	return PID.output;
 }
