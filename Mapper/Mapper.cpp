@@ -358,7 +358,7 @@ void *safety_thread(void* arg)
 			continue;
 		}
 
-		// check pi cpu temp
+		// Check pi cpu temp
 		float cpu_temp;
 		std::ifstream pFile;
 		pFile.open("/sys/class/thermal/thermal_zone0/temp");
@@ -369,6 +369,7 @@ void *safety_thread(void* arg)
 			printf("CPU is above 80 C. Shutting down...\n");
 			substate.mode = STOPPED;
 		}
+		
 		// Check for leak
 		if( digitalRead(LEAKPIN) == HIGH )
 		{
