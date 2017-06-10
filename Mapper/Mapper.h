@@ -12,7 +12,7 @@
 // Core Module
 #include "../Modules/Core/Core.h"
 
-#define DEBUG
+//#define DEBUG
 
 #define PCA9685_ADDR 0x40
 #define PIN_BASE 300
@@ -92,6 +92,10 @@ extern pid_data_t depth_pid;
 
 // Motor channels
 extern int motor_channels[];
+
+// setmotor intialization
+extern float portmotorspeed;
+extern float starmotorspeed;
 
 
 /******************************************************************************

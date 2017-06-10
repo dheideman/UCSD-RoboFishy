@@ -89,7 +89,8 @@ int motor_channels[] = {CHANNEL_1, CHANNEL_2, CHANNEL_3};
 float depth = 0;
 
 // setmotor intialization
-float motor_percent = 0;
+float portmotorspeed = 0;
+float starmotorspeed = 0;
 
 // Start time for stop timer
 time_t start;
@@ -126,7 +127,7 @@ int main()
 	// Create threads using modified attributes
 	//pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
 	//pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
-	//pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
+	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 	pthread_create (&navigationThread, &tattrmed, navigation_thread, NULL);
 	pthread_create (&uiThread, &tattrmed, userInterface, NULL);
 
@@ -208,7 +209,9 @@ void *navigation_thread(void* arg)
 	initialize_motors(motor_channels, HERTZ);
 
 	float yaw = 0; 			  //Local variable for if statements
-
+  float motorpercent;
+  float basespeed = 0.2;
+  
   ////////////////////////////////
   // Yaw Control Initialization //
   ////////////////////////////////
@@ -264,13 +267,17 @@ void *navigation_thread(void* arg)
     if( substate.mode == RUNNING)
     {
       //calculate yaw controller output
-      motor_percent = marchPID(yaw_pid, yaw);
+      motorpercent = marchPID(yaw_pid, yaw);
+      
+      // Set port and starboard
+      portmotorspeed = basespeed + motorpercent;
+      starmotorspeed = basespeed - motorpercent;
 
       // Set port motor
-      set_motor(0, motor_percent);
+      set_motor(0, portmotorspeed);
 
       // Set starboard motor
-      set_motor(1, motor_percent);
+      set_motor(1, starmotorspeed);
 		  
 		} // end if RUNNING 
 		else if( substate.mode == PAUSED)
