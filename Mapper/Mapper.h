@@ -26,7 +26,7 @@
 #define MOTOR_0 2674    // motor output is 0
 
 // Motor Constants
-#define MOTOR_DEADZONE 0.05   // 5 percent
+#define MOTOR_DEADZONE 0.03   // 3 percent
 #define PWM_LOW_LIMIT  1940   // PWM value
 #define PWM_HIGH_LIMIT 3354   // PWM value
 #define PWM_ZERO_VALUE 2647   // PWM value
@@ -100,6 +100,9 @@ imu_t read_imu_fifo(void); 					// read values from bno055
 // Functions for reading DS18B20 temperature sensor
 void start_read_temp(void); 				// start Python background process
 float read_temp_fifo(void);					// read values from ds18b20
+
+// Functions for reading ras pi status
+float read_cpu_temp(void);
 
 // Startup functions
 int initialize_sensors(void);

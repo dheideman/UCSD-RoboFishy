@@ -42,7 +42,7 @@ void *takePictures(void*)
   {
     cerr << "Error opening the camera (OpenCV)" << endl; 
   }
- 
+  subimages.imstate = EMPTY; 
   // Set framerate (OpenCV capture property)
   cap.set(CV_CAP_PROP_FPS,2);
     
@@ -64,12 +64,12 @@ void *takePictures(void*)
   cap.read( subimages.darkframe );
 
   // Grab all 5 images from the frame buffer in order to clear the buffer
-  //printf("%s\n","Before For Loop" );
   for(int i=0; i<5; i++)
   {
     cap.grab();
   }
   printf("%s\n","BUFFER CLEARED" );
+
   // Loop quickly to pick up images as soon as they are taken
   while(substate.mode != STOPPED)
   {
@@ -88,7 +88,8 @@ void *takePictures(void*)
     
     // Retrieve encodes image from grab buffer to 'brightframe' variable
     cap.retrieve( subimages.brightframe );
-    
+    subimages.imstate = BRIGHTFRAME;
+
     // 'Grab' dark frame from webcam's image buffer
     cap.grab();
     
@@ -101,6 +102,8 @@ void *takePictures(void*)
     
     // Retrieve encodes image from grab buffer to 'darkframe' variable
     cap.retrieve( subimages.darkframe );
+    // Let the computer know which frame its at 
+    subimages.imstate = DARKFRAME;
 
     usleep(200000);
   }
@@ -132,4 +135,38 @@ int initializeSubImagesLock(sub_images_t *_subimages)
     return 0;
   }
   return 1;
+}
+
+/*******************************************************************************
+ * void *writeImages(void*)
+ * 
+ * Camera-handling thread: continuously save images as soon as they come in
+ ******************************************************************************/
+void *writeImages(void*)
+{
+  // Loop quickly to pick up images as soon as they are taken
+  while(substate.mode != STOPPED)
+  {
+    // Open data output file:
+    ofstream datafile;
+    datafile.open (CSV_FILENAME);
+
+  	// If we exceed pitch or roll setpoints disarm the laser as to not blind anyone
+    if( subimages.imstate == BRIGHTFRAME )
+    {
+      // Create filename
+      stringstream filename;
+      filename << IMAGE_PREFIX;
+      if(i<10) filename << "0";   // add in a zero to 1-digit numbers
+      filename << i << IMAGE_EXTENSION;
+
+      // Write image to file
+      imwrite(filename.str(), subimages.brightframe);
+    }
+    // close csv file
+    datafile.close();
+    
+    auv_usleep(100000);
+  }
+  pthread_exit(NULL);
 }

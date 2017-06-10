@@ -266,31 +266,39 @@ void *navigation_thread(void* arg)
 	ms5837 = read_pressure_fifo();
 
 	// Set setpoint to current heading
-	yaw_pid.setpoint = substate.imu.yaw;
+  if( substate.imu.yaw > 180 )
+    yaw_pid.setpoint = substate.imu.yaw - 360;
+  else
+    yaw_pid.setpoint = substate.imu.yaw;
 
 	//Set depth setpoint to current depth
-	depth_pid.setpoint = ms5837.depth;
+	depth_pid.setpoint = ms5837.depth + 0.3;
 
 	while(substate.mode!=STOPPED)
 	{
 		// read IMU values from fifo file
 		substate.imu = read_imu_fifo();
 		//read depth from pressure sensor
-		ms5837.depth = read_pressure_fifo();
+		ms5837 = read_pressure_fifo();
 
 		// Only tell motors to run if we are RUNNING
     if( substate.mode == RUNNING)
     {
+			std::cout << std::endl;
       // Print yaw
-	  printf("Yaw:%5.0f  ", substate.imu.yaw);
-      printf("Yaw setpoint:%5.0f  ", yaw_pid.setpoint);
+	    printf("Yaw:%5.0f  ", substate.imu.yaw);
+      printf("Yaw setpoint:%5.0f\n", yaw_pid.setpoint);
+
+      // Print depth
+      printf("Depth:%5.2f  ",ms5837.depth);
+      printf("Depth setpoint:%5.2f\n",depth_pid.setpoint);
 
       //calculate yaw controller output
       motorpercent = marchPID(yaw_pid, substate.imu.yaw);
 
       //calculate depth controller output
       depthpercent = marchPID(depth_pid, ms5837.depth);
-      
+
       // Set port motor
       portmotorspeed = set_motor(0, basespeed + motorpercent);
 
@@ -302,17 +310,19 @@ void *navigation_thread(void* arg)
 
       // Print motor speeds
       printf("Port Output:%5.2f  ", portmotorspeed);
-      printf("Star Output:%5.2f", starmotorspeed);
-      printf("Vertical Output: %5.2f", vertmotorspeed);
+      printf("Star Output:%5.2f  ", starmotorspeed);
+      printf("Vert Output: %5.2f\n", vertmotorspeed);
 		} // end if RUNNING
 		else if( substate.mode == PAUSED)
 		{
 		  // Stop horizontal motors
 		  set_motor(0, 0);
 		  set_motor(1, 0);
+		  set_motor(2, 0);
 
 		  // Wipe integral error
 		  yaw_pid.ierr = 0;
+			depth_pid.ierr = 0;
 
 		  // Sleep a while (we're not doing anything anyways)
 		  auv_msleep(100);
@@ -342,6 +352,10 @@ void *safety_thread(void* arg)
 {
 	printf("Safety Thread Started\n");
 
+	// open a log to record reasons for shutting down
+	std::ifstream logFile;
+	logFile.open("safety.log");
+
 	// Leak detection pins
 	pinMode(LEAKPIN, INPUT);					// set LEAKPIN as an INPUT
 	pinMode(LEAKPOWERPIN, OUTPUT);		// set as output to provide Vcc
@@ -353,26 +367,31 @@ void *safety_thread(void* arg)
 		if( ms5837.depth > STOP_DEPTH )
 		{
 			substate.mode = STOPPED;
+			//logFile << "Shut down due to max depth being reached\n";
+			//logFile << "Stop depth: STOP_DEPTH\n";
+			//logFile << "Current depth: " << std::to_string(ms5837.depth) << "\n";
 			printf("\nWe're too deep! Shutting down...\n");
 			continue;
 		}
-
 		// Check battery compartment temperature
-		if( read_temp_fifo() > STOP_TEMP )
+		float _temp = read_temp_fifo();
+		if( _temp > STOP_TEMP )
 		{
 			substate.mode = STOPPED;
-			printf("\nIt's too hot! Shutting down...\n");
+			//logFile << "Shut down due to max battery temp being reached\n";
+			//logFile << "Stop temp: STOP_TEMP\n";
+			//logFile << "Current temp: " << std::to_string(_temp) << "\n";
+			printf("\nMax battery temp reached: ( %5.2f C)! Shutting down...\n",_temp);
 			continue;
 		}
 
-		// check pi cpu temp
-		float cpu_temp;
-		std::ifstream pFile;
-		pFile.open("/sys/class/thermal/thermal_zone0/temp");
-		pFile >> cpu_temp;
-		pFile.close();
-
-		if (cpu_temp > 80000) {
+		// check pi cpu tem
+		// temp is multiplied by 1000 in raspbian OS
+		float _cpu_temp = read_cpu_temp();
+		if (_cpu_temp > 80000) {
+			//logFile << "Shut down due to max cpu temp being reached\n";
+			//logFile << "Stop temp: 80 C\n";
+			//logFile << "Current temp: " << std::to_string(_cpu_temp) << "\n";
 			printf("CPU is above 80 C. Shutting down...\n");
 			substate.mode = STOPPED;
 		}
@@ -380,6 +399,7 @@ void *safety_thread(void* arg)
 		if( digitalRead(LEAKPIN) == HIGH )
 		{
 			substate.mode = STOPPED;
+			//logFile << "Shut down due to leak\n";
 			printf("\nLEAK DETECTED! Shutting down...\n");
 			continue;
 		}
@@ -390,10 +410,18 @@ void *safety_thread(void* arg)
 			|| (float)fabs(substate.imu.z_acc) > 1.0*GRAVITY )
 		{
 			substate.mode = STOPPED;
+			//logFile << "Shut down due to excessive acceleration (1 g)\n";
+			char accel[100];
+			sprintf(accel, "X Acc: %5.2f  Y Acc: %5.2f  Z Acc: %5.2f\n",
+				substate.imu.x_acc, substate.imu.y_acc, substate.imu.z_acc);
+			//logFile << accel;
 			printf("\nCollision detected. Shutting down...");
 			continue;
 		}
 	}
+	// close log file
+	logFile.close();
+
 	// Exit thread
   pthread_exit(NULL);
 }//*/
@@ -407,13 +435,13 @@ void *safety_thread(void* arg)
  void* userInterface(void* arg)
  {
   // Declare local constant variables
-  float _kp = 0.01, _ki = 0, _kd = 0;
+  float _kp = 0.0003, _ki = 0, _kd = 0;
 
   // Wait a until everything is initialized before starting
   while(substate.mode == INITIALIZING)
   {
     // Waiting...
-    auv_usleep(100000);
+    auv_msleep(100);
   }
 
   // Prompt user for values continuously until the program exits
@@ -448,15 +476,21 @@ void *safety_thread(void* arg)
     yaw_pid.perr = 0;
     yaw_pid.ierr = 0;
     yaw_pid.derr = 0;
+		depth_pid.perr = 0;
+		depth_pid.ierr = 0;
+		depth_pid.derr = 0;		
 
     // Start RUNNING again
     substate.mode = RUNNING;
 
+		// Wait for mode to pause again
+		while (substate.mode == RUNNING) {
+			auv_msleep(100);
+		}
     // Restart timer!
 	  start = time(0);
 
-    // Aaaaaaand, WAIT!
-    auv_usleep(12*1000000);
+    auv_msleep(1000);
   }
 
   // Exit thread

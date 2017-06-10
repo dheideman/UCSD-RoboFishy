@@ -186,15 +186,32 @@ char cmd[100];
 ******************************************************************************/
 float read_temp_fifo(void)
 {
-	float temp;
+	float batt_temp;
 
 	// Read temperature values from temp.fifo
-	char buf[100];
-  std::FILE *fd = fopen("temp.fifo", "r");
-	fgets(buf, 100, fd);
-	fclose(fd);
-	sscanf(buf, "%f", &temp);
+  std::ifstream pFile;
+  pFile.open("temp.fifo");
+  pFile >> batt_temp;
+  pFile.close();
+
+	// Check if batt_temp is some crazy number
+	if (batt_temp > 500) {
+		batt_temp = 0; // set this reading to zero. We'll get it next time.
+	}
 
 	// Return a temperature value
-	return temp;
+	return batt_temp;
+}
+
+/******************************************************************************
+* float read_cpu_temp(void)
+******************************************************************************/
+float read_cpu_temp(void)
+{
+	float cpu_temp;
+	std::ifstream pFile;
+	pFile.open("/sys/class/thermal/thermal_zone0/temp");
+	pFile >> cpu_temp;
+	pFile.close();
+	return cpu_temp;
 }
