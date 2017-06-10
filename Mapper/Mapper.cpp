@@ -365,9 +365,9 @@ void *safety_thread(void* arg)
 		if( ms5837.depth > STOP_DEPTH )
 		{
 			substate.mode = STOPPED;
-			logFile << "Shut down due to max depth being reached\n";
-			logFile << "Stop depth: STOP_DEPTH\n";
-			logFile << "Current depth: " << std::to_string(ms5837.depth) << "\n";
+			//logFile << "Shut down due to max depth being reached\n";
+			//logFile << "Stop depth: STOP_DEPTH\n";
+			//logFile << "Current depth: " << std::to_string(ms5837.depth) << "\n";
 			printf("\nWe're too deep! Shutting down...\n");
 			continue;
 		}
@@ -376,9 +376,9 @@ void *safety_thread(void* arg)
 		if( _temp > STOP_TEMP )
 		{
 			substate.mode = STOPPED;
-			logFile << "Shut down due to max battery temp being reached\n";
-			logFile << "Stop temp: STOP_TEMP\n";
-			logFile << "Current temp: " << std::to_string(_temp) << "\n";
+			//logFile << "Shut down due to max battery temp being reached\n";
+			//logFile << "Stop temp: STOP_TEMP\n";
+			//logFile << "Current temp: " << std::to_string(_temp) << "\n";
 			printf("\nMax battery temp reached: ( %5.2f C)! Shutting down...\n",_temp);
 			continue;
 		}
@@ -387,9 +387,9 @@ void *safety_thread(void* arg)
 		// temp is multiplied by 1000 in raspbian OS
 		float _cpu_temp = read_cpu_temp();
 		if (_cpu_temp > 80000) {
-			logFile << "Shut down due to max cpu temp being reached\n";
-			logFile << "Stop temp: 80 C\n";
-			logFile << "Current temp: " << std::to_string(_cpu_temp) << "\n";
+			//logFile << "Shut down due to max cpu temp being reached\n";
+			//logFile << "Stop temp: 80 C\n";
+			//logFile << "Current temp: " << std::to_string(_cpu_temp) << "\n";
 			printf("CPU is above 80 C. Shutting down...\n");
 			substate.mode = STOPPED;
 		}
@@ -397,7 +397,7 @@ void *safety_thread(void* arg)
 		if( digitalRead(LEAKPIN) == HIGH )
 		{
 			substate.mode = STOPPED;
-			logFile << "Shut down due to leak\n";
+			//logFile << "Shut down due to leak\n";
 			printf("\nLEAK DETECTED! Shutting down...\n");
 			continue;
 		}
@@ -408,11 +408,11 @@ void *safety_thread(void* arg)
 			|| (float)fabs(substate.imu.z_acc) > 1.0*GRAVITY )
 		{
 			substate.mode = STOPPED;
-			logFile << "Shut down due to excessive acceleration (1 g)\n";
+			//logFile << "Shut down due to excessive acceleration (1 g)\n";
 			char accel[100];
 			sprintf(accel, "X Acc: %5.2f  Y Acc: %5.2f  Z Acc: %5.2f\n",
-				substate.imu.x_acc, substate.imu.y_acc, substate.z_acc);
-			logFile << accel;
+				substate.imu.x_acc, substate.imu.y_acc, substate.imu.z_acc);
+			//logFile << accel;
 			printf("\nCollision detected. Shutting down...");
 			continue;
 		}

@@ -101,6 +101,9 @@ imu_t read_imu_fifo(void); 					// read values from bno055
 void start_read_temp(void); 				// start Python background process
 float read_temp_fifo(void);					// read values from ds18b20
 
+// Functions for reading ras pi status
+float read_cpu_temp(void);
+
 // Startup functions
 int initialize_sensors(void);
 
