@@ -212,9 +212,10 @@ void *navigation_thread(void* arg)
 
 	initialize_motors(motor_channels, HERTZ);
 
-	float yaw = 0; 			  //Local variable for if statements
+  float yaw = 0; 			  //Local variable for if statements
   float motorpercent;
   float basespeed = 0.2;
+  float err;
 
   ////////////////////////////////
   // Yaw Control Initialization //
