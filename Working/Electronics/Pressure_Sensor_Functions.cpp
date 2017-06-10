@@ -22,7 +22,7 @@ void start_read_pressure(void)
     printf("\nCreated and cleared pressure.fifo\n");
 
     printf("Starting read_pressure.py, then waiting 3 seconds\n");
-  	char cmd[50];
+  	char cmd[100];
     strcpy(cmd, "nohup python -u read_pressure.py > read_pressure.log 2>&1 < /dev/null & exit");
     system(cmd);
     printf("Started read_pressure.py using system(cmd)\n");
