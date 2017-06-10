@@ -1,5 +1,5 @@
 /******************************************************************************
-* Controls.cpp
+* Controller_Functions.cpp
 *
 * Contains the marchPID() and depth_controller functions
 ******************************************************************************/
