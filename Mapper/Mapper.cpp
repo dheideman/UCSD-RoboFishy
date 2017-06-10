@@ -283,20 +283,16 @@ void *navigation_thread(void* arg)
 
       //calculate yaw controller output
       motorpercent = marchPID(yaw_pid, yaw);
+      
+      // Set port motor
+      portmotorspeed = set_motor(0, basespeed + motorpercent);
 
-      // Set port and starboard
-      portmotorspeed = basespeed + motorpercent;
-      starmotorspeed = basespeed - motorpercent;
+      // Set starboard motor
+      starmotorspeed = set_motor(1, basespeed - motorpercent);
 
       // Print motor speeds
       printf("Port Output:%5.2f  ", portmotorspeed);
       printf("Star Output:%5.2f\n", starmotorspeed);
-
-      // Set port motor
-      set_motor(0, portmotorspeed);
-
-      // Set starboard motor
-      set_motor(1, starmotorspeed);
 
 		} // end if RUNNING
 		else if( substate.mode == PAUSED)
