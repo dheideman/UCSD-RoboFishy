@@ -420,8 +420,12 @@ PI_THREAD (logging_thread)
   // Declare local constant variables
   float _kp, _ki, _kd;
   
-  // Wait a few seconds to start up
-  auv_usleep(8000000);
+  // Wait a until everything is initialized before starting
+  while(substate.mode == INITIALIZING)
+  {
+    // Waiting...
+    auv_usleep(100000);
+  }
   
   // Prompt user for values continuously until the program exits
   while(substate.mode != STOPPED)
