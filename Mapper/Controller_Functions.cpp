@@ -105,5 +105,5 @@ int set_motor(int motornum, float percent)
   printf("Set motor %d to %d \n", motornum, motoroutput);
   #endif
 
-	return 1;
+	return percent;
 }
