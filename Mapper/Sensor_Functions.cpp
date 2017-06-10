@@ -194,6 +194,11 @@ float read_temp_fifo(void)
   pFile >> batt_temp;
   pFile.close();
 
+	// Check if batt_temp is some crazy number
+	if (batt_temp > 500) {
+		batt_temp = 0; // set this reading to zero. We'll get it next time.
+	}
+
 	// Return a temperature value
 	return batt_temp;
 }
