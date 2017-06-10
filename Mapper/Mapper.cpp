@@ -60,6 +60,7 @@
 void *navigation_thread(void* arg);
 void *depth_thread(void* arg);
 void *safety_thread(void* arg);
+void *userInterface(void* arg);
 
 
 /******************************************************************************
@@ -115,7 +116,7 @@ int main()
 	initializeTAttr();
 
 	// Thread handles
-	//pthread_t navigationThread;
+	pthread_t navigationThread;
 	pthread_t depthThread;
 	//pthread_t safetyThread;
 	//pthread_t disarmlaserThread;
@@ -126,7 +127,7 @@ int main()
 	//pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
 	//pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 	//pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
-	//pthread_create (&navigationThread, &tattrmed, navigation_thread, NULL);
+	pthread_create (&navigationThread, &tattrmed, navigation_thread, NULL);
 	pthread_create (&uiThread, &tattrmed, userInterface, NULL);
 
   // Destroy the thread attributes
@@ -440,20 +441,20 @@ PI_THREAD (logging_thread)
     
     // Prompt for kd
     std::cout << "Kd: ";
-    std::cin >> _kp;
+    std::cin >> _kd;
     
     // Give a newline
     std::cout << std::endl;
     
     // Reset gain values
     yaw_pid.kp = _kp;
-    yaw_pid.kd = _ki;
-    yaw_pid.ki = _kd;
+    yaw_pid.ki = _ki;
+    yaw_pid.kd = _kd;
     
     // Clear errors
-    yaw_pid.derr = 0;
-    yaw_pid.ierr = 0;
     yaw_pid.perr = 0;
+    yaw_pid.ierr = 0;
+    yaw_pid.derr = 0;
     
     // Start RUNNING again
     substate.mode = RUNNING;
