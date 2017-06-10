@@ -89,7 +89,8 @@ int motor_channels[] = {CHANNEL_1, CHANNEL_2, CHANNEL_3};
 float depth = 0;
 
 // setmotor intialization
-float motor_percent = 0;
+float portmotorspeed = 0;
+float starmotorspeed = 0;
 
 // Start time for stop timer
 time_t start;
@@ -100,6 +101,9 @@ time_t start;
 
 int main()
 {
+	// capture ctrl+c and exit
+	signal(SIGINT, ctrl_c);
+
 	// Set up RasPi GPIO pins through wiringPi
 	wiringPiSetupGpio();
 
@@ -126,7 +130,7 @@ int main()
 	// Create threads using modified attributes
 	//pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
 	//pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
-	//pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
+	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 	pthread_create (&navigationThread, &tattrmed, navigation_thread, NULL);
 	pthread_create (&uiThread, &tattrmed, userInterface, NULL);
 
@@ -134,7 +138,7 @@ int main()
  	destroyTAttr();
 
   printf("Threads started\n");
-  
+
 	// Start timer!
 	start = time(0);
 
@@ -166,28 +170,31 @@ void *depth_thread(void* arg)
 
 	while( substate.mode != STOPPED )
 	{
+	  // Read pressure values
 		ms5837 = read_pressure_fifo();
-
-		printf("\nCurrent Depth:\t %.3f m, Current water temp:\t %.3f C\n", ms5837.depth, ms5837.water_temp);
-
-		printf("Current battery temp:\t %.2f\n", read_temp_fifo());
-
+		
 		// read IMU values from fifo file
 		substate.imu = read_imu_fifo();
 
-		// Write IMU data
-		printf("\nYaw: %5.2f Roll: %5.2f Pitch: %5.2f p: %5.2f q: %5.2f r: %5.2f \nSys: %i Gyro: "
-			"%i Accel: %i Mag: %i X_acc: %f Y_acc: %f Z_acc: %f\n ",
-			 substate.imu.yaw,	substate.imu.roll,	substate.imu.pitch,
-			 substate.imu.p, 		substate.imu.q,			substate.imu.r,
-			 substate.imu.sys,	substate.imu.gyro,	substate.imu.accel,
-			 substate.imu.mag,	substate.imu.x_acc,	substate.imu.y_acc,
-			 substate.imu.z_acc);
+    // Only print while RUNNING
+    if(substate.mode == RUNNING)
+    {
+      printf("\nCurrent Depth:\t %.3f m, Current water temp:\t %.3f C\n",
+              ms5837.depth, ms5837.water_temp);
 
+      printf("Current battery temp:\t %.2f\n", read_temp_fifo());
+
+      // Write IMU data
+      printf("\nYaw: %5.2f Roll: %5.2f Pitch: %5.2f p: %5.2f q: %5.2f r: %5.2f \nSys: %i Gyro: "
+        "%i Accel: %i Mag: %i X_acc: %f Y_acc: %f Z_acc: %f\n ",
+         substate.imu.yaw,	substate.imu.roll,	substate.imu.pitch,
+         substate.imu.p, 		substate.imu.q,			substate.imu.r,
+         substate.imu.sys,	substate.imu.gyro,	substate.imu.accel,
+         substate.imu.mag,	substate.imu.x_acc,	substate.imu.y_acc,
+         substate.imu.z_acc);
+    }
 		auv_usleep(1000000);
-	 	//printf("\nYawPID_perr: %f Motor Percent: %f ", yaw_pid.perr, motor_percent);
 	}
-
 	pthread_exit(NULL);
 }//*/
 
@@ -203,11 +210,13 @@ void *navigation_thread(void* arg)
 	initialize_motors(motor_channels, HERTZ);
 
 	float yaw = 0; 			  //Local variable for if statements
-
+  float motorpercent;
+  float basespeed = 0.2;
+  
   ////////////////////////////////
   // Yaw Control Initialization //
   ////////////////////////////////
-	yaw_pid.old 			= 0;	 	// Initialize old imu data
+	yaw_pid.old 		= 0;	 	// Initialize old imu data
 	yaw_pid.setpoint 	= 0;		// Initialize setpoint
 
 	yaw_pid.derr = 0;
@@ -226,7 +235,7 @@ void *navigation_thread(void* arg)
   //////////////////////////////////
   // Depth Control Initialization //
   //////////////////////////////////
-	depth_pid.setpoint	= 2;		// Range-from-bottom setpoint (meters)
+	depth_pid.setpoint			= 2;		// Range-from-bottom setpoint (meters)
 	depth_pid.old				= 0;		// Initialize old depth
 	depth_pid.dt				= DT;		// Initialize depth controller time step
 
@@ -254,18 +263,23 @@ void *navigation_thread(void* arg)
 		{
 			yaw = substate.imu.yaw - 360;
 		}
-    
+
     // Only tell motors to run if we are RUNNING
     if( substate.mode == RUNNING )
     {
+
       // Calculate yaw controller output
-      motor_percent = marchPID(yaw_pid, yaw);
+      motorpercent = marchPID(yaw_pid, yaw);
+      
+      // Set port and starboard
+      portmotorspeed = basespeed + motorpercent;
+      starmotorspeed = basespeed - motorpercent;
 
       // Set port motor
-      set_motor(0, motor_percent);
+      set_motor(0, portmotorspeed);
 
       // Set starboard motor
-      set_motor(1, motor_percent);
+      set_motor(1, starmotorspeed);
 		  
 		} // End if RUNNING 
 		else if( substate.mode == PAUSED )
@@ -273,13 +287,13 @@ void *navigation_thread(void* arg)
 		  // Stop horizontal motors
 		  set_motor(0, 0);
 		  set_motor(1, 0);
-		  
+
 		  // Wipe integral error
 		  yaw_pid.ierr = 0;
-		  
+
 		  // Sleep a while (we're not doing anything anyways)
 		  auv_usleep(100000);
-		  
+
 		} // end if PAUSED
 
 		// Sleep for 5 ms
@@ -420,49 +434,52 @@ PI_THREAD (logging_thread)
  {
   // Declare local constant variables
   float _kp, _ki, _kd;
-  
+
   // Wait a until everything is initialized before starting
   while(substate.mode == INITIALIZING)
   {
     // Waiting...
     auv_usleep(100000);
   }
-  
+
   // Prompt user for values continuously until the program exits
   while(substate.mode != STOPPED)
-  { 
+  {
     // Prompt for kp
     std::cout << "Kp: ";
     std::cin >> _kp;
-    
+
     // Prompt for ki
     std::cout << "Ki: ";
     std::cin >> _ki;
-    
+
     // Prompt for kd
     std::cout << "Kd: ";
     std::cin >> _kd;
-    
+
     // Give a newline
     std::cout << std::endl;
-    
+
     // Reset gain values
     yaw_pid.kp = _kp;
     yaw_pid.ki = _ki;
     yaw_pid.kd = _kd;
-    
+
     // Clear errors
     yaw_pid.perr = 0;
     yaw_pid.ierr = 0;
     yaw_pid.derr = 0;
-    
+
     // Start RUNNING again
     substate.mode = RUNNING;
-    
+
     // Restart timer!
 	  start = time(0);
+    
+    // Aaaaaaand, WAIT!
+    auv_usleep(10*1000000);
   }
-  
+
   // Exit thread
   pthread_exit(NULL);
  }

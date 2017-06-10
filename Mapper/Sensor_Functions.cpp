@@ -26,12 +26,11 @@ int initialize_sensors(void)
 	printf("Temp is being read\n\n");
 	auv_usleep(100000);
 
-	signal(SIGINT, ctrl_c);		// capture ctrl+c and exit
 	return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-//															IMU FUNCTIONS
+//															IMU Functions
 ///////////////////////////////////////////////////////////////////////////////
 /******************************************************************************
  * void start_read_imu
@@ -42,7 +41,7 @@ void start_read_imu(void)
 {
   // Create flag for continuing
   bool success = false;
-  while (!success)
+  while (!success && (substate.mode!=STOPPED))
   {
     // clear fifo file //
     std::FILE* fd = fopen("imu.fifo","w");
@@ -98,7 +97,7 @@ imu_t read_imu_fifo(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-//															Pressure FUNCTIONS
+//															Pressure Functions
 ///////////////////////////////////////////////////////////////////////////////
 
 /******************************************************************************
@@ -110,7 +109,7 @@ void start_read_pressure(void)
 {
   // Create flag for continuing
   bool success = false;
-  while (!success)
+  while (!success && (substate.mode!=STOPPED))
   {
     // clear fifo file //
     std::FILE* fd = fopen("pressure.fifo","w");
@@ -160,7 +159,7 @@ ms5837_t read_pressure_fifo(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-//															Temp FUNCTIONS
+//															Temp Functions
 ///////////////////////////////////////////////////////////////////////////////
 
 /******************************************************************************
