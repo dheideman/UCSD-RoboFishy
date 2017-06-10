@@ -84,7 +84,7 @@ extern int motor_channels[];
 // Functions for setting motor PWM with PCA9685
 int initialize_motors(int channels[3], float freq);
 int saturate_number(float* val, float min, float max);
-int set_motor(int motor_num, float speed);
+float set_motor(int motor_num, float speed);
 
 // Yaw controller declaration function
 float marchPID(pid_data_t controller, float input);

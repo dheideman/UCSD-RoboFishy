@@ -85,12 +85,12 @@ int initialize_motors(int channels[3], float freq)
 }
 
 /******************************************************************************
- * int set_motor(int motornum, float percent)
+ * float set_motor(int motornum, float percent)
  *
  * Takes in a value from -1 to 1 (-100 to +100%) and sets the motor
  * outputs accordingly
 ******************************************************************************/
-int set_motor(int motornum, float percent)
+float set_motor(int motornum, float percent)
 {
   // Define characteristics of PWM pulse, microseconds
 	float amplitude  = PWM_HIGH_LIMIT - PWM_ZERO_VALUE;
@@ -113,5 +113,5 @@ int set_motor(int motornum, float percent)
   printf("Set motor %d to %d \n", motornum, motoroutput);
   #endif
 
-	return 1;
+	return percent;
 }
