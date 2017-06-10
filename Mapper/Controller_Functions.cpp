@@ -12,49 +12,49 @@
 * +100%) that the port and starboard thrusters should run at
 ******************************************************************************/
 
-float marchPID(pid_data_t PID, float input)
+float marchPID(pid_data_t pid, float input)
 {
-	float err = input - PID.setpoint;
+	float err = input - pid.setpoint;
 
-	if(PID.period > 0 && err > PID.period/2)
+	if(pid.period > 0 && err > pid.period/2)
 	{
-		err -= period;
+		err -= pid.period;
 	}
 
 	// Calculating errors
-	PID.perr = err;
-	PID.derr = (err - PID.old)/(PID.dt);
-	PID.ierr += PID.dt * (err);
+	pid.perr = err;
+	pid.derr = (err - pid.old)/(pid.dt);
+	pid.ierr += pid.dt * (err);
 
 	//Check for integrator saturation
-	if(PID.ierr > PID.isat)
+	if(pid.ierr > pid.isat)
 	{
-		PID.ierr = PID.isat;
+		pid.ierr = pid.isat;
 	}
 
-	if(PID.ierr < -PID.isat)
+	if(pid.ierr < -pid.isat)
 	{
-		PID.ierr = - PID.isat;
+		pid.ierr = - pid.isat;
 	}
 	//Calculate motor output
-	PID.output =	 PID.kp * PID.perr
-						+ PID.ki * PID.ierr
-						+ PID.kd * PID.derr;
+	pid.output =	 pid.kp * pid.perr
+						+ pid.ki * pid.ierr
+						+ pid.kd * pid.derr;
 	//Check for output saturation
-	if(PID.output > PID.sat)
+	if(pid.output > pid.sat)
 	{
-		PID.output = PID.sat;
+		pid.output = pid.sat;
 	}
 
 
-	if(PID.output < -PID.sat)
+	if(pid.output < -pid.sat)
 	{
-		PID.output = -PID.sat;
+		pid.output = -pid.sat;
 	}
 	// set current input to be the old input //
-	PID.old = err;
+	pid.old = err;
 
-	return PID.output;
+	return pid.output;
 }
 
 
