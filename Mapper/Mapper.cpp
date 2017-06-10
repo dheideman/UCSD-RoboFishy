@@ -21,7 +21,7 @@
 ******************************************************************************/
 
 // Yaw Controller
-#define KP_YAW 0.01
+#define KP_YAW 0.01 
 #define KI_YAW 0
 #define KD_YAW 1
 
@@ -110,7 +110,7 @@ int main()
 	}
 	printf("\nAll components are initialized\n");
 	substate.mode = INITIALIZING;
-  substate.laserarmed = ARMED;
+ 	substate.laserarmed = ARMED;
 
 	printf("Starting Threads\n");
 	initializeTAttr();
@@ -130,7 +130,7 @@ int main()
 	pthread_create (&navigationThread, &tattrmed, navigation_thread, NULL);
 	pthread_create (&uiThread, &tattrmed, userInterface, NULL);
 
-  // Destroy the thread attributes
+  	// Destroy the thread attributes
  	destroyTAttr();
 
   printf("Threads started\n");
@@ -252,7 +252,7 @@ void *navigation_thread(void* arg)
 		}
 		else // AUV pointed left
 		{
-			yaw =(substate.imu.yaw-360);
+			yaw = substate.imu.yaw - 360;
 		}
     
     // Only tell motors to run if we are RUNNING
