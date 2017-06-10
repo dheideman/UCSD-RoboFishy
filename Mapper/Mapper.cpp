@@ -216,7 +216,7 @@ void *navigation_thread(void* arg)
   ////////////////////////////////
   // Yaw Control Initialization //
   ////////////////////////////////
-	yaw_pid.old 			= 0;	 	// Initialize old imu data
+	yaw_pid.old 		= 0;	 	// Initialize old imu data
 	yaw_pid.setpoint 	= 0;		// Initialize setpoint
 
 	yaw_pid.derr = 0;
@@ -235,7 +235,7 @@ void *navigation_thread(void* arg)
   //////////////////////////////////
   // Depth Control Initialization //
   //////////////////////////////////
-	depth_pid.setpoint	= 2;		// Range-from-bottom setpoint (meters)
+	depth_pid.setpoint			= 2;		// Range-from-bottom setpoint (meters)
 	depth_pid.old				= 0;		// Initialize old depth
 	depth_pid.dt				= DT;		// Initialize depth controller time step
 
