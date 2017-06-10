@@ -474,6 +474,9 @@ PI_THREAD (logging_thread)
 
     // Restart timer!
 	  start = time(0);
+    
+    // Aaaaaaand, WAIT!
+    auv_usleep(10*1000000);
   }
 
   // Exit thread
