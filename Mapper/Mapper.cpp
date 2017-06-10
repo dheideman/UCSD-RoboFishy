@@ -100,7 +100,7 @@ float starmotorspeed = 0;
 time_t start;
 
 // Setpoint array
-float setpoints[0, 90, 180, -90, 0];
+float setpoints = {0, 90, 180, -90, 0};
 int   nsetpoints = 5;
 
 /******************************************************************************
