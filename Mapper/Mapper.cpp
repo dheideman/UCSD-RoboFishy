@@ -74,7 +74,7 @@ void *userInterface(void* arg);
 ms5837_t ms5837;
 
 // Holds the latest temperature value from the temperature temperature sensor
-float temperature;
+float batt_temp;
 
 // Holds the constants and latest errors of the yaw pid controller
 pid_data_t yaw_pid;
@@ -122,14 +122,14 @@ int main()
 	// Thread handles
 	pthread_t navigationThread;
 	pthread_t depthThread;
-	//pthread_t safetyThread;
+	pthread_t safetyThread;
 	//pthread_t disarmlaserThread;
 	pthread_t uiThread;
 
 
 	// Create threads using modified attributes
 	//pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
-	//pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
+	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 	pthread_create (&navigationThread, &tattrmed, navigation_thread, NULL);
 	pthread_create (&uiThread, &tattrmed, userInterface, NULL);
@@ -172,7 +172,7 @@ void *depth_thread(void* arg)
 	{
 	  // Read pressure values
 		ms5837 = read_pressure_fifo();
-		
+
 		// read IMU values from fifo file
 		substate.imu = read_imu_fifo();
 
@@ -212,7 +212,7 @@ void *navigation_thread(void* arg)
 	float yaw = 0; 			  //Local variable for if statements
   float motorpercent;
   float basespeed = 0.2;
-  
+
   ////////////////////////////////
   // Yaw Control Initialization //
   ////////////////////////////////
@@ -269,7 +269,7 @@ void *navigation_thread(void* arg)
     {
       //calculate yaw controller output
       motorpercent = marchPID(yaw_pid, yaw);
-      
+
       // Set port and starboard
       portmotorspeed = basespeed + motorpercent;
       starmotorspeed = basespeed - motorpercent;
@@ -279,8 +279,8 @@ void *navigation_thread(void* arg)
 
       // Set starboard motor
       set_motor(1, starmotorspeed);
-		  
-		} // end if RUNNING 
+
+		} // end if RUNNING
 		else if( substate.mode == PAUSED)
 		{
 		  // Stop horizontal motors
@@ -314,114 +314,54 @@ void *navigation_thread(void* arg)
  * Shuts down AUV if vehicle goes belows 10m, temperature gets too high, or
  * water intrusion is detected
  *****************************************************************************/
-/*void *safety_thread(void* arg)
+void *safety_thread(void* arg)
 {
 	printf("Safety Thread Started\n");
-
-	// Set up WiringPi for use // (not sure if actually needed)
-	wiringPiSetup();
 
 	// Leak detection pins
 	pinMode(LEAKPIN, INPUT);					// set LEAKPIN as an INPUT
 	pinMode(LEAKPOWERPIN, OUTPUT);		// set as output to provide Vcc
 	digitalWrite(LEAKPOWERPIN, HIGH);	// write high to provide Vcc
 
-	// Leak checking variables
-	int leakState;	// holds the state (HIGH or LOW) of the LEAKPIN
-
-	// Test if temp sensor reads anything
-	temperature = read_temp_fifo();
-	printf("Temperature: %f degC\n", temperature);
-
 	while( substate.mode != STOPPED )
 	{
 		// Check if depth threshold has been exceeded
-		if( substate.fdepth > DEPTH_STOP )
+		if( ms5837.depth > STOP_DEPTH )
 		{
 			substate.mode = STOPPED;
-			printf("We're too deep! Shutting down...\n");
+			printf("\nWe're too deep! Shutting down...\n");
 			continue;
 		}
-		else
-		{
-			// We're still good
-			substate.mode = RUNNING;
-		}
 
-		// Check temperature
-		// Shut down AUV if housing temperature gets too high
-
-		if( temperature > TEMP_STOP )
+		// Check battery compartment temperature
+		if( read_temp_fifo() > STOP_TEMP )
 		{
 			substate.mode = STOPPED;
-			printf("It's too hot! Shutting down...\n");
+			printf("\nIt's too hot! Shutting down...\n");
 			continue;
 		}
-		else
-		{
-			// We're still good
-			substate.mode = RUNNING;
-		}
-
 
 		// Check for leak
-		leakState = digitalRead(LEAKPIN);	// check the state of LEAKPIN
-		if( leakState == HIGH )
+		if( digitalRead(LEAKPIN) == HIGH )
 		{
 			substate.mode = STOPPED;
-			printf("LEAK DETECTED! Shutting down...\n");
+			printf("\nLEAK DETECTED! Shutting down...\n");
 			continue;
-		}
-		else if (leakState == LOW)
-		{
-			// We're still good
-			substate.mode = RUNNING;
 		}
 
 		// Check IMU accelerometer for collision (1+ g detected)
-		if( (float)fabs(substate.imu.x_acc) > 1.0*GRAVITY
+		if(  (float)fabs(substate.imu.x_acc) > 1.0*GRAVITY
 			|| (float)fabs(substate.imu.y_acc) > 1.0*GRAVITY
 			|| (float)fabs(substate.imu.z_acc) > 1.0*GRAVITY )
 		{
 			substate.mode = STOPPED;
-			printf("Collision detected. Shutting down...");
+			printf("\nCollision detected. Shutting down...");
 			continue;
 		}
-		else
-		{
-			// We're still good
-			substate.mode = RUNNING;
-		}
-
 	}
-    pthread_exit(NULL);
-
+	// Exit thread
+  pthread_exit(NULL);
 }//*/
-
-
-/******************************************************************************
- * Logging Thread
- *
- * Logs the sensor output data into a file
- *****************************************************************************/
-/*
-PI_THREAD (logging_thread)
-{
-	while(substate.mode!=STOPPED){
-		FILE *fd = fopen("log.txt", "a");
-		char buffer[100] = {0};
-		// add logging values to the next line
-		sprintf(buffer, "%f %f %f %f %i %i %i %i %f %f %f %f\n",sstate.roll, sstate.pitch[0], sstate.yaw[0], sstate.depth[0],sstate.x[0],
-		sstate.y[0], sstate.radius[0], setpoint.x - sstate.x[0], sstate.esc_out[0], sstate.esc_out[1], sstate.esc_out[2], sstate.esc_out[3]);
-		fputs(buffer, fd);
-		fclose(fd);
-		//sleep for 100 ms
-
-		usleep(100000);
-	}
-	return 0;
-}
-*/
 
 /******************************************************************************
  * User Interface Thread
@@ -459,7 +399,7 @@ PI_THREAD (logging_thread)
     // Give a newline
     std::cout << std::endl;
 
-    // Reset gain values
+    // Reset gain values to input values
     yaw_pid.kp = _kp;
     yaw_pid.ki = _ki;
     yaw_pid.kd = _kd;
@@ -474,7 +414,7 @@ PI_THREAD (logging_thread)
 
     // Restart timer!
 	  start = time(0);
-    
+
     // Aaaaaaand, WAIT!
     auv_usleep(10*1000000);
   }
