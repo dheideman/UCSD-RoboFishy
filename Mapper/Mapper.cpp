@@ -214,7 +214,7 @@ void *navigation_thread(void* arg)
 
   float yaw = 0; 			  //Local variable for if statements
   float motorpercent;
-  float basespeed = 0.2;
+  float basespeed = 0.1;
   float err;
 
   ////////////////////////////////
@@ -254,13 +254,16 @@ void *navigation_thread(void* arg)
 	depth_pid.isat = INT_SAT;		// Depth controller saturation values
 	depth_pid.sat  = DEPTH_SAT;
 
+	// read IMU values from fifo file
+	substate.imu = read_imu_fifo();
+
+	// Set setpoint to current heading
+	yaw_pid.setpoint = substate.imu.yaw;
+
 	while(substate.mode!=STOPPED)
 	{
 		// read IMU values from fifo file
 		substate.imu = read_imu_fifo();
-
-		// Set setpoint to current heading
-		yaw_pid.setpoint = yaw;
 
 		if (substate.imu.yaw < 180) // AUV pointed right
 		{
@@ -275,7 +278,8 @@ void *navigation_thread(void* arg)
     if( substate.mode == RUNNING)
     {
       // Print yaw
-		  printf("Yaw:\t%f\n", substate.imu.yaw);
+		  printf("Yaw:%5.0f  ", substate.imu.yaw);
+      printf("Yaw setpoint:%5.0f  ", yaw_pid.setpoint);
 
       //calculate yaw controller output
       motorpercent = marchPID(yaw_pid, yaw);
@@ -285,8 +289,8 @@ void *navigation_thread(void* arg)
       starmotorspeed = basespeed - motorpercent;
 
       // Print motor speeds
-      printf("Port Motor:\t%f", portmotorspeed);
-      printf("Star Motor:\t%f", starmotorspeed);
+      printf("Port Output:%5.2f  ", portmotorspeed);
+      printf("Star Output:%5.2f\n", starmotorspeed);
 
       // Set port motor
       set_motor(0, portmotorspeed);
@@ -305,7 +309,7 @@ void *navigation_thread(void* arg)
 		  yaw_pid.ierr = 0;
 
 		  // Sleep a while (we're not doing anything anyways)
-		  auv_usleep(100000);
+		  auv_msleep(100);
 
 		} // end if PAUSED
 
