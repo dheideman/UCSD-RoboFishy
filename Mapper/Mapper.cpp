@@ -482,13 +482,14 @@ void *safety_thread(void* arg)
 
     // Start RUNNING again
     substate.mode = RUNNING;
-
+    
+    // Restart timer!
+	  start = time(0);
+	  
 		// Wait for mode to pause again
 		while (substate.mode == RUNNING) {
 			auv_msleep(100);
 		}
-    // Restart timer!
-	  start = time(0);
 
     auv_msleep(1000);
   }
