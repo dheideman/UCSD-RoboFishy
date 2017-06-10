@@ -281,8 +281,8 @@ void *navigation_thread(void* arg)
       starmotorspeed = basespeed - motorpercent;
       
       // Print motor speeds
-      printf("Port Motor:\t%f",portmotorspeed);
-      printf("Star Motor:\t%f"starmotorspeed);
+      printf("Port Motor:\t%f", portmotorspeed);
+      printf("Star Motor:\t%f", starmotorspeed);
 
       // Set port motor
       set_motor(0, portmotorspeed);
