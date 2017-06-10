@@ -165,24 +165,29 @@ void *depth_thread(void* arg)
 
 	while(substate.mode!=STOPPED)
 	{
+	  // Read pressure values
 		ms5837 = read_pressure_fifo();
-
-		printf("\nCurrent Depth:\t %.3f m, Current water temp:\t %.3f C\n", ms5837.depth, ms5837.water_temp);
-
-		printf("Current battery temp:\t %.2f\n", read_temp_fifo());
-
+		
 		// read IMU values from fifo file
 		substate.imu = read_imu_fifo();
 
-		// Write IMU data
-		printf("\nYaw: %5.2f Roll: %5.2f Pitch: %5.2f p: %5.2f q: %5.2f r: %5.2f \nSys: %i Gyro: "
-			"%i Accel: %i Mag: %i X_acc: %f Y_acc: %f Z_acc: %f\n ",
-			 substate.imu.yaw,	substate.imu.roll,	substate.imu.pitch,
-			 substate.imu.p, 		substate.imu.q,			substate.imu.r,
-			 substate.imu.sys,	substate.imu.gyro,	substate.imu.accel,
-			 substate.imu.mag,	substate.imu.x_acc,	substate.imu.y_acc,
-			 substate.imu.z_acc);
+    // Only print while RUNNING
+    if(substate.mode == RUNNING)
+    {
+      printf("\nCurrent Depth:\t %.3f m, Current water temp:\t %.3f C\n",
+              ms5837.depth, ms5837.water_temp);
 
+      printf("Current battery temp:\t %.2f\n", read_temp_fifo());
+
+      // Write IMU data
+      printf("\nYaw: %5.2f Roll: %5.2f Pitch: %5.2f p: %5.2f q: %5.2f r: %5.2f \nSys: %i Gyro: "
+        "%i Accel: %i Mag: %i X_acc: %f Y_acc: %f Z_acc: %f\n ",
+         substate.imu.yaw,	substate.imu.roll,	substate.imu.pitch,
+         substate.imu.p, 		substate.imu.q,			substate.imu.r,
+         substate.imu.sys,	substate.imu.gyro,	substate.imu.accel,
+         substate.imu.mag,	substate.imu.x_acc,	substate.imu.y_acc,
+         substate.imu.z_acc);
+    }
 		auv_usleep(1000000);
 	 	//printf("\nYawPID_perr: %f Motor Percent: %f ", yaw_pid.perr, motor_percent);
 	}
