@@ -121,7 +121,7 @@ int main()
 
 	// Thread handles
 	pthread_t navigationThread;
-	pthread_t depthThread;
+	//pthread_t depthThread;
 	//pthread_t safetyThread;
 	//pthread_t disarmlaserThread;
 	pthread_t uiThread;
@@ -130,7 +130,7 @@ int main()
 	// Create threads using modified attributes
 	//pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
 	//pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
-	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
+	//pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 	pthread_create (&navigationThread, &tattrmed, navigation_thread, NULL);
 	pthread_create (&uiThread, &tattrmed, userInterface, NULL);
 
@@ -270,12 +270,19 @@ void *navigation_thread(void* arg)
     // Only tell motors to run if we are RUNNING
     if( substate.mode == RUNNING)
     {
+      // Print yaw
+		  printf("Yaw:\t%f\n",substate.imu.yaw);
+		  
       //calculate yaw controller output
       motorpercent = marchPID(yaw_pid, yaw);
       
       // Set port and starboard
       portmotorspeed = basespeed + motorpercent;
       starmotorspeed = basespeed - motorpercent;
+      
+      // Print motor speeds
+      printf("Port Motor:\t%f",portmotorspeed);
+      printf("Star Motor:\t%f"starmotorspeed);
 
       // Set port motor
       set_motor(0, portmotorspeed);
