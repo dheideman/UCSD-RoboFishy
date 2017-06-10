@@ -26,17 +26,24 @@ int main()
 	{
     int motornum = 0, motoroutput;
 
-//    std::cout << "Input motor number: ";
-//    std::cin  >> motornum;
+    //std::cout << "Input motor number: ";
+    //std::cin  >> motornum;
     
     std::cout << "Input motor output: ";
     std::cin  >> motoroutput;
 
     // Spin those motors
-    pwmWrite(motornum + PIN_BASE, motoroutput);
+    //pwmWrite(motornum + PIN_BASE, motoroutput);
+    pwmWrite(PIN_BASE + 0, motoroutput);
+    pwmWrite(PIN_BASE + 1, motoroutput);
 
     std::cout << "Set Motor " << motornum << " to " << motoroutput << std::endl << std::endl;
 	}
+  
+  // Shut off motors
+  pwmWrite(PIN_BASE + 0, 2647);
+  pwmWrite(PIN_BASE + 1, 2647);
+  pwmWrite(PIN_BASE + 2, 2647);
 
 	return 0;
 }
