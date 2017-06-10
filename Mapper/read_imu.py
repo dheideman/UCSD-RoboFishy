@@ -91,7 +91,8 @@ while True:
   x_acc,y_acc,z_acc = bno.read_linear_acceleration()
 
   _string = "%f %f %f %f %f %f %i %i %i %i %f %f %f" %(heading, roll, pitch, p, q, r, sys, gyro, accel, mag, x_acc, y_acc, z_acc)
-  # fifo = open("imu.fifo", "w")
+
+  # open fifo and write IMU data to it
   fifo = open("imu.fifo", "w")
   fifo.write(_string)
   fifo.close()
@@ -119,4 +120,4 @@ while True:
   #x,y,z = bno.read_gravity()
 
   # Sleep until the next reading.
-  time.sleep(0.5)
+  time.sleep(0.1)

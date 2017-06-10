@@ -1,4 +1,4 @@
-# project name 
+# project name
 # change to match your main c file
 TARGET = Mapper
 
@@ -9,7 +9,7 @@ CFLAGS	:= -c -Wall -g -I/usr/include/python2.7 `pkg-config --cflags opencv`
 LFLAGS	:= -lwiringPi -lpython2.7 -I/usr/include/python2.7 -lwiringPiPca9685 -lpthread
 
 # Module Selection (add required modules to MODULES)
-MOD_PATH := ../../Modules
+MOD_PATH := ../Modules
 MODULES := Core V4L2Control RangeFinder Camera
 
 # Local Source Variables
@@ -43,7 +43,7 @@ echo:
 $(OBJECTS): %.o : %.cpp $(INCLUDES)
 	@$(TOUCH) $(CC) $(CFLAGS) -c $< -o $(@)
 	@echo "Compiled "$<" successfully!"
-	
+
 # module compiling command
 $(MOD_OBJECTS): %.o : %.cpp $(MOD_INCLUDES)
 	@$(TOUCH) $(CC) $(CFLAGS) -c $< -o $(@)
@@ -60,7 +60,7 @@ install: $(all)
 	@echo
 	@echo "Project "$(TARGET)" installed to $(INSTALL_DIR)"
 	@echo
-	
+
 clean:
 	@$(RM) $(OBJECTS)
 	@$(RM) $(TARGET)
