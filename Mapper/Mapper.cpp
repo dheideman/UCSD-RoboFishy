@@ -139,10 +139,10 @@ int main()
 	start = time(0);
 
 	// Run main while loop, wait until it's time to stop
-	while(substate.mode != STOPPED)
+	while( substate.mode != STOPPED )
 	{
 		// Check if we've passed the stop time
-		if(difftime(time(0),start) > STOP_TIME)
+		if( difftime(time(0),start) > STOP_TIME )
 			substate.mode = PAUSED;
 
 		// Sleep a little
@@ -164,7 +164,7 @@ void *depth_thread(void* arg)
 {
 	printf("Depth Thread Started\n");
 
-	while(substate.mode!=STOPPED)
+	while( substate.mode != STOPPED )
 	{
 		ms5837 = read_pressure_fifo();
 
@@ -241,12 +241,12 @@ void *navigation_thread(void* arg)
 	depth_pid.isat = INT_SAT;		// Depth controller saturation values
 	depth_pid.sat  = DEPTH_SAT;
 
-	while(substate.mode!=STOPPED)
+	while( substate.mode != STOPPED )
 	{
 		// read IMU values from fifo file
 		substate.imu = read_imu_fifo();
 
-	  if (substate.imu.yaw < 180) // AUV pointed right
+	  if ( substate.imu.yaw < 180 ) // AUV pointed right
 		{
 			yaw = substate.imu.yaw;
 		}
@@ -256,9 +256,9 @@ void *navigation_thread(void* arg)
 		}
     
     // Only tell motors to run if we are RUNNING
-    if( substate.mode == RUNNING)
+    if( substate.mode == RUNNING )
     {
-      //calculate yaw controller output
+      // Calculate yaw controller output
       motor_percent = marchPID(yaw_pid, yaw);
 
       // Set port motor
@@ -267,8 +267,8 @@ void *navigation_thread(void* arg)
       // Set starboard motor
       set_motor(1, motor_percent);
 		  
-		} // end if RUNNING 
-		else if( substate.mode == PAUSED)
+		} // End if RUNNING 
+		else if( substate.mode == PAUSED )
 		{
 		  // Stop horizontal motors
 		  set_motor(0, 0);
