@@ -141,6 +141,9 @@ int main()
 
 	// Start timer!
 	start = time(0);
+	
+	// We're ready to run.
+	substate.mode = RUNNING;
 
 	// Run main while loop, wait until it's time to stop
 	while(substate.mode != STOPPED)
@@ -476,7 +479,7 @@ PI_THREAD (logging_thread)
 	  start = time(0);
     
     // Aaaaaaand, WAIT!
-    auv_usleep(10*1000000);
+    auv_usleep(12*1000000);
   }
 
   // Exit thread
