@@ -19,7 +19,22 @@ int cleanup_auv()
 	printf("\nExiting Cleanly\n");
 
 	// Let final threads clean up
-	usleep(500000);
+	auv_usleep(1000000);
+
+  // kill python scripts
+  char imu_cmd[100];
+  strcpy(imu_cmd, "ps -ef | grep read_imu.py | grep -v grep | awk '{print $2}' | xargs kill");
+  system(imu_cmd);
+  auv_usleep(100000);
+
+	char temp_cmd[100];
+  strcpy(temp_cmd, "ps -ef | grep read_temp.py | grep -v grep | awk '{print $2}' | xargs kill");
+  system(temp_cmd);
+  auv_usleep(100000);
+
+	char pres_cmd[100];
+  strcpy(pres_cmd, "ps -ef | grep read_pressure.py | grep -v grep | awk '{print $2}' | xargs kill");
+  system(pres_cmd);
 
 	// Delete fifo files
 	remove("imu.fifo");
@@ -28,21 +43,14 @@ int cleanup_auv()
 	printf("temp.fifo deleted successfully\n");
 	remove("pressure.fifo");
 	printf("pressure.fifo deleted successfully\n");
-
+	printf("\n");
+	
 	// Set all motors to zero
-	int channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3};
-	int i;
-	for( i=0; i<3; i++ )
+	for( int i=0; i<3; i++ )
 	{
 		// Shut off motors
-		pwmWrite (PIN_BASE+channels[i], MOTOR_0);
-
-		// Sleep...just cuz
-		usleep(10000);
+		set_motor(i, 0);
+		printf("Motor %i shut off\n", i);
 	}
-
-	// Shutdown Python interpreter
-	Py_Finalize();
-
 	return 0;
 }
