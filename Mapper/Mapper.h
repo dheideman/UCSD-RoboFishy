@@ -32,8 +32,8 @@
 #define PWM_ZERO_VALUE 2647   // PWM value
 
 // Protection Constants
-#define DEPTH_STOP 2000	// threshold depth (mm)
-#define TEMP_STOP 50	// deg C
+#define STOP_DEPTH 2	// threshold depth (m)
+#define STOP_TEMP 50	// deg C
 
 
 /***************************************************************************
@@ -60,29 +60,12 @@ typedef struct pid_data_t
 	float isat;
 }pid_data_t;
 
-// Struct for setpoints
-/*typedef struct setpoint_t
-{
-	float yaw;				// yaw angle in (rad)
-	float yaw_rate;			// yaw rate (rad/s)
-	float depth;			// z component in fixed coordinate system
-	float speed;			// speed setpoint
-}setpoint_t;*/
-
-
-
 /***************************************************************************
 * Global Variables
 ***************************************************************************/
 
-// Holds the setpoint data structure with current setpoints
-//extern setpoint_t setpoint;
-
 // Holds the latest pressure value from the MS5837 pressure sensor
 extern ms5837_t ms5837;
-
-// Holds the latest temperature value from the DS18B20 temperature sensor
-extern float ds18b20;
 
 // Holds the constants and latest errors of the yaw pid controller
 extern pid_data_t yaw_pid;
