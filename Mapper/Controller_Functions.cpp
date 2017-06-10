@@ -12,41 +12,41 @@
 * +100%) that the port and starboard thrusters should run at
 ******************************************************************************/
 
-float marchPID(pid_data_t controller, float input)
+float marchPID(pid_data_t PID, float input)
 {
 	// Calculating errors
-	controller.perr = input - controller.setpoint;
-	controller.derr = (input - controller.old)/(controller.dt);
-	controller.ierr += controller.dt * (input - controller.setpoint);
+	PID.perr = input - PID.setpoint;
+	PID.derr = (input - PID.old)/(PID.dt);
+	PID.ierr += PID.dt * (input - PID.setpoint);
 
-	if(controller.ierr > controller.isat)
+	if(PID.ierr > PID.isat)
 	{
-		controller.ierr = controller.isat;
+		PID.ierr = PID.isat;
 	}
 
-	if(controller.ierr < -controller.isat)
+	if(PID.ierr < -PID.isat)
 	{
-		controller.ierr = - controller.isat;
+		PID.ierr = - PID.isat;
 	}
 
-	controller.output =   controller.kp * controller.perr
-						+ controller.ki * controller.ierr
-						+ controller.kd * controller.derr;
+	PID.output =   PID.kp * PID.perr
+						+ PID.ki * PID.ierr
+						+ PID.kd * PID.derr;
 
-	if(controller.output > controller.sat)
+	if(PID.output > PID.sat)
 	{
-		controller.output = controller.sat;
+		PID.output = PID.sat;
 	}
 
 
-	if(controller.output < -controller.sat)
+	if(PID.output < -PID.sat)
 	{
-		controller.output = -controller.sat;
+		PID.output = -PID.sat;
 	}
 	// set current input to be the old input //
-	controller.old = input;
+	PID.old = input;
 
-	return controller.output;
+	return PID.output;
 }
 
 
