@@ -144,6 +144,7 @@ int initializeSubImagesLock(sub_images_t *_subimages)
  ******************************************************************************/
 void *writeImages(void*)
 {
+  int i = 0;
   // Loop quickly to pick up images as soon as they are taken
   while(substate.mode != STOPPED)
   {
@@ -162,6 +163,7 @@ void *writeImages(void*)
 
       // Write image to file
       imwrite(filename.str(), subimages.brightframe);
+      i++;
     }
     // close csv file
     datafile.close();
