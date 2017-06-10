@@ -26,8 +26,8 @@
 #define KD_YAW 1
 
 // Depth Controller
-#define KP_DEPTH 0
-#define KI_DEPTH 0
+#define KP_DEPTH 0.5
+#define KI_DEPTH 0.05
 #define KD_DEPTH 0
 
 // Saturation Constants
@@ -272,21 +272,25 @@ void *navigation_thread(void* arg)
     yaw_pid.setpoint = substate.imu.yaw;
 
 	//Set depth setpoint to current depth
-	depth_pid.setpoint = ms5837.depth;
+	depth_pid.setpoint = ms5837.depth + 0.3;
 
 	while(substate.mode!=STOPPED)
 	{
 		// read IMU values from fifo file
 		substate.imu = read_imu_fifo();
 		//read depth from pressure sensor
-		ms5837.depth = read_pressure_fifo();
+		ms5837 = read_pressure_fifo();
 
 		// Only tell motors to run if we are RUNNING
     if( substate.mode == RUNNING)
     {
       // Print yaw
-	  printf("Yaw:%5.0f  ", substate.imu.yaw);
-      printf("Yaw setpoint:%5.0f  ", yaw_pid.setpoint);
+	    printf("Yaw:%5.0f  ", substate.imu.yaw);
+      printf("Yaw setpoint:%5.0f\n", yaw_pid.setpoint);
+      
+      // Print depth
+      printf("Depth:%5.2f  ",ms5837.depth);
+      printf("Depth setpoint:%5.2f\n",depth_pid.setpoint);
 
       //calculate yaw controller output
       motorpercent = marchPID(yaw_pid, substate.imu.yaw);
@@ -306,7 +310,7 @@ void *navigation_thread(void* arg)
       // Print motor speeds
       printf("Port Output:%5.2f  ", portmotorspeed);
       printf("Star Output:%5.2f", starmotorspeed);
-      printf("Vertical Output: %5.2f", vertmotorspeed);
+      printf("Vertical Output: %5.2f\n", vertmotorspeed);
 		} // end if RUNNING
 		else if( substate.mode == PAUSED)
 		{
@@ -359,14 +363,14 @@ void *safety_thread(void* arg)
 			printf("\nWe're too deep! Shutting down...\n");
 			continue;
 		}
-
+    float _temp = read_temp_fifo();
 		// Check battery compartment temperature
-		if( read_temp_fifo() > STOP_TEMP )
-		{
-			substate.mode = STOPPED;
-			printf("\nIt's too hot! Shutting down...\n");
-			continue;
-		}
+//		if( _temp > STOP_TEMP )
+//		{
+//			substate.mode = STOPPED;
+//			printf("\nIt's too hot ( %5.2f C)! Shutting down...\n",_temp);
+//			continue;
+//		}
 
 		// check pi cpu temp
 		float cpu_temp;
