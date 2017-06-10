@@ -79,6 +79,7 @@ void ctrl_c(int signo);
 // time stuff
 void auv_nanosleep(uint64_t ns);
 void auv_usleep(unsigned int us);
+void auv_msleep(unsigned int us);
 
 //////////////////////
 // Global Variables //
