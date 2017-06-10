@@ -32,6 +32,9 @@
 
 #include <linux/videodev2.h>
 
+// WiringPi
+#include <wiringPi.h>
+
 using namespace cv;
 using namespace std;
 
@@ -41,7 +44,8 @@ using namespace std;
 #define CSV_FILENAME    "calibration_data.csv"
 #define IMAGE_PREFIX    "images/image"
 #define IMAGE_EXTENSION ".jpg"
-
+// Laser Pin
+#define LASERPIN      3
 // Global Variables
 int n;
 string source_window = "Original Image";
@@ -79,6 +83,10 @@ void setISO(int iso)
 //////////
 int main(int argc, char** argv)
 { 
+  // Set up wiring pi
+  wiringPiSetup();
+  pinMode(LASERPIN, OUTPUT); 
+
   // Open the camera!
   cap.open(0);
   fd = open("/dev/video0",  O_RDWR /* required */ | O_NONBLOCK, 0);
@@ -143,6 +151,7 @@ int main(int argc, char** argv)
   // Take a bunch of pictures
   for(int i=1; i<=N_CAL_DISTANCES; i++)
   {
+    digitalWrite(LASERPIN, HIGH);
     // Calculate distance from which to take the picture (meters)
     float d = i*CAL_DX;
     
@@ -162,9 +171,15 @@ int main(int argc, char** argv)
     Mat hsv_frame;
     cvtColor(frame, hsv_frame, CV_BGR2HSV);
     
-    // Find laser dot
-    Mat mask;
-    inRange(hsv_frame, Scalar(0, 0, 40), Scalar(180, 255, 255), mask);
+    // Find Green laser dot
+    //Mat mask;
+    //inRange(hsv_frame, Scalar(0, 0, 40), Scalar(180, 255, 255), mask);
+
+    // Red
+    Mat1b mask1, mask2;
+    inRange(hsvframe, Scalar(1, 50, 50), Scalar(15, 250, 250), mask1);
+    inRange(hsvframe, Scalar(165, 50, 50), Scalar(179, 250, 250), mask2);
+    mask = mask1 | mask2;
     
     // Locate centroid of laser dot
     Moments m = moments(mask, false);
@@ -186,7 +201,8 @@ int main(int argc, char** argv)
     // Write image to file
     imwrite(filename.str(), frame);
   } // end for
-  
+
+  digitalWrite(LASERPIN, LOW);
   // close camera
   close(fd);
   
