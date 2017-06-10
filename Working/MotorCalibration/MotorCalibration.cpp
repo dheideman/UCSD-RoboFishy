@@ -17,12 +17,19 @@ int stoploop = 0;
 * 
 * Control-C Handler
 ******************************************************************************/
-void ctroC(int signo)
+void ctrlC(int signo)
 {
 	if (signo == SIGINT)
 	{
 		stoploop = 1;
 		printf("\nReceived SIGINT Ctrl-C\n");
+    
+ 	  for( int i = 0; i < 3; i++ )
+  	{
+		  pwmWrite (300+i, 2674);
+		  printf("Motor zeroed at pin_base: %i\n", PIN_BASE+i);
+	  }
+    printf("exited cleanly\n");
 	}
 }
 
@@ -38,7 +45,7 @@ int main()
 	// Setup ctrl-c catcher
 	signal(SIGINT, ctrlC);
 
-	int fd = pca9685Setup(PIN_BASE, PCA9685_ADDR, HERTZ);
+  int fd = pca9685Setup(PIN_BASE, PCA9685_ADDR, HERTZ);
  	pca9685PWMReset(fd);
  	for( int i = 0; i < 3; i++ )
  	{
@@ -72,3 +79,4 @@ int main()
 
 	return 0;
 }
+
