@@ -12,41 +12,49 @@
 * +100%) that the port and starboard thrusters should run at
 ******************************************************************************/
 
-float marchPID(pid_data_t PID, float input)
+float marchPID(pid_data_t pid, float input)
 {
+	float err = input - pid.setpoint;
+
+	if(pid.period > 0 && err > pid.period/2)
+	{
+		err -= pid.period;
+	}
+
 	// Calculating errors
-	PID.perr = input - PID.setpoint;
-	PID.derr = (input - PID.old)/(PID.dt);
-	PID.ierr += PID.dt * (input - PID.setpoint);
+	pid.perr = err;
+	pid.derr = (err - pid.old)/(pid.dt);
+	pid.ierr += pid.dt * (err);
 
-	if(PID.ierr > PID.isat)
+	//Check for integrator saturation
+	if(pid.ierr > pid.isat)
 	{
-		PID.ierr = PID.isat;
+		pid.ierr = pid.isat;
 	}
 
-	if(PID.ierr < -PID.isat)
+	if(pid.ierr < -pid.isat)
 	{
-		PID.ierr = - PID.isat;
+		pid.ierr = - pid.isat;
+	}
+	//Calculate motor output
+	pid.output =	 pid.kp * pid.perr
+						+ pid.ki * pid.ierr
+						+ pid.kd * pid.derr;
+	//Check for output saturation
+	if(pid.output > pid.sat)
+	{
+		pid.output = pid.sat;
 	}
 
-	PID.output =   PID.kp * PID.perr
-						+ PID.ki * PID.ierr
-						+ PID.kd * PID.derr;
 
-	if(PID.output > PID.sat)
+	if(pid.output < -pid.sat)
 	{
-		PID.output = PID.sat;
-	}
-
-
-	if(PID.output < -PID.sat)
-	{
-		PID.output = -PID.sat;
+		pid.output = -pid.sat;
 	}
 	// set current input to be the old input //
-	PID.old = input;
+	pid.old = err;
 
-	return PID.output;
+	return pid.output;
 }
 
 
@@ -77,33 +85,33 @@ int initialize_motors(int channels[3], float freq)
 }
 
 /******************************************************************************
- * int set_motor(int motornum, float percent)
+ * float set_motor(int motornum, float percent)
  *
  * Takes in a value from -1 to 1 (-100 to +100%) and sets the motor
  * outputs accordingly
 ******************************************************************************/
-int set_motor(int motornum, float percent)
+float set_motor(int motornum, float percent)
 {
-  // Define characteristics of PWM pulse, microseconds
-	float amplitude  = PWM_HIGH_LIMIT - PWM_ZERO_VALUE;
+	// Define characteristics of PWM pulse, microseconds
+	float amplitude	 = PWM_HIGH_LIMIT - PWM_ZERO_VALUE;
 
 	// Saturation limits
-  if( percent >  1.0) percent =  1.0;
-  if( percent < -1.0) percent = -1.0;
+	if( percent >	 1.0) percent =	 1.0;
+	if( percent < -1.0) percent = -1.0;
 
-  // Deadzone check
-  if( (percent < MOTOR_DEADZONE) && (percent > -MOTOR_DEADZONE) ) percent = 0.0;
+	// Deadzone check
+	if( (percent < MOTOR_DEADZONE) && (percent > -MOTOR_DEADZONE) ) percent = 0.0;
 
 	// Calculate corresponding pwm output value
 	int motoroutput = percent * amplitude + PWM_ZERO_VALUE;
 
 	// Spin those motors
-  pwmWrite(motornum + PIN_BASE, motoroutput);
+	pwmWrite(motornum + PIN_BASE, motoroutput);
 
-  #ifdef DEBUG
-  // Print what we told the motor to spin at.
-  printf("Set motor %d to %d \n", motornum, motoroutput);
-  #endif
+	#ifdef DEBUG
+	// Print what we told the motor to spin at.
+	printf("Set motor %d to %d \n", motornum, motoroutput);
+	#endif
 
 	return percent;
 }
