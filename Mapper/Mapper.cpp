@@ -87,10 +87,11 @@ int motor_channels[] = {CHANNEL_1, CHANNEL_2, CHANNEL_3};
 // Ignoring sstate
 float depth = 0;
 
- // setmotor intialization
+// setmotor intialization
 float motor_percent = 0;
 
-
+// Start time for stop timer
+time_t start;
 
 /******************************************************************************
 * Main Function
@@ -118,27 +119,30 @@ int main()
 	pthread_t depthThread;
 	//pthread_t safetyThread;
 	//pthread_t disarmlaserThread;
+	pthread_t uiThread;
 
 
 	// Create threads using modified attributes
 	//pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
 	//pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
-	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
+	//pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 	//pthread_create (&navigationThread, &tattrmed, navigation_thread, NULL);
+	pthread_create (&uiThread, &tattrmed, userInterface, NULL);
 
   // Destroy the thread attributes
  	destroyTAttr();
 
   printf("Threads started\n");
+  
 	// Start timer!
-	time_t start = time(0);
+	start = time(0);
 
 	// Run main while loop, wait until it's time to stop
 	while(substate.mode != STOPPED)
 	{
 		// Check if we've passed the stop time
 		if(difftime(time(0),start) > STOP_TIME)
-			substate.mode = STOPPED;
+			substate.mode = PAUSED;
 
 		// Sleep a little
 		auv_usleep(100000);
@@ -249,18 +253,36 @@ void *navigation_thread(void* arg)
 		{
 			yaw =(substate.imu.yaw-360);
 		}
+    
+    // Only tell motors to run if we are RUNNING
+    if( substate.mode == RUNNING)
+    {
+      //calculate yaw controller output
+      motor_percent = marchPID(yaw_pid, yaw);
 
-		//calculate yaw controller output
-		motor_percent = marchPID(yaw_pid, yaw);
+      // Set port motor
+      set_motor(0, motor_percent);
 
-		// Set port motor
-		set_motor(0, motor_percent);
-
-		// Set starboard motor
-		set_motor(1, motor_percent);
+      // Set starboard motor
+      set_motor(1, motor_percent);
+		  
+		} // end if RUNNING 
+		else if( substate.mode == PAUSED)
+		{
+		  // Stop horizontal motors
+		  set_motor(0, 0);
+		  set_motor(1, 0);
+		  
+		  // Wipe integral error
+		  yaw_pid.ierr = 0;
+		  
+		  // Sleep a while (we're not doing anything anyways)
+		  auv_usleep(100000);
+		  
+		} // end if PAUSED
 
 		// Sleep for 5 ms
-		auv_usleep(5000);
+		auv_usleep(DT);
 	}
 
 	// Turn motors off
@@ -386,3 +408,56 @@ PI_THREAD (logging_thread)
 	return 0;
 }
 */
+
+/******************************************************************************
+ * User Interface Thread
+ * void* userInterface(void* arg)
+ *
+ * Interfaces with the user, asks for input
+ *****************************************************************************/
+ void* userInterface(void* arg)
+ {
+  // Declare local constant variables
+  float _kp, _ki, _kd;
+  
+  // Wait a few seconds to start up
+  auv_usleep(8000000);
+  
+  // Prompt user for values continuously until the program exits
+  while(substate.mode != STOPPED)
+  { 
+    // Prompt for kp
+    std::cout << "Kp: ";
+    std::cin >> _kp;
+    
+    // Prompt for ki
+    std::cout << "Ki: ";
+    std::cin >> _ki;
+    
+    // Prompt for kd
+    std::cout << "Kd: ";
+    std::cin >> _kp;
+    
+    // Give a newline
+    std::cout << std::endl;
+    
+    // Reset gain values
+    yaw_pid.kp = _kp;
+    yaw_pid.kd = _ki;
+    yaw_pid.ki = _kd;
+    
+    // Clear errors
+    yaw_pid.derr = 0;
+    yaw_pid.ierr = 0;
+    yaw_pid.perr = 0;
+    
+    // Start RUNNING again
+    substate.mode = RUNNING;
+    
+    // Restart timer!
+	  start = time(0);
+  }
+  
+  // Exit thread
+  pthread_exit(NULL);
+ }
