@@ -186,15 +186,13 @@ char cmd[100];
 ******************************************************************************/
 float read_temp_fifo(void)
 {
-	float temp;
+	float batt_temp;
 
 	// Read temperature values from temp.fifo
-	char buf[100];
-  std::FILE *fd = fopen("temp.fifo", "r");
-	fgets(buf, 100, fd);
-	fclose(fd);
-	sscanf(buf, "%f", &temp);
-
+  std::ifstream pFile;
+  pFile.open("temp.fifo");
+  pFile >> batt_temp;
+  pFile.close();
 	// Return a temperature value
-	return temp;
+	return batt_temp;
 }
