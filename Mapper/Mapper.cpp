@@ -216,6 +216,8 @@ void *navigation_thread(void* arg)
   float motorpercent;
   float basespeed = 0.1;
   float err;
+  float depthpercent;
+  float vertmotorspeed;
 
   ////////////////////////////////
   // Yaw Control Initialization //
@@ -260,35 +262,37 @@ void *navigation_thread(void* arg)
 	// read IMU values from fifo file
 	substate.imu = read_imu_fifo();
 
+	// Read pressure values
+	ms5837 = read_pressure_fifo();
+
 	// Set setpoint to current heading
   if( substate.imu.yaw > 180 )
     yaw_pid.setpoint = substate.imu.yaw - 360;
   else
     yaw_pid.setpoint = substate.imu.yaw;
 
+	//Set depth setpoint to current depth
+	depth_pid.setpoint = ms5837.depth;
+
 	while(substate.mode!=STOPPED)
 	{
 		// read IMU values from fifo file
 		substate.imu = read_imu_fifo();
-
-		if (substate.imu.yaw < 180) // AUV pointed right
-		{
-			yaw = substate.imu.yaw;
-		}
-		else // AUV pointed left
-		{
-			yaw =(substate.imu.yaw-360);
-		}
+		//read depth from pressure sensor
+		ms5837.depth = read_pressure_fifo();
 
 		// Only tell motors to run if we are RUNNING
     if( substate.mode == RUNNING)
     {
       // Print yaw
-		  printf("Yaw:%5.0f  ", substate.imu.yaw);
+	  printf("Yaw:%5.0f  ", substate.imu.yaw);
       printf("Yaw setpoint:%5.0f  ", yaw_pid.setpoint);
 
       //calculate yaw controller output
       motorpercent = marchPID(yaw_pid, substate.imu.yaw);
+
+      //calculate depth controller output
+      depthpercent = marchPID(depth_pid, ms5837.depth);
       
       // Set port motor
       portmotorspeed = set_motor(0, basespeed + motorpercent);
@@ -296,10 +300,13 @@ void *navigation_thread(void* arg)
       // Set starboard motor
       starmotorspeed = set_motor(1, basespeed - motorpercent);
 
+      //set vertical thruster
+      vertmotorspeed = set_motor(2, depthpercent);
+
       // Print motor speeds
       printf("Port Output:%5.2f  ", portmotorspeed);
-      printf("Star Output:%5.2f\n", starmotorspeed);
-
+      printf("Star Output:%5.2f", starmotorspeed);
+      printf("Vertical Output: %5.2f", vertmotorspeed);
 		} // end if RUNNING
 		else if( substate.mode == PAUSED)
 		{
@@ -361,6 +368,17 @@ void *safety_thread(void* arg)
 			continue;
 		}
 
+		// check pi cpu temp
+		float cpu_temp;
+		std::ifstream pFile;
+		pFile.open("/sys/class/thermal/thermal_zone0/temp");
+		pFile >> cpu_temp;
+		pFile.close();
+
+		if (cpu_temp > 80000) {
+			printf("CPU is above 80 C. Shutting down...\n");
+			substate.mode = STOPPED;
+		}
 		// Check for leak
 		if( digitalRead(LEAKPIN) == HIGH )
 		{
