@@ -56,6 +56,8 @@
 
 // Laser Pin
 #define LASERPIN      3
+
+// Write Images
 #define CSV_FILENAME    "high_resolution.csv"
 #define IMAGE_PREFIX    "high_resolution/image"
 #define IMAGE_EXTENSION ".jpg"

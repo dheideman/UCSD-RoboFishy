@@ -42,7 +42,7 @@ void *takePictures(void*)
   {
     cerr << "Error opening the camera (OpenCV)" << endl; 
   }
- 
+  subimages.imstate = EMPTY; 
   // Set framerate (OpenCV capture property)
   cap.set(CV_CAP_PROP_FPS,2);
     
@@ -75,7 +75,7 @@ void *takePictures(void*)
   {
     // 'Grab' bright frame from webcam's image buffer
     cap.grab();
-    subimages.imstate = EMPTY;
+    
     // Set exposure now (rather than later)
     picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, DARK_EXPOSURE );
     
