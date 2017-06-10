@@ -142,6 +142,9 @@ int main()
 	// Start timer!
 	start = time(0);
 
+	// We're ready to run.  Kinda.  Pause first
+	substate.mode = PAUSED;
+
 	// Run main while loop, wait until it's time to stop
 	while(substate.mode != STOPPED)
 	{
@@ -216,7 +219,7 @@ void *navigation_thread(void* arg)
   ////////////////////////////////
   // Yaw Control Initialization //
   ////////////////////////////////
-	yaw_pid.old 		= 0;	 	// Initialize old imu data
+	yaw_pid.old 			= 0;	 	// Initialize old imu data
 	yaw_pid.setpoint 	= 0;		// Initialize setpoint
 
 	yaw_pid.derr = 0;
@@ -235,7 +238,7 @@ void *navigation_thread(void* arg)
   //////////////////////////////////
   // Depth Control Initialization //
   //////////////////////////////////
-	depth_pid.setpoint			= 2;		// Range-from-bottom setpoint (meters)
+	depth_pid.setpoint	= 0.5	;		// Range-from-bottom setpoint (meters)
 	depth_pid.old				= 0;		// Initialize old depth
 	depth_pid.dt				= DT;		// Initialize depth controller time step
 
@@ -255,7 +258,10 @@ void *navigation_thread(void* arg)
 		// read IMU values from fifo file
 		substate.imu = read_imu_fifo();
 
-	  if (substate.imu.yaw < 180) // AUV pointed right
+		// Set setpoint to current heading
+		yaw_pid.setpoint = yaw;
+
+		if (substate.imu.yaw < 180) // AUV pointed right
 		{
 			yaw = substate.imu.yaw;
 		}
@@ -264,15 +270,22 @@ void *navigation_thread(void* arg)
 			yaw =(substate.imu.yaw-360);
 		}
 
-    // Only tell motors to run if we are RUNNING
+		// Only tell motors to run if we are RUNNING
     if( substate.mode == RUNNING)
     {
+      // Print yaw
+		  printf("Yaw:\t%f\n", substate.imu.yaw);
+
       //calculate yaw controller output
       motorpercent = marchPID(yaw_pid, yaw);
 
       // Set port and starboard
       portmotorspeed = basespeed + motorpercent;
       starmotorspeed = basespeed - motorpercent;
+
+      // Print motor speeds
+      printf("Port Motor:\t%f", portmotorspeed);
+      printf("Star Motor:\t%f", starmotorspeed);
 
       // Set port motor
       set_motor(0, portmotorspeed);
@@ -372,7 +385,7 @@ void *safety_thread(void* arg)
  void* userInterface(void* arg)
  {
   // Declare local constant variables
-  float _kp, _ki, _kd;
+  float _kp = 0.01, _ki = 0, _kd = 0;
 
   // Wait a until everything is initialized before starting
   while(substate.mode == INITIALIZING)
@@ -384,6 +397,11 @@ void *safety_thread(void* arg)
   // Prompt user for values continuously until the program exits
   while(substate.mode != STOPPED)
   {
+    // Print Kp, Ki, Kd for reference
+    std::cout << "Current Values:" << std::endl;
+    printf("Kp:\t%f\tKi:\t%f\tKd:\t%f\n",_kp,_ki,_kd);
+    std::cout << std::endl;
+
     // Prompt for kp
     std::cout << "Kp: ";
     std::cin >> _kp;
@@ -416,7 +434,7 @@ void *safety_thread(void* arg)
 	  start = time(0);
 
     // Aaaaaaand, WAIT!
-    auv_usleep(10*1000000);
+    auv_usleep(12*1000000);
   }
 
   // Exit thread

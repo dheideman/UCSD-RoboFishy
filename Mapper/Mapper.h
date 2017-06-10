@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #ifndef MAPPER_H
 #define MAPPER_H
 
@@ -33,7 +32,7 @@
 #define PWM_ZERO_VALUE 2647   // PWM value
 
 // Protection Constants
-#define STOP_DEPTH 2000	// threshold depth (mm)
+#define STOP_DEPTH 2	// threshold depth (m)
 #define STOP_TEMP 50	// deg C
 
 
