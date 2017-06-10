@@ -50,8 +50,12 @@
 #define STOP_TIME 10		// seconds
 
 // Leak Sensor Inpu and Power Pin
-#define LEAKPIN 27		// connected to GPIO 27
-#define LEAKPOWERPIN 17 // providing Vcc to leak board
+#define LEAKPIN       27	// connected to GPIO 27
+#define LEAKPOWERPIN  17  // providing Vcc to leak board
+
+// Time Per Straight Leg of "Path"
+#define DRIVE_TIME    2   // seconds
+
 
 /******************************************************************************
  * Declare Threads
@@ -94,6 +98,10 @@ float starmotorspeed = 0;
 
 // Start time for stop timer
 time_t start;
+
+// Setpoint array
+float setpoints[0, 90, 180, -90, 0];
+int   nsetpoints = 5;
 
 /******************************************************************************
 * Main Function
@@ -141,6 +149,8 @@ int main()
 
 	// Start timer!
 	start = time(0);
+	
+	int iterator = 0;
 
 	// We're ready to run.  Kinda.  Pause first
 	substate.mode = PAUSED;
@@ -149,8 +159,35 @@ int main()
 	while(substate.mode != STOPPED)
 	{
 		// Check if we've passed the stop time
-		if(difftime(time(0),start) > STOP_TIME)
-			substate.mode = PAUSED;
+// 		if(difftime(time(0),start) > STOP_TIME)
+// 			substate.mode = PAUSED;
+    if(substate.mode == RUNNING)
+    {
+      // Change the setpoint every DRIVE_TIME seconds
+      if(difftime(time(0),start) > DRIVE)
+      {
+        // If this was the last segment
+        if(iterator >= nsetpoints - 1)
+        {
+          iterator = 0;
+          substate.mode = PAUSED;
+        }
+        else
+        {
+          // Reset timer
+          start = time(0);
+          
+          // Set new setpoint
+          yaw_pid.setpoint = setpoints[iterator];
+          
+          // Increment iterator
+          iterator++;
+          
+        } // end if iterator
+        
+      } // end if difftime
+      
+    } // end if RUNNING
 
 		// Sleep a little
 		auv_usleep(100000);
@@ -484,7 +521,7 @@ void *safety_thread(void* arg)
     substate.mode = RUNNING;
     
     // Restart timer!
-	  start = time(0);
+	  //start = time(0);
 	  
 		// Wait for mode to pause again
 		while (substate.mode == RUNNING) {
