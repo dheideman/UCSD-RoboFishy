@@ -261,7 +261,10 @@ void *navigation_thread(void* arg)
 	substate.imu = read_imu_fifo();
 
 	// Set setpoint to current heading
-	yaw_pid.setpoint = substate.imu.yaw;
+  if( substate.imu.yaw > 180 )
+    yaw_pid.setpoint = substate.imu.yaw - 360;
+  else
+    yaw_pid.setpoint = substate.imu.yaw;
 
 	while(substate.mode!=STOPPED)
 	{
