@@ -435,7 +435,7 @@ void *safety_thread(void* arg)
  void* userInterface(void* arg)
  {
   // Declare local constant variables
-  float _kp = 0.01, _ki = 0, _kd = 0;
+  float _kp = 0.0003, _ki = 0, _kd = 0;
 
   // Wait a until everything is initialized before starting
   while(substate.mode == INITIALIZING)
@@ -476,6 +476,9 @@ void *safety_thread(void* arg)
     yaw_pid.perr = 0;
     yaw_pid.ierr = 0;
     yaw_pid.derr = 0;
+		depth_pid.perr = 0;
+		depth_pid.ierr = 0;
+		depth_pid.derr = 0;		
 
     // Start RUNNING again
     substate.mode = RUNNING;
@@ -487,8 +490,7 @@ void *safety_thread(void* arg)
     // Restart timer!
 	  start = time(0);
 
-    // Aaaaaaand, WAIT!
-    auv_msleep(12000);
+    auv_msleep(1000);
   }
 
   // Exit thread
