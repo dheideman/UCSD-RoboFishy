@@ -287,7 +287,7 @@ void *navigation_thread(void* arg)
       // Print yaw
 	    printf("Yaw:%5.0f  ", substate.imu.yaw);
       printf("Yaw setpoint:%5.0f\n", yaw_pid.setpoint);
-      
+
       // Print depth
       printf("Depth:%5.2f  ",ms5837.depth);
       printf("Depth setpoint:%5.2f\n",depth_pid.setpoint);
@@ -297,7 +297,7 @@ void *navigation_thread(void* arg)
 
       //calculate depth controller output
       depthpercent = marchPID(depth_pid, ms5837.depth);
-      
+
       // Set port motor
       portmotorspeed = set_motor(0, basespeed + motorpercent);
 
@@ -350,6 +350,10 @@ void *safety_thread(void* arg)
 {
 	printf("Safety Thread Started\n");
 
+	// open a log to record reasons for shutting down
+	std::ifstream logFile;
+	logFile.open("safety.log");
+
 	// Leak detection pins
 	pinMode(LEAKPIN, INPUT);					// set LEAKPIN as an INPUT
 	pinMode(LEAKPOWERPIN, OUTPUT);		// set as output to provide Vcc
@@ -361,26 +365,31 @@ void *safety_thread(void* arg)
 		if( ms5837.depth > STOP_DEPTH )
 		{
 			substate.mode = STOPPED;
+			logFile << "Shut down due to max depth being reached\n";
+			logFile << "Stop depth: STOP_DEPTH\n";
+			logFile << "Current depth: " << std::to_string(ms5837.depth) << "\n";
 			printf("\nWe're too deep! Shutting down...\n");
 			continue;
 		}
-    float _temp = read_temp_fifo();
 		// Check battery compartment temperature
-//		if( _temp > STOP_TEMP )
-//		{
-//			substate.mode = STOPPED;
-//			printf("\nIt's too hot ( %5.2f C)! Shutting down...\n",_temp);
-//			continue;
-//		}
+		float _temp = read_temp_fifo();
+		if( _temp > STOP_TEMP )
+		{
+			substate.mode = STOPPED;
+			logFile << "Shut down due to max battery temp being reached\n";
+			logFile << "Stop temp: STOP_TEMP\n";
+			logFile << "Current temp: " << std::to_string(_temp) << "\n";
+			printf("\nMax battery temp reached: ( %5.2f C)! Shutting down...\n",_temp);
+			continue;
+		}
 
-		// check pi cpu temp
-		float cpu_temp;
-		std::ifstream pFile;
-		pFile.open("/sys/class/thermal/thermal_zone0/temp");
-		pFile >> cpu_temp;
-		pFile.close();
-
-		if (cpu_temp > 80000) {
+		// check pi cpu tem
+		// temp is multiplied by 1000 in raspbian OS
+		float _cpu_temp = read_cpu_temp();
+		if (_cpu_temp > 80000) {
+			logFile << "Shut down due to max cpu temp being reached\n";
+			logFile << "Stop temp: 80 C\n";
+			logFile << "Current temp: " << std::to_string(_cpu_temp) << "\n";
 			printf("CPU is above 80 C. Shutting down...\n");
 			substate.mode = STOPPED;
 		}
@@ -388,6 +397,7 @@ void *safety_thread(void* arg)
 		if( digitalRead(LEAKPIN) == HIGH )
 		{
 			substate.mode = STOPPED;
+			logFile << "Shut down due to leak\n";
 			printf("\nLEAK DETECTED! Shutting down...\n");
 			continue;
 		}
@@ -398,10 +408,18 @@ void *safety_thread(void* arg)
 			|| (float)fabs(substate.imu.z_acc) > 1.0*GRAVITY )
 		{
 			substate.mode = STOPPED;
+			logFile << "Shut down due to excessive acceleration (1 g)\n";
+			char accel[100];
+			sprintf(accel, "X Acc: %5.2f  Y Acc: %5.2f  Z Acc: %5.2f\n",
+				substate.imu.x_acc, substate.imu.y_acc, substate.z_acc);
+			logFile << accel;
 			printf("\nCollision detected. Shutting down...");
 			continue;
 		}
 	}
+	// close log file
+	logFile.close();
+
 	// Exit thread
   pthread_exit(NULL);
 }//*/
