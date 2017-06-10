@@ -129,3 +129,12 @@ void auv_usleep(unsigned int us){
 	auv_nanosleep(us*1000);
 	return;
 }
+/*******************************************************************************
+* void auv_msleep(unsigned int ms)
+*
+* And a microseconds sleep for convenience
+*******************************************************************************/
+void auv_msleep(unsigned int ms){
+	auv_nanosleep(ms*1000000);
+	return;
+}
