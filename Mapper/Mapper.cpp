@@ -142,8 +142,8 @@ int main()
 	// Start timer!
 	start = time(0);
 	
-	// We're ready to run.
-	substate.mode = RUNNING;
+	// We're ready to run.  Kinda.  Pause first
+	substate.mode = PAUSED;
 
 	// Run main while loop, wait until it's time to stop
 	while(substate.mode != STOPPED)
@@ -435,7 +435,7 @@ PI_THREAD (logging_thread)
  void* userInterface(void* arg)
  {
   // Declare local constant variables
-  float _kp, _ki, _kd;
+  float _kp = 0.01, _ki = 0, _kd = 0;
 
   // Wait a until everything is initialized before starting
   while(substate.mode == INITIALIZING)
@@ -447,6 +447,11 @@ PI_THREAD (logging_thread)
   // Prompt user for values continuously until the program exits
   while(substate.mode != STOPPED)
   {
+    // Print Kp, Ki, Kd for reference
+    std::cout << "Current Values:" << std::endl;
+    printf("Kp:\t%f\tKi:\t%f\tKd:\t%f\n",_kp,_ki,_kd);
+    std::cout << std::endl;
+  
     // Prompt for kp
     std::cout << "Kp: ";
     std::cin >> _kp;
