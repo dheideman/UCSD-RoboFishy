@@ -11,10 +11,10 @@
 
 // Sampling Values
 #define SAMPLE_RATE 200 // sample rate of main control loop (Hz)
-#define DT 0.005		// timestep; make sure this is equal to 1/SAMPLE_RATE!
+#define DT 0.005				// timestep; make sure this is equal to 1/SAMPLE_RATE!
 
 // Conversion Factors
-#define UNITS_KPA 0.1 // converts pressure from mbar to kPa
+#define UNITS_KPA 0.1		// converts pressure from mbar to kPa
 
 /******************************************************************************
 * Controller Gains
@@ -98,9 +98,6 @@ float motor_percent = 0;
 
 int main()
 {
-	// Initialize Python interpreter
-	Py_Initialize();
-
 	// Set up RasPi GPIO pins through wiringPi
 	wiringPiSetupGpio();
 
@@ -176,13 +173,13 @@ void *depth_thread(void* arg)
 		// Write IMU data
 		printf("\nYaw: %5.2f Roll: %5.2f Pitch: %5.2f p: %5.2f q: %5.2f r: %5.2f \nSys: %i Gyro: "
 			"%i Accel: %i Mag: %i X_acc: %f Y_acc: %f Z_acc: %f\n ",
-			 substate.imu.yaw, substate.imu.pitch, substate.imu.roll,
-			 substate.imu.p, substate.imu.q, substate.imu.r,
-			 substate.imu.sys, substate.imu.gyro, substate.imu.accel,
-			 substate.imu.mag, substate.imu.x_acc, substate.imu.y_acc,
+			 substate.imu.yaw,	substate.imu.roll,	substate.imu.pitch,
+			 substate.imu.p, 		substate.imu.q,			substate.imu.r,
+			 substate.imu.sys,	substate.imu.gyro,	substate.imu.accel,
+			 substate.imu.mag,	substate.imu.x_acc,	substate.imu.y_acc,
 			 substate.imu.z_acc);
 
-		sleep(1);
+		auv_usleep(1000000);
 	 	//printf("\nYawPID_perr: %f Motor Percent: %f ", yaw_pid.perr, motor_percent);
 	}
 
@@ -205,38 +202,38 @@ void *navigation_thread(void* arg)
   ////////////////////////////////
   // Yaw Control Initialization //
   ////////////////////////////////
-	yaw_pid.old = 0;	    	// Initialize old imu data
-	yaw_pid.setpoint = 0;   // Initialize setpoint
+	yaw_pid.old 			= 0;	 	// Initialize old imu data
+	yaw_pid.setpoint 	= 0;		// Initialize setpoint
 
 	yaw_pid.derr = 0;
-	yaw_pid.ierr = 0;	    	// Initialize error values
+	yaw_pid.ierr = 0;					// Initialize error values
 	yaw_pid.perr = 0;
 
 	yaw_pid.kp = KP_YAW;
-	yaw_pid.kd = KD_YAW;		// Initialize gain values
+	yaw_pid.kd = KD_YAW;			// Initialize gain values
 	yaw_pid.ki = KI_YAW;
 
-	yaw_pid.isat = INT_SAT;	// Initialize saturation values
+	yaw_pid.isat = INT_SAT;		// Initialize saturation values
 	yaw_pid.sat  = YAW_SAT;
 
-	yaw_pid.dt   = DT;      // initialize time step
+	yaw_pid.dt   = DT;				// initialize time step
 
   //////////////////////////////////
   // Depth Control Initialization //
   //////////////////////////////////
-	depth_pid.setpoint = 2; 	// Range-from-bottom setpoint (meters)
-	depth_pid.old	   = 0; 		// Initialize old depth
-	depth_pid.dt 	   = DT;		// Initialize depth controller time step
+	depth_pid.setpoint	= 2;		// Range-from-bottom setpoint (meters)
+	depth_pid.old				= 0;		// Initialize old depth
+	depth_pid.dt				= DT;		// Initialize depth controller time step
 
 	depth_pid.kp = KP_DEPTH;
-	depth_pid.kd = KD_DEPTH;	// Depth controller gain initialization
+	depth_pid.kd = KD_DEPTH;		// Depth controller gain initialization
 	depth_pid.ki = KI_DEPTH;
 
 	depth_pid.perr = 0;
-	depth_pid.ierr = 0;	    	// Initialize depth controller error values
+	depth_pid.ierr = 0;					// Initialize depth controller error values
 	depth_pid.derr = 0;
 
-	depth_pid.isat = INT_SAT; 	// Depth controller saturation values
+	depth_pid.isat = INT_SAT;		// Depth controller saturation values
 	depth_pid.sat  = DEPTH_SAT;
 
 	while(substate.mode!=STOPPED)
@@ -263,7 +260,7 @@ void *navigation_thread(void* arg)
 		set_motor(1, motor_percent);
 
 		// Sleep for 5 ms
-		usleep(5000);
+		auv_usleep(5000);
 	}
 
 	// Turn motors off

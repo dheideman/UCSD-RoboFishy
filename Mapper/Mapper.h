@@ -6,13 +6,11 @@
 #include <wiringPiI2C.h>
 #include <cstdio>
 #include <stdlib.h>
-#include <Python.h>
 #include <time.h>
 #include <signal.h>		// capture ctrl+c
 
 // Core Module
-#include "../../Modules/Core/Core.h"
-
+#include "../Modules/Core/Core.h"
 
 #define DEBUG
 

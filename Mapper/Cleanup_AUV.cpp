@@ -19,7 +19,7 @@ int cleanup_auv()
 	printf("\nExiting Cleanly\n");
 
 	// Let final threads clean up
-	auv_usleep(500000);
+	auv_usleep(1000000);
 
   // kill python scripts
   char imu_cmd[100];
@@ -43,16 +43,14 @@ int cleanup_auv()
 	printf("temp.fifo deleted successfully\n");
 	remove("pressure.fifo");
 	printf("pressure.fifo deleted successfully\n");
-
+	printf("\n");
+	
 	// Set all motors to zero
-	int channels[]	= {CHANNEL_1, CHANNEL_2, CHANNEL_3};
 	for( int i=0; i<3; i++ )
 	{
 		// Shut off motors
-		pwmWrite (PIN_BASE+channels[i], MOTOR_0);
-
-		// Sleep...just cuz
-		usleep(10000);
+		set_motor(i, 0);
+		printf("Motor %i shut off\n", i);
 	}
 	return 0;
 }
