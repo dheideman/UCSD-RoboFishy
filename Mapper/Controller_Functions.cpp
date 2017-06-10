@@ -37,7 +37,7 @@ float marchPID(pid_data_t PID, float input)
 		PID.ierr = - PID.isat;
 	}
 	//Calculate motor output
-	PID.output =   PID.kp * PID.perr
+	PID.output =	 PID.kp * PID.perr
 						+ PID.ki * PID.ierr
 						+ PID.kd * PID.derr;
 	//Check for output saturation
@@ -92,26 +92,26 @@ int initialize_motors(int channels[3], float freq)
 ******************************************************************************/
 float set_motor(int motornum, float percent)
 {
-  // Define characteristics of PWM pulse, microseconds
-	float amplitude  = PWM_HIGH_LIMIT - PWM_ZERO_VALUE;
+	// Define characteristics of PWM pulse, microseconds
+	float amplitude	 = PWM_HIGH_LIMIT - PWM_ZERO_VALUE;
 
 	// Saturation limits
-  if( percent >  1.0) percent =  1.0;
-  if( percent < -1.0) percent = -1.0;
+	if( percent >	 1.0) percent =	 1.0;
+	if( percent < -1.0) percent = -1.0;
 
-  // Deadzone check
-  if( (percent < MOTOR_DEADZONE) && (percent > -MOTOR_DEADZONE) ) percent = 0.0;
+	// Deadzone check
+	if( (percent < MOTOR_DEADZONE) && (percent > -MOTOR_DEADZONE) ) percent = 0.0;
 
 	// Calculate corresponding pwm output value
 	int motoroutput = percent * amplitude + PWM_ZERO_VALUE;
 
 	// Spin those motors
-  pwmWrite(motornum + PIN_BASE, motoroutput);
+	pwmWrite(motornum + PIN_BASE, motoroutput);
 
-  #ifdef DEBUG
-  // Print what we told the motor to spin at.
-  printf("Set motor %d to %d \n", motornum, motoroutput);
-  #endif
+	#ifdef DEBUG
+	// Print what we told the motor to spin at.
+	printf("Set motor %d to %d \n", motornum, motoroutput);
+	#endif
 
 	return percent;
 }
