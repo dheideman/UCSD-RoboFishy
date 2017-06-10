@@ -317,6 +317,7 @@ void *navigation_thread(void* arg)
 		  // Stop horizontal motors
 		  set_motor(0, 0);
 		  set_motor(1, 0);
+		  set_motor(2, 0);
 
 		  // Wipe integral error
 		  yaw_pid.ierr = 0;
