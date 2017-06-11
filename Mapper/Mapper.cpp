@@ -21,9 +21,9 @@
 ******************************************************************************/
 
 // Yaw Controller
-#define KP_YAW 0.01
+#define KP_YAW 0.0003
 #define KI_YAW 0
-#define KD_YAW 1
+#define KD_YAW 0
 
 // Depth Controller
 #define KP_DEPTH 0.5
@@ -37,8 +37,8 @@
 #define DINT_SAT 10		// upper limit of depth integral windup
 
 // Pitch/Roll limits
-#define ROLL_LIMIT    30  // degrees
-#define PITCH_LIMIT   30  // degrees
+#define ROLL_LIMIT    1000  // degrees
+#define PITCH_LIMIT   1000  // degrees
 
 // Fluid Densities in kg/m^3
 #define DENSITY_FRESHWATER 997
@@ -51,14 +51,14 @@
 #define DEPTH_START 50 // starting depth (mm)
 
 // Stop Timer
-#define STOP_TIME 10		// seconds
+#define STOP_TIME 20		// seconds
 
 // Leak Sensor Inpu and Power Pin
 #define LEAKPIN       27	// connected to GPIO 27
 #define LEAKPOWERPIN  17  // providing Vcc to leak board
 
 // Time Per Straight Leg of "Path"
-#define DRIVE_TIME    4   // seconds
+#define DRIVE_TIME    6   // seconds
 
 
 /******************************************************************************
@@ -144,7 +144,7 @@ int main()
 	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
 	pthread_create (&navigationThread, &tattrmed, navigation_thread, NULL);
-	pthread_create (&uiThread, &tattrmed, userInterface, NULL);
+//	pthread_create (&uiThread, &tattrmed, userInterface, NULL);
 
   // Destroy the thread attributes
  	destroyTAttr();
@@ -157,14 +157,16 @@ int main()
 	int iterator = 0;
 
 	// We're ready to run.  Kinda.  Pause first
-	substate.mode = PAUSED;
-
-	// Run main while loop, wait until it's time to stop
+//	substate.mode = PAUSED;
+  substate.mode = RUNNING;
+	
+  // Run main while loop, wait until it's time to stop
 	while(substate.mode != STOPPED)
 	{
 		// Check if we've passed the stop time
-// 		if(difftime(time(0),start) > STOP_TIME)
-// 			substate.mode = PAUSED;
+ 		if(difftime(time(0),start) > STOP_TIME)
+ 			substate.mode = STOPPED;
+/*
     if(substate.mode == RUNNING)
     {
       // Change the setpoint every DRIVE_TIME seconds
@@ -174,7 +176,7 @@ int main()
         if(iterator >= nsetpoints)
         {
           iterator = 0;
-          substate.mode = PAUSED;
+          substate.mode = STOPPED;
         }
         else
         {
@@ -182,7 +184,7 @@ int main()
           start = time(0);
           
           // Set new setpoint
-          yaw_pid.setpoint = setpoints[iterator];
+         // yaw_pid.setpoint = setpoints[iterator];
           
           // Increment iterator
           iterator++;
@@ -192,7 +194,7 @@ int main()
       } // end if difftime
       
     } // end if RUNNING
-
+*/
 		// Sleep a little
 		auv_usleep(100000);
 	}
@@ -255,7 +257,7 @@ void *navigation_thread(void* arg)
 
   float yaw = 0; 			  //Local variable for if statements
   float motorpercent;
-  float basespeed = 0.1;
+  float basespeed = 0.2;
   float err;
   float depthpercent;
   float vertmotorspeed;
@@ -341,13 +343,13 @@ void *navigation_thread(void* arg)
       depthpercent = marchPID(depth_pid, ms5837.depth);
 
       // Set port motor
-      portmotorspeed = set_motor(0, basespeed + motorpercent);
+      portmotorspeed = set_motor(0, basespeed - motorpercent);
 
       // Set starboard motor
-      starmotorspeed = set_motor(1, basespeed - motorpercent);
+      starmotorspeed = set_motor(1, basespeed + motorpercent);
 
       //set vertical thruster
-      vertmotorspeed = set_motor(2, depthpercent);
+      //vertmotorspeed = set_motor(2, depthpercent);
 
       // Print motor speeds
       printf("Port Output:%5.2f  ", portmotorspeed);

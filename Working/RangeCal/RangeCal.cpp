@@ -39,8 +39,8 @@ using namespace cv;
 using namespace std;
 
 // Parameters
-#define N_CAL_DISTANCES 20
-#define CAL_DX          0.3048  // meters between measurements
+#define N_CAL_DISTANCES 10
+#define CAL_DX          0.2  // meters between measurements
 #define CSV_FILENAME    "calibration_data.csv"
 #define IMAGE_PREFIX    "images/image"
 #define IMAGE_EXTENSION ".jpg"
@@ -130,7 +130,7 @@ int main(int argc, char** argv)
   }
   
   // Initialize exposure, iso values
-  setExposure(1);
+  setExposure(5);
   setISO(0);
     
   // Set capture camera properties to maximum (8 MP)
@@ -172,13 +172,14 @@ int main(int argc, char** argv)
     cvtColor(frame, hsv_frame, CV_BGR2HSV);
     
     // Find Green laser dot
-    //Mat mask;
+    Mat mask;
+
     //inRange(hsv_frame, Scalar(0, 0, 40), Scalar(180, 255, 255), mask);
 
     // Red
     Mat1b mask1, mask2;
-    inRange(hsvframe, Scalar(1, 50, 50), Scalar(15, 250, 250), mask1);
-    inRange(hsvframe, Scalar(165, 50, 50), Scalar(179, 250, 250), mask2);
+    inRange(hsv_frame, Scalar(1, 50, 50), Scalar(15, 250, 250), mask1);
+    inRange(hsv_frame, Scalar(165, 50, 50), Scalar(179, 250, 250), mask2);
     mask = mask1 | mask2;
     
     // Locate centroid of laser dot
