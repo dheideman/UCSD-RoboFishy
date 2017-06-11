@@ -39,8 +39,8 @@ using namespace cv;
 using namespace std;
 
 // Parameters
-#define N_CAL_DISTANCES 20
-#define CAL_DX          0.3048  // meters between measurements
+#define N_CAL_DISTANCES 10
+#define CAL_DX          0.2  // meters between measurements
 #define CSV_FILENAME    "calibration_data.csv"
 #define IMAGE_PREFIX    "images/image"
 #define IMAGE_EXTENSION ".jpg"
