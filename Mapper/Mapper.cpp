@@ -36,6 +36,10 @@
 #define INT_SAT 10		// upper limit of integral windup
 #define DINT_SAT 10		// upper limit of depth integral windup
 
+// Pitch/Roll limits
+#define ROLL_LIMIT    30  // degrees
+#define PITCH_LIMIT   30  // degrees
+
 // Fluid Densities in kg/m^3
 #define DENSITY_FRESHWATER 997
 #define DENSITY_SALTWATER 1029
@@ -439,6 +443,26 @@ void *safety_thread(void* arg)
 			//logFile << "Shut down due to leak\n";
 			printf("\nLEAK DETECTED! Shutting down...\n");
 			continue;
+		}
+		
+		// Check IMU accelerometer for too much pitch
+		if(  (float)fabs(substate.imu.pitch) > PITCH_LIMIT )
+		{
+		  substate.mode = STOPPED;
+			//logFile << "Shut down due to excessive pitch (PITCH_LIMIT deg)\n";
+			char accel[100];
+			sprintf(accel, "Pitch: %5.2f  Roll: %5.2f\n",
+				substate.imu.pitch, substate.imu.roll);
+		}
+		
+		// Check IMU accelerometer for too much roll
+		if( (float)fabs(substate.imu.roll) > ROLL_LIMIT )
+		{
+		  substate.mode = STOPPED;
+			//logFile << "Shut down due to excessive roll (ROLL_LIMIT deg)\n";
+			char accel[100];
+			sprintf(accel, "Pitch: %5.2f  Roll: %5.2f\n",
+				substate.imu.pitch, substate.imu.roll);
 		}
 
 		// Check IMU accelerometer for collision (1+ g detected)
