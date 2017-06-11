@@ -57,6 +57,10 @@
 // Laser Pin
 #define LASERPIN      3
 
+// Write Images
+#define CSV_FILENAME    "high_resolution.csv"
+#define IMAGE_PREFIX    "high_resolution/image"
+#define IMAGE_EXTENSION ".jpg"
 
 //////////////////////
 // Type Definitions //
@@ -89,7 +93,7 @@ typedef struct sub_images_t
 // Thread
 void *takePictures(void*);
 void *disarmLaser(void* arg);
-void *writeImages(void* arg);
+void *writeImages(void*);
 // Mutex Lock Initializer
 int initializeSubImagesLock(sub_images_t *_subimages);
 
