@@ -444,7 +444,7 @@ void *safety_thread(void* arg)
 		// Check IMU accelerometer for collision (1+ g detected)
 		if(  (float)fabs(substate.imu.x_acc) > 1.0*GRAVITY
 			|| (float)fabs(substate.imu.y_acc) > 1.0*GRAVITY
-			|| (float)fabs(substate.imu.z_acc) > 1.0*GRAVITY )
+			|| (float)fabs(substate.imu.z_acc) > 2.0*GRAVITY )
 		{
 			substate.mode = STOPPED;
 			//logFile << "Shut down due to excessive acceleration (1 g)\n";
