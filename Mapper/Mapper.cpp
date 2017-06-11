@@ -21,9 +21,9 @@
 ******************************************************************************/
 
 // Yaw Controller
-#define KP_YAW 0.01
+#define KP_YAW 0.0003
 #define KI_YAW 0
-#define KD_YAW 1
+#define KD_YAW 0.0001
 
 // Depth Controller
 #define KP_DEPTH 0.5
@@ -48,7 +48,7 @@
 #define GRAVITY 9.81
 
 // Depth Start Value
-#define DEPTH_START 50 // starting depth (mm)
+#define DEPTH_START 0.05 // starting depth (m)
 
 // Stop Timer
 #define STOP_TIME 10		// seconds
@@ -74,9 +74,6 @@ void *userInterface(void* arg);
 /******************************************************************************
  * Global Variables
 ******************************************************************************/
-
-// Holds the setpoint data structure with current setpoints
-//setpoint_t setpoint;
 
 // Holds the latest pressure value from the MS5837 pressure sensor
 ms5837_t ms5837;
@@ -104,7 +101,7 @@ float starmotorspeed = 0;
 time_t start;
 
 // Setpoint array
-float setpoints[] = {0, 90, 180, -90, 0};
+float setpoints[] = {0, 90, 180, -90};
 int   nsetpoints = 5;
 
 /******************************************************************************
@@ -153,7 +150,7 @@ int main()
 
 	// Start timer!
 	start = time(0);
-	
+
 	int iterator = 0;
 
 	// We're ready to run.  Kinda.  Pause first
@@ -180,17 +177,17 @@ int main()
         {
           // Reset timer
           start = time(0);
-          
+
           // Set new setpoint
           yaw_pid.setpoint = setpoints[iterator];
-          
+
           // Increment iterator
           iterator++;
-          
+
         } // end if iterator
-        
+
       } // end if difftime
-      
+
     } // end if RUNNING
 
 		// Sleep a little
@@ -237,7 +234,7 @@ void *depth_thread(void* arg)
          substate.imu.mag,	substate.imu.x_acc,	substate.imu.y_acc,
          substate.imu.z_acc);
     }
-		auv_usleep(1000000);
+		auv_msleep(1000);
 	}
 	pthread_exit(NULL);
 }//*/
@@ -444,7 +441,7 @@ void *safety_thread(void* arg)
 			printf("\nLEAK DETECTED! Shutting down...\n");
 			continue;
 		}
-		
+
 		// Check IMU accelerometer for too much pitch
 		if(  (float)fabs(substate.imu.pitch) > PITCH_LIMIT )
 		{
@@ -454,7 +451,7 @@ void *safety_thread(void* arg)
 			sprintf(accel, "Pitch: %5.2f  Roll: %5.2f\n",
 				substate.imu.pitch, substate.imu.roll);
 		}
-		
+
 		// Check IMU accelerometer for too much roll
 		if( (float)fabs(substate.imu.roll) > ROLL_LIMIT )
 		{
@@ -539,14 +536,14 @@ void *safety_thread(void* arg)
     yaw_pid.derr = 0;
 		depth_pid.perr = 0;
 		depth_pid.ierr = 0;
-		depth_pid.derr = 0;		
+		depth_pid.derr = 0;
 
     // Start RUNNING again
     substate.mode = RUNNING;
-    
+
     // Restart timer!
 	  //start = time(0);
-	  
+
 		// Wait for mode to pause again
 		while (substate.mode == RUNNING) {
 			auv_msleep(100);
