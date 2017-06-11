@@ -13,6 +13,7 @@
 #include "../Modules/Core/Core.h"
 
 //#define DEBUG
+#define RASPBERRY_PI
 
 #define PCA9685_ADDR 0x40
 #define PIN_BASE 300
