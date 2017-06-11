@@ -54,7 +54,7 @@
 #define LEAKPOWERPIN  17  // providing Vcc to leak board
 
 // Time Per Straight Leg of "Path"
-#define DRIVE_TIME    2   // seconds
+#define DRIVE_TIME    4   // seconds
 
 
 /******************************************************************************
@@ -100,7 +100,7 @@ float starmotorspeed = 0;
 time_t start;
 
 // Setpoint array
-float setpoints = {0, 90, 180, -90, 0};
+float setpoints[] = {0, 90, 180, -90, 0};
 int   nsetpoints = 5;
 
 /******************************************************************************
@@ -164,7 +164,7 @@ int main()
     if(substate.mode == RUNNING)
     {
       // Change the setpoint every DRIVE_TIME seconds
-      if(difftime(time(0),start) > DRIVE)
+      if(difftime(time(0),start) > DRIVE_TIME)
       {
         // If this was the last segment
         if(iterator >= nsetpoints - 1)
