@@ -167,7 +167,7 @@ int main()
       if(difftime(time(0),start) > DRIVE_TIME)
       {
         // If this was the last segment
-        if(iterator >= nsetpoints - 1)
+        if(iterator >= nsetpoints)
         {
           iterator = 0;
           substate.mode = PAUSED;
