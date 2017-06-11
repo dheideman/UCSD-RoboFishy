@@ -36,6 +36,10 @@
 #define INT_SAT 10		// upper limit of integral windup
 #define DINT_SAT 10		// upper limit of depth integral windup
 
+// Pitch/Roll limits
+#define ROLL_LIMIT    30  // degrees
+#define PITCH_LIMIT   30  // degrees
+
 // Fluid Densities in kg/m^3
 #define DENSITY_FRESHWATER 997
 #define DENSITY_SALTWATER 1029
@@ -50,8 +54,12 @@
 #define STOP_TIME 10		// seconds
 
 // Leak Sensor Inpu and Power Pin
-#define LEAKPIN 27		// connected to GPIO 27
-#define LEAKPOWERPIN 17 // providing Vcc to leak board
+#define LEAKPIN       27	// connected to GPIO 27
+#define LEAKPOWERPIN  17  // providing Vcc to leak board
+
+// Time Per Straight Leg of "Path"
+#define DRIVE_TIME    4   // seconds
+
 
 /******************************************************************************
  * Declare Threads
@@ -94,6 +102,10 @@ float starmotorspeed = 0;
 
 // Start time for stop timer
 time_t start;
+
+// Setpoint array
+float setpoints[] = {0, 90, 180, -90, 0};
+int   nsetpoints = 5;
 
 /******************************************************************************
 * Main Function
@@ -141,6 +153,8 @@ int main()
 
 	// Start timer!
 	start = time(0);
+	
+	int iterator = 0;
 
 	// We're ready to run.  Kinda.  Pause first
 	substate.mode = PAUSED;
@@ -149,8 +163,35 @@ int main()
 	while(substate.mode != STOPPED)
 	{
 		// Check if we've passed the stop time
-		if(difftime(time(0),start) > STOP_TIME)
-			substate.mode = PAUSED;
+// 		if(difftime(time(0),start) > STOP_TIME)
+// 			substate.mode = PAUSED;
+    if(substate.mode == RUNNING)
+    {
+      // Change the setpoint every DRIVE_TIME seconds
+      if(difftime(time(0),start) > DRIVE_TIME)
+      {
+        // If this was the last segment
+        if(iterator >= nsetpoints)
+        {
+          iterator = 0;
+          substate.mode = PAUSED;
+        }
+        else
+        {
+          // Reset timer
+          start = time(0);
+          
+          // Set new setpoint
+          yaw_pid.setpoint = setpoints[iterator];
+          
+          // Increment iterator
+          iterator++;
+          
+        } // end if iterator
+        
+      } // end if difftime
+      
+    } // end if RUNNING
 
 		// Sleep a little
 		auv_usleep(100000);
@@ -403,11 +444,31 @@ void *safety_thread(void* arg)
 			printf("\nLEAK DETECTED! Shutting down...\n");
 			continue;
 		}
+		
+		// Check IMU accelerometer for too much pitch
+		if(  (float)fabs(substate.imu.pitch) > PITCH_LIMIT )
+		{
+		  substate.mode = STOPPED;
+			//logFile << "Shut down due to excessive pitch (PITCH_LIMIT deg)\n";
+			char accel[100];
+			sprintf(accel, "Pitch: %5.2f  Roll: %5.2f\n",
+				substate.imu.pitch, substate.imu.roll);
+		}
+		
+		// Check IMU accelerometer for too much roll
+		if( (float)fabs(substate.imu.roll) > ROLL_LIMIT )
+		{
+		  substate.mode = STOPPED;
+			//logFile << "Shut down due to excessive roll (ROLL_LIMIT deg)\n";
+			char accel[100];
+			sprintf(accel, "Pitch: %5.2f  Roll: %5.2f\n",
+				substate.imu.pitch, substate.imu.roll);
+		}
 
 		// Check IMU accelerometer for collision (1+ g detected)
 		if(  (float)fabs(substate.imu.x_acc) > 1.0*GRAVITY
 			|| (float)fabs(substate.imu.y_acc) > 1.0*GRAVITY
-			|| (float)fabs(substate.imu.z_acc) > 1.0*GRAVITY )
+			|| (float)fabs(substate.imu.z_acc) > 2.0*GRAVITY )
 		{
 			substate.mode = STOPPED;
 			//logFile << "Shut down due to excessive acceleration (1 g)\n";
@@ -482,13 +543,14 @@ void *safety_thread(void* arg)
 
     // Start RUNNING again
     substate.mode = RUNNING;
-
+    
+    // Restart timer!
+	  //start = time(0);
+	  
 		// Wait for mode to pause again
 		while (substate.mode == RUNNING) {
 			auv_msleep(100);
 		}
-    // Restart timer!
-	  start = time(0);
 
     auv_msleep(1000);
   }
