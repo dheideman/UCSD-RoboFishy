@@ -46,10 +46,6 @@
 #define ROLL_LIMIT    1000  // degrees
 #define PITCH_LIMIT   1000  // degrees
 
-// Fluid Densities in kg/m^3
-#define DENSITY_FRESHWATER 997
-#define DENSITY_SALTWATER 1029
-
 // Acceleration Due to Gravity in m/s^2
 #define GRAVITY 9.81
 
@@ -108,7 +104,7 @@ struct timeval start, now;
 
 // Setpoint array
 float setpoints[] = {0, 90, 180, -90};
-int   nsetpoints = 5;
+int   nsetpoints = 4;
 
 /******************************************************************************
 * Main Function
@@ -168,13 +164,13 @@ int main()
 	{
 		// Check if we've passed the stop time
 		gettimeofday(&now, NULL);
- 		if((now.tv_sec - start.tv_sec) > STOP_TIME)
- 			substate.mode = STOPPED;
-/*
+// 		if((now.tv_sec - start.tv_sec) > STOP_TIME)
+// 			substate.mode = STOPPED;
+
     if(substate.mode == RUNNING)
     {
       // Change the setpoint every DRIVE_TIME seconds
-      if(difftime(time(0),start) > DRIVE_TIME)
+      if((now.tv_sec - start.tv_sec) > DRIVE_TIME*(iterator + 1))
       {
         // If this was the last segment
         if(iterator >= nsetpoints)
@@ -184,11 +180,8 @@ int main()
         }
         else
         {
-          // Reset timer
-          start = time(0);
-
           // Set new setpoint
-         // yaw_pid.setpoint = setpoints[iterator];
+          yaw_pid.setpoint = setpoints[iterator];
           // Increment iterator
           iterator++;
 
@@ -197,7 +190,7 @@ int main()
       } // end if difftime
 
     } // end if RUNNING
-*/
+    
 		// Sleep a little
 		auv_usleep(100000);
 	}
