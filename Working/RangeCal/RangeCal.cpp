@@ -140,6 +140,13 @@ int main(int argc, char** argv)
   cap.set(CV_CAP_PROP_FRAME_HEIGHT,720);
 //  cap.set(CV_CAP_PROP_FRAME_WIDTH,640);
 //  cap.set(CV_CAP_PROP_FRAME_HEIGHT,480);
+
+  // Grab all 5 images from the frame buffer in order to clear the buffer
+  for(int i=0; i<5; i++)
+  {
+    cap.grab();
+  }
+  printf("%s\n","BUFFER CLEARED" );
   
   // Open data output file:
   ofstream datafile;
