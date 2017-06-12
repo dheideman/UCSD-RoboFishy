@@ -154,7 +154,7 @@ int main()
 	gettimeofday(&start, NULL);
 
 	int iterator = 0;
-	yaw_pid.setpoint = setpoints[iterator];
+	//yaw_pid.setpoint = setpoints[iterator];
 
 	// We're ready to run.  Kinda.  Pause first
 //	substate.mode = PAUSED;
@@ -171,7 +171,7 @@ int main()
     if(substate.mode == RUNNING)
     {
       // Change the setpoint every DRIVE_TIME seconds
-      if((now.tv_sec - start.tv_sec) > DRIVE_TIME*(iterator + 1))
+      if((now.tv_sec - start.tv_sec) > DRIVE_TIME*iterator)
       {
         // If this was the last segment
         if(iterator >= nsetpoints)
