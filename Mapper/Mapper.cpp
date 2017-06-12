@@ -154,6 +154,7 @@ int main()
 	gettimeofday(&start, NULL);
 
 	int iterator = 0;
+	yaw_pid.setpoint = setpoints[iterator];
 
 	// We're ready to run.  Kinda.  Pause first
 //	substate.mode = PAUSED;
@@ -363,10 +364,12 @@ void *navigation_thread(void* arg)
 	ms5837 = read_pressure_fifo();
 
 	// Set setpoint to current heading
+/*
   if( substate.imu.yaw > 180 )
     yaw_pid.setpoint = substate.imu.yaw - 360;
   else
     yaw_pid.setpoint = substate.imu.yaw;
+*/
 
 	//Set depth setpoint to current depth
 	depth_pid.setpoint = ms5837.depth + 0.3;
