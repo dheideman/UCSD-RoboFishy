@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/time.h>
 #include <signal.h>		// capture ctrl+c
 
 // Core Module
