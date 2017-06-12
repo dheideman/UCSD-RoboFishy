@@ -13,6 +13,9 @@
 #define SAMPLE_RATE 200 // sample rate of main control loop (Hz)
 #define DT 0.005				// timestep; make sure this is equal to 1/SAMPLE_RATE!
 
+// Print/Logging Rate
+#define LOG_RATE    10  // Hz
+
 // Conversion Factors
 #define UNITS_KPA 0.1		// converts pressure from mbar to kPa
 
@@ -201,14 +204,26 @@ int main()
 }
 
 /******************************************************************************
-* Depth Thread
+* Logging Thread
 *
-* For Recording Depth & Determining If AUV is in Water or not
+* Writes data to screen and to files
 ******************************************************************************/
 
 void *depth_thread(void* arg)
 {
-	printf("Depth Thread Started\n");
+  // Start the Kenny Loggings Thread!
+	printf("Logging Thread Started\n");
+	
+	// open a log to record general data
+	std::fstream genlog;
+	genlog.open("mapper.log");
+	
+	// open a log to record yaw-related information
+	std::fstream yawlog;
+	yawlog.open("yawcontrol.log");
+	
+	// Create a string stream to store information for printing and logging
+	std::stringstream output;
 
 	while(substate.mode!=STOPPED)
 	{
@@ -221,12 +236,34 @@ void *depth_thread(void* arg)
     // Only print while RUNNING
     if(substate.mode == RUNNING)
     {
-      printf("\nCurrent Depth:\t %.3f m, Current water temp:\t %.3f C\n",
-              ms5837.depth, ms5837.water_temp);
-
-      printf("Current battery temp:\t %.2f\n", read_temp_fifo());
+      /* Generate general output */
+      
+      // Clear string stream
+      output.str(std::string());
+      
+      // Print yaw
+      output << "Yaw: ", substate.imu.yaw;
+      output << "Yaw setpoint: " << yaw_pid.setpoint << std::endl;
+      
+      // Write a newline
+      output << std::endl;
+      
+      // Print depth
+      output << "Depth: " << ms5837.depth;
+      output << "Depth setpoint: " << depth_pid.setpoint;
+      output << "Water temp: " << ms5837.water_temp << " C" << std::endl;
+      
+      // Write a newline
+      output << std::endl;
+      
+      // Print battery temperature
+      output << "Battery temp: " << read_temp_fifo() << " C" << std::endl;
+      
+      // Write a newline
+      output << std::endl;
 
       // Write IMU data
+/*
       printf("\nYaw: %5.2f Roll: %5.2f Pitch: %5.2f p: %5.2f q: %5.2f r: %5.2f \nSys: %i Gyro: "
         "%i Accel: %i Mag: %i X_acc: %f Y_acc: %f Z_acc: %f\n ",
          substate.imu.yaw,	substate.imu.roll,	substate.imu.pitch,
@@ -234,9 +271,37 @@ void *depth_thread(void* arg)
          substate.imu.sys,	substate.imu.gyro,	substate.imu.accel,
          substate.imu.mag,	substate.imu.x_acc,	substate.imu.y_acc,
          substate.imu.z_acc);
+*/
+      
+      // Write a newline
+//      output << std::endl;
+      
+      // Write to general log file
+      genlog << output.str();
+      
+      // Write to output
+      std::cout << output.str();
+      
+      
+      /* Generate an output */
+      
+      // Yaw controller info
+      double timestamp = difftime(time(0),start);
+      double yaw = substate.imu.yaw;
+      double setpoint = yaw_pid.setpoint;
+      
+      // Write to file
+      yawlog << timestamp << "," << yaw << "'" << setpoint << ",";
+      yawlog << portmotorspeed << "," << starmotorspeed << std::endl;
+      
     }
-		auv_msleep(1000);
+		auv_msleep(1000/LOG_RATE);
 	}
+	
+	// Close log files
+	genlog.close();
+	yawlog.close();
+	
 	pthread_exit(NULL);
 }//*/
 
@@ -323,15 +388,6 @@ void *navigation_thread(void* arg)
 		// Only tell motors to run if we are RUNNING
     if( substate.mode == RUNNING)
     {
-			std::cout << std::endl;
-      // Print yaw
-	    printf("Yaw:%5.0f  ", substate.imu.yaw);
-      printf("Yaw setpoint:%5.0f\n", yaw_pid.setpoint);
-
-      // Print depth
-      printf("Depth:%5.2f  ",ms5837.depth);
-      printf("Depth setpoint:%5.2f\n",depth_pid.setpoint);
-
       //calculate yaw controller output
       motorpercent = marchPID(yaw_pid, substate.imu.yaw);
 
@@ -346,11 +402,6 @@ void *navigation_thread(void* arg)
 
       //set vertical thruster
       //vertmotorspeed = set_motor(2, depthpercent);
-
-      // Print motor speeds
-      printf("Port Output:%5.2f  ", portmotorspeed);
-      printf("Star Output:%5.2f  ", starmotorspeed);
-      printf("Vert Output: %5.2f\n", vertmotorspeed);
 		} // end if RUNNING
 		else if( substate.mode == PAUSED)
 		{
@@ -392,7 +443,7 @@ void *safety_thread(void* arg)
 	printf("Safety Thread Started\n");
 
 	// open a log to record reasons for shutting down
-	std::ofstream logFile;
+	std::fstream logFile;
 	logFile.open("safety.log");
 
 	// Leak detection pins
