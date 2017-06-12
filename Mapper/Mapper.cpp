@@ -72,7 +72,7 @@
 ******************************************************************************/
 
 void *navigation_thread(void* arg);
-void *depth_thread(void* arg);
+void *log_thread(void* arg);
 void *safety_thread(void* arg);
 void *userInterface(void* arg);
 
