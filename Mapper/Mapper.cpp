@@ -245,7 +245,7 @@ void *log_thread(void* arg)
       output.str(std::string());
       
       // Print yaw
-      output << "Yaw: ", substate.imu.yaw;
+      output << "Yaw: " << substate.imu.yaw;
       output << "Yaw setpoint: " << yaw_pid.setpoint << std::endl;
       
       // Write a newline
