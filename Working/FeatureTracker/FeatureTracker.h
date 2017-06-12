@@ -31,7 +31,7 @@
 #define DEBUG
 
 #define OUTPUT_VIDEO_NAME "DemoVideo.avi"
-#define FRAME_WIDTH       640
-#define FRAME_HEIGHT      480
+//#define FRAME_WIDTH       640
+//#define FRAME_HEIGHT      480
 
 #define MATCH_CIRCLE_R    5      // Match circle radius, px

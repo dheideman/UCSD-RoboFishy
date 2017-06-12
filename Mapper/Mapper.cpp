@@ -27,7 +27,7 @@
 ******************************************************************************/
 
 // Yaw Controller
-#define KP_YAW 0.0003
+#define KP_YAW 0.001
 #define KI_YAW 0
 #define KD_YAW 0
 
@@ -60,7 +60,7 @@
 #define LEAKPOWERPIN  17  // providing Vcc to leak board
 
 // Time Per Straight Leg of "Path"
-#define DRIVE_TIME    6   // seconds
+#define DRIVE_TIME    10   // seconds
 
 
 /******************************************************************************
@@ -103,8 +103,12 @@ float starmotorspeed = 0;
 struct timeval start, now;
 
 // Setpoint array
-float setpoints[] = {0, 90, 180, -90};
-int   nsetpoints = 4;
+//float setpoints[] = {0, 45, 90, 135, 180, -135, -90, -45};
+//int   nsetpoints = 8;
+//float setpoints[] = {0, 90, 180, -90};
+//int   nsetpoints = 4;
+float deltasetpoint = 180;
+int   nsetpointchanges = 2;
 
 /******************************************************************************
 * Main Function
@@ -149,12 +153,15 @@ int main()
  	destroyTAttr();
 
   printf("Threads started\n");
+  
+  auv_msleep(100);
 
 	// Start timer!
 	gettimeofday(&start, NULL);
 
 	int iterator = 0;
-	//yaw_pid.setpoint = setpoints[iterator];
+	yaw_pid.setpoint = substate.imu.yaw;
+  if(yaw_pid.setpoint > 180) yaw_pid.setpoint -= 360;
 
 	// We're ready to run.  Kinda.  Pause first
 //	substate.mode = PAUSED;
@@ -171,10 +178,11 @@ int main()
     if(substate.mode == RUNNING)
     {
       // Change the setpoint every DRIVE_TIME seconds
-      if((now.tv_sec - start.tv_sec) > DRIVE_TIME*iterator)
+      if((now.tv_sec - start.tv_sec) > DRIVE_TIME*(iterator+1))
       {
         // If this was the last segment
-        if(iterator >= nsetpoints)
+//        if(iterator >= nsetpoints)
+        if(iterator >= (nsetpointchanges-1))
         {
           iterator = 0;
           substate.mode = STOPPED;
@@ -182,7 +190,9 @@ int main()
         else
         {
           // Set new setpoint
-          yaw_pid.setpoint = setpoints[iterator];
+          yaw_pid.setpoint += deltasetpoint;
+          if(yaw_pid.setpoint > 180) yaw_pid.setpoint -= 360;
+
           // Increment iterator
           iterator++;
 
@@ -312,7 +322,7 @@ void *navigation_thread(void* arg)
 
   float yaw = 0; 			  //Local variable for if statements
   float motorpercent;
-  float basespeed = 0.2;
+  float basespeed = 0.95;
   float err;
   float depthpercent;
   float vertmotorspeed;
