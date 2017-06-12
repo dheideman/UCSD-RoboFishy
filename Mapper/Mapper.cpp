@@ -104,7 +104,7 @@ float portmotorspeed = 0;
 float starmotorspeed = 0;
 
 // Start time for stop timer
-time_t start;
+struct timeval start, now;
 
 // Setpoint array
 float setpoints[] = {0, 90, 180, -90};
@@ -155,7 +155,7 @@ int main()
   printf("Threads started\n");
 
 	// Start timer!
-	start = time(0);
+	gettimeofday(&start, NULL);
 
 	int iterator = 0;
 
@@ -167,7 +167,8 @@ int main()
 	while(substate.mode != STOPPED)
 	{
 		// Check if we've passed the stop time
- 		if(difftime(time(0),start) > STOP_TIME)
+		gettimeofday(&now, NULL);
+ 		if((now.tv_sec - start.tv_sec) > STOP_TIME)
  			substate.mode = STOPPED;
 /*
     if(substate.mode == RUNNING)
@@ -283,7 +284,9 @@ void *log_thread(void* arg)
       /* Generate an output */
       
       // Yaw controller info
-      double timestamp = difftime(time(0),start);
+      gettimeofday(&now, NULL);
+      double timestamp = (now.tv_sec - start.tv_sec)*1000 + 
+                         (now.tv_usec - start.tv_usec)/1000;
       double yaw = substate.imu.yaw;
       double setpoint = yaw_pid.setpoint;
       
@@ -594,7 +597,7 @@ void *safety_thread(void* arg)
     substate.mode = RUNNING;
 
     // Restart timer!
-	  //start = time(0);
+	  //gettimeofday(&start, NULL);
 
 		// Wait for mode to pause again
 		while (substate.mode == RUNNING) {
