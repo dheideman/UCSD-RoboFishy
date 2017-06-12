@@ -19,6 +19,9 @@
 #include <sched.h>
 #include <unistd.h>
 
+// Timer
+#include <sys/time.h>
+
 // Core
 #include "../../Modules/Core/Core.h"
 
@@ -31,9 +34,11 @@
 ///////////////
 
 // Odometry Match Constants
-#define MIN_MINDIST       10
+#define MIN_MINDIST       10    // pixels
 #define MAX_MATCHES       500
 
+// Odometry Thread Rate
+#define ODOM_RATE         1     // Hz
 
 //////////////////////
 // Type Definitions //
@@ -51,7 +56,7 @@ typedef struct odom_data_t
   std::vector<cv::Point2f>  newpts;       // The matched points in the new image
   std::vector<cv::Point2f>  oldpts;       // The matched points in the new image
   
-  cv::Mat                   tf;           // Transformation matrix between images
+  cv::Mat                   tf;           // Transformation matrix btwn images
 } odom_data_t;
 
 
