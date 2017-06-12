@@ -14,7 +14,10 @@
 #define DT 0.005				// timestep; make sure this is equal to 1/SAMPLE_RATE!
 
 // Print/Logging Rate
-#define LOG_RATE    10  // Hz
+#define LOG_RATE      10  // Hz
+
+// Safety Thread Rate
+#define SAFETY_RATE   1  // Hz
 
 // Conversion Factors
 #define UNITS_KPA 0.1		// converts pressure from mbar to kPa
@@ -133,7 +136,7 @@ int main()
 
 	// Thread handles
 	pthread_t navigationThread;
-	pthread_t depthThread;
+	pthread_t logThread;
 	pthread_t safetyThread;
 	//pthread_t disarmlaserThread;
 	pthread_t uiThread;
@@ -142,7 +145,7 @@ int main()
 	// Create threads using modified attributes
 	//pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
 	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
-	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
+	pthread_create (&logThread, &tattrmed, log_thread, NULL);
 	pthread_create (&navigationThread, &tattrmed, navigation_thread, NULL);
 //	pthread_create (&uiThread, &tattrmed, userInterface, NULL);
 
@@ -209,7 +212,7 @@ int main()
 * Writes data to screen and to files
 ******************************************************************************/
 
-void *depth_thread(void* arg)
+void *log_thread(void* arg)
 {
   // Start the Kenny Loggings Thread!
 	printf("Logging Thread Started\n");
@@ -528,6 +531,9 @@ void *safety_thread(void* arg)
 			printf("\nCollision detected. Shutting down...");
 			continue;
 		}
+		
+		// Sleep a bit
+		auv_msleep(1000/SAFETY_RATE);
 	}
 	// close log file
 	logFile.close();
