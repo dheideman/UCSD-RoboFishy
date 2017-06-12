@@ -408,7 +408,7 @@ void *safety_thread(void* arg)
 			substate.mode = STOPPED;
 			logFile << "Shut down due to max depth being reached\n";
 			logFile << "Stop depth: STOP_DEPTH\n";
-			logFile << "Current depth: " << std::to_string(ms5837.depth) << "\n";
+			logFile << "Current depth: " << ms5837.depth << "\n";
 			printf("\nWe're too deep! Shutting down...\n");
 			continue;
 		}
@@ -419,7 +419,7 @@ void *safety_thread(void* arg)
 			substate.mode = STOPPED;
 			logFile << "Shut down due to max battery temp being reached\n";
 			logFile << "Stop temp: STOP_TEMP\n";
-			logFile << "Current temp: " << std::to_string(_temp) << "\n";
+			logFile << "Current temp: " << _temp << "\n";
 			printf("\nMax battery temp reached: ( %5.2f C)! Shutting down...\n",_temp);
 			continue;
 		}
@@ -430,7 +430,7 @@ void *safety_thread(void* arg)
 		if (_cpu_temp > 80000) {
 			logFile << "Shut down due to max cpu temp being reached\n";
 			logFile << "Stop temp: 80 C\n";
-			logFile << "Current temp: " << std::to_string(_cpu_temp) << "\n";
+			logFile << "Current temp: " << _cpu_temp << "\n";
 			printf("CPU is above 80 C. Shutting down...\n");
 			substate.mode = STOPPED;
 		}
