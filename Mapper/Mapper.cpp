@@ -225,7 +225,7 @@ void *log_thread(void* arg)
 	// open a log to record yaw-related information
 	std::ofstream yawlog;
 	yawlog.open("yawcontrol.log");
-	
+	yawlog.precision(10);
 	// Create a string stream to store information for printing and logging
 	std::stringstream output;
 
@@ -291,7 +291,7 @@ void *log_thread(void* arg)
       double setpoint = yaw_pid.setpoint;
       
       // Write to file
-      yawlog << timestamp << "," << yaw << "'" << setpoint << ",";
+      yawlog << timestamp << "," << yaw << "," << setpoint << ",";
       yawlog << portmotorspeed << "," << starmotorspeed << std::endl;
       
     }
