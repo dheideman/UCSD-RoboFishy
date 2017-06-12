@@ -218,11 +218,11 @@ void *log_thread(void* arg)
 	printf("Logging Thread Started\n");
 	
 	// open a log to record general data
-	std::fstream genlog;
+	std::ofstream genlog;
 	genlog.open("mapper.log");
 	
 	// open a log to record yaw-related information
-	std::fstream yawlog;
+	std::ofstream yawlog;
 	yawlog.open("yawcontrol.log");
 	
 	// Create a string stream to store information for printing and logging
@@ -245,19 +245,13 @@ void *log_thread(void* arg)
       output.str(std::string());
       
       // Print yaw
-      output << "Yaw: " << substate.imu.yaw;
+      output << "Yaw: " << substate.imu.yaw << "\t";
       output << "Yaw setpoint: " << yaw_pid.setpoint << std::endl;
       
-      // Write a newline
-      output << std::endl;
-      
       // Print depth
-      output << "Depth: " << ms5837.depth;
-      output << "Depth setpoint: " << depth_pid.setpoint;
+      output << "Depth: " << ms5837.depth << "\t";
+      output << "Depth setpoint: " << depth_pid.setpoint << "\t";
       output << "Water temp: " << ms5837.water_temp << " C" << std::endl;
-      
-      // Write a newline
-      output << std::endl;
       
       // Print battery temperature
       output << "Battery temp: " << read_temp_fifo() << " C" << std::endl;
@@ -446,7 +440,7 @@ void *safety_thread(void* arg)
 	printf("Safety Thread Started\n");
 
 	// open a log to record reasons for shutting down
-	std::fstream logFile;
+	std::ofstream logFile;
 	logFile.open("safety.log");
 
 	// Leak detection pins
