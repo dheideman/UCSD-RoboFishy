@@ -107,9 +107,8 @@ struct timeval start, now;
 //int   nsetpoints = 8;
 //float setpoints[] = {0, 90, 180, -90};
 //int   nsetpoints = 4;
-float deltasetpoint = 180;
-int   nsetpointchanges = 2;
-
+float deltasetpoint = 45;
+int   nsetpointchanges = 16;
 /******************************************************************************
 * Main Function
 ******************************************************************************/
