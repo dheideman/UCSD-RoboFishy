@@ -10,8 +10,8 @@
 #include <unistd.h>
 
 // Sampling Values
-#define SAMPLE_RATE 200 // sample rate of main control loop (Hz)
-#define DT 0.005				// timestep; make sure this is equal to 1/SAMPLE_RATE!
+#define SAMPLE_RATE 50  // sample rate of main control loop (Hz)
+#define DT 0.02 				// timestep; make sure this is equal to 1/SAMPLE_RATE!
 
 // Print/Logging Rate
 #define LOG_RATE      10  // Hz
