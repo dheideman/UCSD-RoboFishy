@@ -72,11 +72,11 @@ int main(int argc, char** argv)
   pthread_create (&odometryThread, &tattrhigh, visualOdometry, NULL);
   
   // Destroy the thread attributes
-  destroyTAttr()
+  destroyTAttr();
   
   
   // Wait for stuff to initialize
-  sleep(1);
+  auv_msleep(1000);
   
   // MAIN LOOP!
   while (waitKey(1) != 27)
@@ -138,7 +138,7 @@ int main(int argc, char** argv)
     
     // Show detected matches
     imshow("Good Matches & Object detection", matchesimg);
-    usleep(10*1000);
+    auv_msleep(1000);
   }
   return 0;
 }

@@ -109,7 +109,7 @@ void start_read_pressure(void)
 {
   // Create flag for continuing
   bool success = false;
-  while (!success && (substate.mode!=STOPPED))
+//  while (!success && (substate.mode!=STOPPED))
   {
     // clear fifo file //
     std::FILE* fd = fopen("pressure.fifo","w");

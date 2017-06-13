@@ -73,9 +73,9 @@ int main()
 	}
 
 	// Shut off motors
-	pwmWrite(PIN_BASE + 0, 2647);
-	pwmWrite(PIN_BASE + 1, 2647);
-	pwmWrite(PIN_BASE + 2, 2647);
+	//pwmWrite(PIN_BASE + 0, 2647);
+	//pwmWrite(PIN_BASE + 1, 2647);
+	//pwmWrite(PIN_BASE + 2, 2647);
 
 	return 0;
 }

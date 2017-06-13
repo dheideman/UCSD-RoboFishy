@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"ms",
+				"ms5837"
+			],
+			[
+				"depth",
+				"depth_pid"
+			],
+			[
 				"moto",
 				"motor_percent"
 			],
@@ -236,27 +244,35 @@
 	"buffers":
 	[
 		{
-			"file": "Mapper.cpp",
+			"file": "/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Mapper/Mapper.cpp",
 			"settings":
 			{
-				"buffer_size": 10240,
+				"buffer_size": 12267,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "read_imu.py",
+			"file": "/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Modules/Core/Core.cpp",
 			"settings":
 			{
-				"buffer_size": 4760,
+				"buffer_size": 4583,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "IMU_Functions.cpp",
+			"file": "/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Mapper/Controller_Functions.cpp",
 			"settings":
 			{
-				"buffer_size": 2120,
+				"buffer_size": 2975,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Mapper/Mapper.h",
+			"settings":
+			{
+				"buffer_size": 2975,
 				"line_ending": "Windows"
 			}
 		}
@@ -294,11 +310,16 @@
 	"expanded_folders":
 	[
 		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy",
-		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working",
-		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics"
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Mapper",
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Modules",
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Modules/Core"
 	],
 	"file_history":
 	[
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Mapper/Cleanup_AUV.cpp",
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Mapper.cpp",
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/IMU_Functions.cpp",
+		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/read_imu.py",
 		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Pressure_Sensor_Functions.cpp",
 		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Controls.cpp",
 		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Mapper.h",
@@ -306,10 +327,8 @@
 		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Modules/Core/Core.h",
 		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Makefile",
 		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Scripps_AUV_Init.cpp",
-		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Mapper.cpp",
 		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Disarm_Laser.cp",
 		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Modules/Camera/Disarm_Laser.cp",
-		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/IMU_Functions.cpp",
 		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Temperature_Sensor_Functions.cpp",
 		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Functions.cpp",
 		"/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Working/Electronics/Libraries.h",
@@ -424,9 +443,7 @@
 		"/C/Users/Grant/AppData/Local/Temp/scp49795/home/pi/pca9685-master/Motors/MS5837.py",
 		"/C/Users/Grant/Downloads/scripps_auv.h",
 		"/C/Users/Grant/Downloads/scripps_auv.c",
-		"/C/Users/Grant/Downloads/feedback.c",
-		"/C/Users/Grant/AppData/Local/Temp/scp51212/home/pi/pca9685-master/Motors/MS5837.c",
-		"/C/Users/Grant/AppData/Local/Temp/scp49122/home/pi/pca9685-master/Motors/Libraries.h"
+		"/C/Users/Grant/Downloads/feedback.c"
 	],
 	"find":
 	{
@@ -444,6 +461,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"Head",
 			"yaw_controller",
 			"imu",
 			"substate",
@@ -560,29 +578,27 @@
 			[
 				{
 					"buffer": 0,
-					"file": "Mapper.cpp",
+					"file": "/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Mapper/Mapper.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 10240,
+						"buffer_size": 12267,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5436,
-								5436
+								847,
+								847
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/C++/C++.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 5692.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -590,49 +606,19 @@
 				},
 				{
 					"buffer": 1,
-					"file": "read_imu.py",
-					"semi_transient": false,
+					"file": "/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Modules/Core/Core.cpp",
+					"semi_transient": true,
 					"settings":
 					{
-						"buffer_size": 4760,
+						"buffer_size": 4583,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3408,
-								3408
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 103.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "IMU_Functions.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2120,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1596,
-								1596
+								0,
+								0
 							]
 						],
 						"settings":
@@ -641,8 +627,72 @@
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
+						"translation.x": -0.0,
+						"translation.y": 393.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 2,
+					"file": "/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Mapper/Controller_Functions.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2975,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1161,
+								1161
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
 						"translation.x": 0.0,
-						"translation.y": 729.0,
+						"translation.y": 222.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/C/Users/Grant/Documents/GitHub/UCSD-Robofishy/Mapper/Mapper.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2975,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1302,
+								1302
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 560.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
@@ -668,11 +718,18 @@
 				0,
 				1,
 				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
 			]
 		],
 		"cols":
 		[
 			0.0,
+			0.5,
 			1.0
 		],
 		"rows":
@@ -723,14 +780,30 @@
 	"selected_group": 0,
 	"settings":
 	{
+		"last_automatic_layout":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
+			]
+		]
 	},
 	"show_minimap": true,
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 155.0,
+	"side_bar_width": 222.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
+		"max_columns": 2
 	}
 }

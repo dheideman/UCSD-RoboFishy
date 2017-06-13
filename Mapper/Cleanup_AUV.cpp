@@ -19,7 +19,7 @@ int cleanup_auv()
 	printf("\nExiting Cleanly\n");
 
 	// Let final threads clean up
-	auv_usleep(1000000);
+	auv_usleep(2000000);
 
   // kill python scripts
   char imu_cmd[100];
