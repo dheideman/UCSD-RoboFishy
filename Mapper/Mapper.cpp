@@ -13,6 +13,12 @@
 #define SAMPLE_RATE 200 // sample rate of main control loop (Hz)
 #define DT 0.005				// timestep; make sure this is equal to 1/SAMPLE_RATE!
 
+// Print/Logging Rate
+#define LOG_RATE      10  // Hz
+
+// Safety Thread Rate
+#define SAFETY_RATE   1  // Hz
+
 // Conversion Factors
 #define UNITS_KPA 0.1		// converts pressure from mbar to kPa
 
@@ -21,9 +27,9 @@
 ******************************************************************************/
 
 // Yaw Controller
-#define KP_YAW 0.0003
+#define KP_YAW 0.001
 #define KI_YAW 0
-#define KD_YAW 0.0001
+#define KD_YAW 0
 
 // Depth Controller
 #define KP_DEPTH 0.1
@@ -37,12 +43,8 @@
 #define DINT_SAT 10		// upper limit of depth integral windup
 
 // Pitch/Roll limits
-#define ROLL_LIMIT    30  // degrees
-#define PITCH_LIMIT   30  // degrees
-
-// Fluid Densities in kg/m^3
-#define DENSITY_FRESHWATER 997
-#define DENSITY_SALTWATER 1029
+#define ROLL_LIMIT    1000  // degrees
+#define PITCH_LIMIT   1000  // degrees
 
 // Acceleration Due to Gravity in m/s^2
 #define GRAVITY 9.81
@@ -51,14 +53,14 @@
 #define DEPTH_START 0.05 // starting depth (m)
 
 // Stop Timer
-#define STOP_TIME 10		// seconds
+#define STOP_TIME 20		// seconds
 
 // Leak Sensor Inpu and Power Pin
 #define LEAKPIN       27	// connected to GPIO 27
 #define LEAKPOWERPIN  17  // providing Vcc to leak board
 
 // Time Per Straight Leg of "Path"
-#define DRIVE_TIME    4   // seconds
+#define DRIVE_TIME    10   // seconds
 
 
 /******************************************************************************
@@ -66,7 +68,7 @@
 ******************************************************************************/
 
 void *navigation_thread(void* arg);
-void *depth_thread(void* arg);
+void *log_thread(void* arg);
 void *safety_thread(void* arg);
 void *userInterface(void* arg);
 
@@ -98,11 +100,15 @@ float portmotorspeed = 0;
 float starmotorspeed = 0;
 
 // Start time for stop timer
-time_t start;
+struct timeval start, now;
 
 // Setpoint array
-float setpoints[] = {0, 90, 180, -90};
-int   nsetpoints = 5;
+//float setpoints[] = {0, 45, 90, 135, 180, -135, -90, -45};
+//int   nsetpoints = 8;
+//float setpoints[] = {0, 90, 180, -90};
+//int   nsetpoints = 4;
+float deltasetpoint = 180;
+int   nsetpointchanges = 2;
 
 /******************************************************************************
 * Main Function
@@ -130,7 +136,7 @@ int main()
 
 	// Thread handles
 	pthread_t navigationThread;
-	pthread_t depthThread;
+	pthread_t logThread;
 	pthread_t safetyThread;
 	//pthread_t disarmlaserThread;
 	pthread_t uiThread;
@@ -139,47 +145,53 @@ int main()
 	// Create threads using modified attributes
 	//pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
 	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
-	pthread_create (&depthThread, &tattrmed, depth_thread, NULL);
+	pthread_create (&logThread, &tattrmed, log_thread, NULL);
 	pthread_create (&navigationThread, &tattrmed, navigation_thread, NULL);
-	pthread_create (&uiThread, &tattrmed, userInterface, NULL);
+//	pthread_create (&uiThread, &tattrmed, userInterface, NULL);
 
   // Destroy the thread attributes
  	destroyTAttr();
 
   printf("Threads started\n");
+  
+  auv_msleep(100);
 
 	// Start timer!
-	start = time(0);
+	gettimeofday(&start, NULL);
 
 	int iterator = 0;
+	yaw_pid.setpoint = substate.imu.yaw;
+  if(yaw_pid.setpoint > 180) yaw_pid.setpoint -= 360;
 
 	// We're ready to run.  Kinda.  Pause first
-	substate.mode = PAUSED;
-
-	// Run main while loop, wait until it's time to stop
+//	substate.mode = PAUSED;
+  substate.mode = RUNNING;
+	
+  // Run main while loop, wait until it's time to stop
 	while(substate.mode != STOPPED)
 	{
 		// Check if we've passed the stop time
-// 		if(difftime(time(0),start) > STOP_TIME)
-// 			substate.mode = PAUSED;
+		gettimeofday(&now, NULL);
+// 		if((now.tv_sec - start.tv_sec) > STOP_TIME)
+// 			substate.mode = STOPPED;
+
     if(substate.mode == RUNNING)
     {
       // Change the setpoint every DRIVE_TIME seconds
-      if(difftime(time(0),start) > DRIVE_TIME)
+      if((now.tv_sec - start.tv_sec) > DRIVE_TIME*(iterator+1))
       {
         // If this was the last segment
-        if(iterator >= nsetpoints)
+//        if(iterator >= nsetpoints)
+        if(iterator >= (nsetpointchanges-1))
         {
           iterator = 0;
-          substate.mode = PAUSED;
+          substate.mode = STOPPED;
         }
         else
         {
-          // Reset timer
-          start = time(0);
-
           // Set new setpoint
-          yaw_pid.setpoint = setpoints[iterator];
+          yaw_pid.setpoint += deltasetpoint;
+          if(yaw_pid.setpoint > 180) yaw_pid.setpoint -= 360;
 
           // Increment iterator
           iterator++;
@@ -189,7 +201,7 @@ int main()
       } // end if difftime
 
     } // end if RUNNING
-
+    
 		// Sleep a little
 		auv_usleep(100000);
 	}
@@ -200,14 +212,26 @@ int main()
 }
 
 /******************************************************************************
-* Depth Thread
+* Logging Thread
 *
-* For Recording Depth & Determining If AUV is in Water or not
+* Writes data to screen and to files
 ******************************************************************************/
 
-void *depth_thread(void* arg)
+void *log_thread(void* arg)
 {
-	printf("Depth Thread Started\n");
+  // Start the Kenny Loggings Thread!
+	printf("Logging Thread Started\n");
+	
+	// open a log to record general data
+	std::ofstream genlog;
+	genlog.open("mapper.log");
+	
+	// open a log to record yaw-related information
+	std::ofstream yawlog;
+	yawlog.open("yawcontrol.log");
+
+	// Create a string stream to store information for printing and logging
+	std::stringstream output;
 
 	while(substate.mode!=STOPPED)
 	{
@@ -220,12 +244,28 @@ void *depth_thread(void* arg)
     // Only print while RUNNING
     if(substate.mode == RUNNING)
     {
-      printf("\nCurrent Depth:\t %.3f m, Current water temp:\t %.3f C\n",
-              ms5837.depth, ms5837.water_temp);
-
-      printf("Current battery temp:\t %.2f\n", read_temp_fifo());
+      /* Generate general output */
+      
+      // Clear string stream
+      output.str(std::string());
+      
+      // Print yaw
+      output << "Yaw: " << substate.imu.yaw << "\t";
+      output << "Yaw setpoint: " << yaw_pid.setpoint << std::endl;
+      
+      // Print depth
+      output << "Depth: " << ms5837.depth << "\t";
+      output << "Depth setpoint: " << depth_pid.setpoint << "\t";
+      output << "Water temp: " << ms5837.water_temp << " C" << std::endl;
+      
+      // Print battery temperature
+      output << "Battery temp: " << read_temp_fifo() << " C" << std::endl;
+      
+      // Write a newline
+      output << std::endl;
 
       // Write IMU data
+/*
       printf("\nYaw: %5.2f Roll: %5.2f Pitch: %5.2f p: %5.2f q: %5.2f r: %5.2f \nSys: %i Gyro: "
         "%i Accel: %i Mag: %i X_acc: %f Y_acc: %f Z_acc: %f\n ",
          substate.imu.yaw,	substate.imu.roll,	substate.imu.pitch,
@@ -233,9 +273,39 @@ void *depth_thread(void* arg)
          substate.imu.sys,	substate.imu.gyro,	substate.imu.accel,
          substate.imu.mag,	substate.imu.x_acc,	substate.imu.y_acc,
          substate.imu.z_acc);
+*/
+      
+      // Write a newline
+//      output << std::endl;
+      
+      // Write to general log file
+      genlog << output.str();
+      
+      // Write to output
+      std::cout << output.str();
+      
+      
+      /* Generate an output */
+      
+      // Yaw controller info
+      gettimeofday(&now, NULL);
+      double timestamp = (now.tv_sec - start.tv_sec)*1000 + 
+                         (now.tv_usec - start.tv_usec)/1000;
+      double yaw = substate.imu.yaw;
+      double setpoint = yaw_pid.setpoint;
+      
+      // Write to file
+      yawlog << timestamp << "," << yaw << "," << setpoint << ",";
+      yawlog << portmotorspeed << "," << starmotorspeed << std::endl;
+      
     }
-		auv_msleep(1000);
+		auv_msleep(1000/LOG_RATE);
 	}
+	
+	// Close log files
+	genlog.close();
+	yawlog.close();
+	
 	pthread_exit(NULL);
 }//*/
 
@@ -252,7 +322,7 @@ void *navigation_thread(void* arg)
 
   float yaw = 0; 			  //Local variable for if statements
   float motorpercent;
-  float basespeed = 0.1;
+  float basespeed = 0.95;
   float err;
   float depthpercent;
   float vertmotorspeed;
@@ -304,10 +374,12 @@ void *navigation_thread(void* arg)
 	ms5837 = read_pressure_fifo();
 
 	// Set setpoint to current heading
+/*
   if( substate.imu.yaw > 180 )
     yaw_pid.setpoint = substate.imu.yaw - 360;
   else
     yaw_pid.setpoint = substate.imu.yaw;
+*/
 
 	//Set depth setpoint to current depth
 	depth_pid.setpoint = ms5837.depth + 0.3;
@@ -322,15 +394,6 @@ void *navigation_thread(void* arg)
 		// Only tell motors to run if we are RUNNING
     if( substate.mode == RUNNING)
     {
-			std::cout << std::endl;
-      // Print yaw
-	    printf("Yaw:%5.0f  ", substate.imu.yaw);
-      printf("Yaw setpoint:%5.0f\n", yaw_pid.setpoint);
-
-      // Print depth
-      printf("Depth:%5.2f  ",ms5837.depth);
-      printf("Depth setpoint:%5.2f\n",depth_pid.setpoint);
-
       //calculate yaw controller output
       motorpercent = marchPID(yaw_pid, substate.imu.yaw);
 
@@ -338,18 +401,13 @@ void *navigation_thread(void* arg)
       depthpercent = marchPID(depth_pid, ms5837.depth);
 
       // Set port motor
-      portmotorspeed = set_motor(0, basespeed + motorpercent);
+      portmotorspeed = set_motor(0, basespeed - motorpercent);
 
       // Set starboard motor
-      starmotorspeed = set_motor(1, basespeed - motorpercent);
+      starmotorspeed = set_motor(1, basespeed + motorpercent);
 
       //set vertical thruster
-      vertmotorspeed = set_motor(2, depthpercent);
-
-      // Print motor speeds
-      printf("Port Output:%5.2f  ", portmotorspeed);
-      printf("Star Output:%5.2f  ", starmotorspeed);
-      printf("Vert Output: %5.2f\n", vertmotorspeed);
+      //vertmotorspeed = set_motor(2, depthpercent);
 		} // end if RUNNING
 		else if( substate.mode == PAUSED)
 		{
@@ -391,7 +449,7 @@ void *safety_thread(void* arg)
 	printf("Safety Thread Started\n");
 
 	// open a log to record reasons for shutting down
-	std::ifstream logFile;
+	std::ofstream logFile;
 	logFile.open("safety.log");
 
 	// Leak detection pins
@@ -405,9 +463,9 @@ void *safety_thread(void* arg)
 		if( ms5837.depth > STOP_DEPTH )
 		{
 			substate.mode = STOPPED;
-			//logFile << "Shut down due to max depth being reached\n";
-			//logFile << "Stop depth: STOP_DEPTH\n";
-			//logFile << "Current depth: " << std::to_string(ms5837.depth) << "\n";
+			logFile << "Shut down due to max depth being reached\n";
+			logFile << "Stop depth: STOP_DEPTH\n";
+			logFile << "Current depth: " << ms5837.depth << "\n";
 			printf("\nWe're too deep! Shutting down...\n");
 			continue;
 		}
@@ -416,9 +474,9 @@ void *safety_thread(void* arg)
 		if( _temp > STOP_TEMP )
 		{
 			substate.mode = STOPPED;
-			//logFile << "Shut down due to max battery temp being reached\n";
-			//logFile << "Stop temp: STOP_TEMP\n";
-			//logFile << "Current temp: " << std::to_string(_temp) << "\n";
+			logFile << "Shut down due to max battery temp being reached\n";
+			logFile << "Stop temp: STOP_TEMP\n";
+			logFile << "Current temp: " << _temp << "\n";
 			printf("\nMax battery temp reached: ( %5.2f C)! Shutting down...\n",_temp);
 			continue;
 		}
@@ -427,9 +485,9 @@ void *safety_thread(void* arg)
 		// temp is multiplied by 1000 in raspbian OS
 		float _cpu_temp = read_cpu_temp();
 		if (_cpu_temp > 80000) {
-			//logFile << "Shut down due to max cpu temp being reached\n";
-			//logFile << "Stop temp: 80 C\n";
-			//logFile << "Current temp: " << std::to_string(_cpu_temp) << "\n";
+			logFile << "Shut down due to max cpu temp being reached\n";
+			logFile << "Stop temp: 80 C\n";
+			logFile << "Current temp: " << _cpu_temp << "\n";
 			printf("CPU is above 80 C. Shutting down...\n");
 			substate.mode = STOPPED;
 		}
@@ -437,7 +495,7 @@ void *safety_thread(void* arg)
 		if( digitalRead(LEAKPIN) == HIGH )
 		{
 			substate.mode = STOPPED;
-			//logFile << "Shut down due to leak\n";
+			logFile << "Shut down due to leak\n";
 			printf("\nLEAK DETECTED! Shutting down...\n");
 			continue;
 		}
@@ -446,7 +504,7 @@ void *safety_thread(void* arg)
 		if(  (float)fabs(substate.imu.pitch) > PITCH_LIMIT )
 		{
 		  substate.mode = STOPPED;
-			//logFile << "Shut down due to excessive pitch (PITCH_LIMIT deg)\n";
+			logFile << "Shut down due to excessive pitch (PITCH_LIMIT deg)\n";
 			char accel[100];
 			sprintf(accel, "Pitch: %5.2f  Roll: %5.2f\n",
 				substate.imu.pitch, substate.imu.roll);
@@ -456,7 +514,7 @@ void *safety_thread(void* arg)
 		if( (float)fabs(substate.imu.roll) > ROLL_LIMIT )
 		{
 		  substate.mode = STOPPED;
-			//logFile << "Shut down due to excessive roll (ROLL_LIMIT deg)\n";
+			logFile << "Shut down due to excessive roll (ROLL_LIMIT deg)\n";
 			char accel[100];
 			sprintf(accel, "Pitch: %5.2f  Roll: %5.2f\n",
 				substate.imu.pitch, substate.imu.roll);
@@ -468,14 +526,17 @@ void *safety_thread(void* arg)
 			|| (float)fabs(substate.imu.z_acc) > 2.0*GRAVITY )
 		{
 			substate.mode = STOPPED;
-			//logFile << "Shut down due to excessive acceleration (1 g)\n";
+			logFile << "Shut down due to excessive acceleration (1 g)\n";
 			char accel[100];
 			sprintf(accel, "X Acc: %5.2f  Y Acc: %5.2f  Z Acc: %5.2f\n",
 				substate.imu.x_acc, substate.imu.y_acc, substate.imu.z_acc);
-			//logFile << accel;
+			logFile << accel;
 			printf("\nCollision detected. Shutting down...");
 			continue;
 		}
+		
+		// Sleep a bit
+		auv_msleep(1000/SAFETY_RATE);
 	}
 	// close log file
 	logFile.close();
@@ -542,7 +603,7 @@ void *safety_thread(void* arg)
     substate.mode = RUNNING;
 
     // Restart timer!
-	  //start = time(0);
+	  //gettimeofday(&start, NULL);
 
 		// Wait for mode to pause again
 		while (substate.mode == RUNNING) {

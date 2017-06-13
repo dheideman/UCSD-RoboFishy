@@ -7,12 +7,14 @@
 #include <cstdio>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/time.h>
 #include <signal.h>		// capture ctrl+c
 
 // Core Module
 #include "../Modules/Core/Core.h"
 
 //#define DEBUG
+#define RASPBERRY_PI
 
 #define PCA9685_ADDR 0x40
 #define PIN_BASE 300

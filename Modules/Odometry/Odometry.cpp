@@ -106,8 +106,14 @@ bool compareDMatch(const DMatch& a, const DMatch& b)
   pretfpts[0] = cvPoint(FRAME_WIDTH/2, FRAME_HEIGHT/2); // center
   pretfpts[1] = cvPoint(FRAME_WIDTH/2, 0); // center-top
   
+  // Declare thread timers
+  struct timeval threadstart, now;
+  
   while( substate.mode != RUNNING )
   {
+    // Get start time of thread
+    gettimeofday(&threadstart, NULL);
+    
     // Lock access to subimages.brightframe, odomdata.newimg
     pthread_mutex_lock(&subimages.brightframelock);
     pthread_mutex_lock(&odomdata.newimglock);
@@ -205,6 +211,14 @@ bool compareDMatch(const DMatch& a, const DMatch& b)
     // Save feature information to "old" values
     newkeypoints.swap(oldkeypoints);
     cv::swap(newdescriptors,olddescriptors);
+    
+    // Check how much time it's taken to run this thread
+    gettimeofday(&now, NULL);
+    
+    // Pause for the remainder of the time necessary to achieve desired rate
+    int elapsedtime = (now.tv_sec - threadstart.tv_sec)*1000000 +
+                      (now.tv_usec - threadstart.tv_usec);
+    auv_usleep(1000000/ODOM_RATE - elapsedtime);
     
   } // end while(...)
   

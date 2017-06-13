@@ -130,7 +130,7 @@ int main(int argc, char** argv)
   }
   
   // Initialize exposure, iso values
-  setExposure(1);
+  setExposure(5);
   setISO(0);
     
   // Set capture camera properties to maximum (8 MP)
@@ -140,6 +140,13 @@ int main(int argc, char** argv)
   cap.set(CV_CAP_PROP_FRAME_HEIGHT,720);
 //  cap.set(CV_CAP_PROP_FRAME_WIDTH,640);
 //  cap.set(CV_CAP_PROP_FRAME_HEIGHT,480);
+
+  // Grab all 5 images from the frame buffer in order to clear the buffer
+  for(int i=0; i<5; i++)
+  {
+    cap.grab();
+  }
+  printf("%s\n","BUFFER CLEARED" );
   
   // Open data output file:
   ofstream datafile;
@@ -172,13 +179,14 @@ int main(int argc, char** argv)
     cvtColor(frame, hsv_frame, CV_BGR2HSV);
     
     // Find Green laser dot
-    //Mat mask;
+    Mat mask;
+
     //inRange(hsv_frame, Scalar(0, 0, 40), Scalar(180, 255, 255), mask);
 
     // Red
     Mat1b mask1, mask2;
-    inRange(hsvframe, Scalar(1, 50, 50), Scalar(15, 250, 250), mask1);
-    inRange(hsvframe, Scalar(165, 50, 50), Scalar(179, 250, 250), mask2);
+    inRange(hsv_frame, Scalar(1, 50, 50), Scalar(15, 250, 250), mask1);
+    inRange(hsv_frame, Scalar(165, 50, 50), Scalar(179, 250, 250), mask2);
     mask = mask1 | mask2;
     
     // Locate centroid of laser dot
