@@ -1,3 +1,5 @@
+#include "Mapper.h"
+
 /******************************************************************************
  * User Interface Thread
  * void* userInterface(void* arg)
