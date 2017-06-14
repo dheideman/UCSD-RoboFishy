@@ -12,6 +12,9 @@
 
 // Core Module
 #include "../Modules/Core/Core.h"
+#include "../Modules/Camera/Camera.h"
+#include "../Modules/RangeFinder/RangeFinder.h"
+#include "../Modules/Odometry/Odometry.h"
 
 //#define DEBUG
 #define RASPBERRY_PI

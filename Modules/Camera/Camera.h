@@ -53,6 +53,7 @@
 //#define FRAME_HEIGHT    2464  // 8 megapixels
 #define FRAME_WIDTH       1280  // 720 HD
 #define FRAME_HEIGHT      720   // 720 HD
+#define FRAME_RATE        2     // fps
 
 // Laser Pin
 #define LASERPIN      3

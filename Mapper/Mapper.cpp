@@ -128,7 +128,11 @@ int main()
 	}
 	printf("\nAll components are initialized\n");
 	substate.mode = INITIALIZING;
-  substate.laserarmed = ARMED;
+  	substate.laserarmed = ARMED;
+
+  	// Initialize Thread locks
+  	initializeSubImagesLock();
+  	//initializeOdomDataLock();
 
 	printf("Starting Threads\n");
 	initializeTAttr();
@@ -139,6 +143,8 @@ int main()
 	pthread_t safetyThread;
 	//pthread_t disarmlaserThread;
 	pthread_t uiThread;
+	pthread_t cameraThread;
+  	pthread_t rangeThread;
 
 
 	// Create threads using modified attributes
@@ -146,6 +152,9 @@ int main()
 	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 	pthread_create (&logThread, &tattrmed, log_thread, NULL);
 	pthread_create (&navigationThread, &tattrmed, navigation_thread, NULL);
+	pthread_create (&cameraThread, &tattrhigh, takePictures, NULL);
+	pthread_create (&rangeThread, &tattrmed, rangeFinder, NULL);
+	
 //	pthread_create (&uiThread, &tattrmed, userInterface, NULL);
 
   // Destroy the thread attributes
