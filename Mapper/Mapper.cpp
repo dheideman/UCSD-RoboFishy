@@ -271,6 +271,9 @@ void *log_thread(void* arg)
       
       // Print battery temperature
       output << "Battery temp: " << read_temp_fifo() << " C" << std::endl;
+
+      // Print Range to the Bottom
+      output << "Range: " << substate.range << std::endl;
       
       // Write a newline
       output << std::endl;
