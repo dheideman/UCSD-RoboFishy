@@ -82,7 +82,7 @@ void *takePictures(void*)
   printf("%s\n","BUFFER CLEARED" );
   
   // Set the laserpin
-  wiringPiSetup();
+
   pinMode(LASERPIN, OUTPUT);
   // Loop quickly to pick up images as soon as they are taken
   while(substate.mode != STOPPED)

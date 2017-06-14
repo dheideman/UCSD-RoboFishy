@@ -268,13 +268,12 @@ void *log_thread(void* arg)
       output << "Depth: " << ms5837.depth << "\t";
       output << "Depth setpoint: " << depth_pid.setpoint << "\t";
       output << "Water temp: " << ms5837.water_temp << " C" << std::endl;
-      
-      // Print battery temperature
-      output << "Battery temp: " << read_temp_fifo() << " C" << std::endl;
-
       // Print Range to the Bottom
       output << "Range: " << substate.range << std::endl;
       
+      // Print battery temperature
+      output << "Battery temp: " << read_temp_fifo() << " C" << std::endl;
+ 
       // Write a newline
       output << std::endl;
 
