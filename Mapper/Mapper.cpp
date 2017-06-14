@@ -53,9 +53,6 @@
 // Holds the latest pressure value from the MS5837 pressure sensor
 ms5837_t ms5837;
 
-// Holds the latest temperature value from the temperature temperature sensor
-float batt_temp;
-
 // Holds the constants and latest errors of the yaw pid controller
 pid_data_t yaw_pid;
 
@@ -65,8 +62,8 @@ pid_data_t depth_pid;
 // Motor channels
 int motor_channels[] = {CHANNEL_1, CHANNEL_2, CHANNEL_3};
 
-// Ignoring sstate
-float depth = 0;
+// Holds the latest temperature value from the temperature temperature sensor
+float batt_temp;
 
 // setmotor intialization
 float portmotorspeed = 0;

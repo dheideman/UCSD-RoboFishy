@@ -100,6 +100,16 @@ extern pid_data_t depth_pid;
 // Motor channels
 extern int motor_channels[];
 
+// Holds the latest temperature value from the temperature temperature sensor
+extern float batt_temp;
+
+// setmotor intialization
+extern float portmotorspeed = 0;
+extern float starmotorspeed = 0;
+
+// Start time for stop timer
+extern struct timeval start, now;
+
 
 /******************************************************************************
  * Declare Threads
