@@ -628,6 +628,10 @@ void *safety_thread(void* arg)
 
     auv_msleep(1000);
   }
+  
+  // Save last bright and dark image
+  imwrite("lastbrightimage.jpg",subimages.brightframe);
+  imwrite("lastdarkimage.jpg",subimages.darkframe);
 
   // Exit thread
   pthread_exit(NULL);
