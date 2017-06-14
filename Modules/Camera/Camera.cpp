@@ -49,7 +49,7 @@ void *takePictures(void*)
   
   // Let people know we don't have any images for them
   subimages.imstate = EMPTY; 
-  
+  substate.laserarmed = ARMED;
   // Set framerate (OpenCV capture property)
   cap.set(CV_CAP_PROP_FPS,FRAME_RATE);
     
@@ -80,7 +80,8 @@ void *takePictures(void*)
     cap.grab();
   }
   printf("%s\n","BUFFER CLEARED" );
-
+  // Set the laserpin
+  pinMode(LASERPIN, OUTPUT);
   // Loop quickly to pick up images as soon as they are taken
   while(substate.mode != STOPPED)
   {
