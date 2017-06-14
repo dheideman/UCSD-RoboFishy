@@ -162,7 +162,7 @@ int main()
   auv_msleep(100);
 
 	// iterate counter
-	int interator = 0;
+	int iterator = 0;
 
 	// Prompt for run time
 	int run_time;
@@ -207,7 +207,12 @@ int main()
 
 	// Exit cleanly
 	cleanup_auv();
-	return 0;
+	
+  // Write last two images to file
+  imwrite("lastbrightimage.jpg",subimages.brightframe);
+  imwrite("lastdarkimage.jpg",subimages.darkframe);
+  
+  return 0;
 }
 
 /******************************************************************************
@@ -618,10 +623,6 @@ void *safety_thread(void* arg)
     auv_msleep(1000);
   }
   
-  // Save last bright and dark image
-  imwrite("lastbrightimage.jpg",subimages.brightframe);
-  imwrite("lastdarkimage.jpg",subimages.darkframe);
-
   // Exit thread
   pthread_exit(NULL);
  }
