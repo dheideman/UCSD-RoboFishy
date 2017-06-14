@@ -60,7 +60,7 @@
 #define LEAKPOWERPIN  17  // providing Vcc to leak board
 
 // Time Per Straight Leg of "Path"
-#define DRIVE_TIME    10   // seconds
+#define DRIVE_TIME    1   // seconds
 
 
 /******************************************************************************
@@ -321,7 +321,7 @@ void *navigation_thread(void* arg)
 
   float yaw = 0; 			  //Local variable for if statements
   float motorpercent;
-  float basespeed = 0.95;
+  float basespeed = 0.15;
   float err;
   float depthpercent;
   float vertmotorspeed;
