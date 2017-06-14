@@ -4,11 +4,6 @@
 
 #include "Mapper.h"
 
-// Multithreading
-#include <pthread.h>
-#include <sched.h>
-#include <unistd.h>
-
 /******************************************************************************
 * Controller Gains
 ******************************************************************************/

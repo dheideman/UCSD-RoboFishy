@@ -10,6 +10,11 @@
 #include <sys/time.h>
 #include <signal.h>		// capture ctrl+c
 
+// Multithreading
+#include <pthread.h>
+#include <sched.h>
+#include <unistd.h>
+
 // Core Module
 #include "../Modules/Core/Core.h"
 #include "../Modules/Camera/Camera.h"
