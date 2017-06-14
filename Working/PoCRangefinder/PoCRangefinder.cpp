@@ -96,6 +96,8 @@ int main(int argc, char** argv)
   
   // set default white balance
   whiteBalanceCallback(0,0);
+  
+  initializeSubImagesLock(&subimages);
 
   initializeTAttr();
   
