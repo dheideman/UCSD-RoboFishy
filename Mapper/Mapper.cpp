@@ -128,7 +128,11 @@ int main()
 	}
 	printf("\nAll components are initialized\n");
 	substate.mode = INITIALIZING;
-  substate.laserarmed = ARMED;
+  	substate.laserarmed = ARMED;
+
+  	// Initialize Thread locks
+  	initializeSubImagesLock();
+  	//initializeOdomDataLock();
 
 	printf("Starting Threads\n");
 	initializeTAttr();
