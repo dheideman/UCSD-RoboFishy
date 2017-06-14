@@ -40,6 +40,19 @@
 #define STOP_DEPTH 2	// threshold depth (m)
 #define STOP_TEMP 50	// deg C
 
+// Sampling Values
+#define SAMPLE_RATE 50  // sample rate of main control loop (Hz)
+#define DT 0.02 				// timestep; make sure this is equal to 1/SAMPLE_RATE!
+
+// Print/Logging Rate
+#define LOG_RATE      10  // Hz
+
+// Safety Thread Rate
+#define SAFETY_RATE   1  // Hz
+
+// Conversion Factors
+#define UNITS_KPA 0.1		 // converts pressure from mbar to kPa
+
 
 /***************************************************************************
 * Create Structs
@@ -81,6 +94,16 @@ extern pid_data_t depth_pid;
 
 // Motor channels
 extern int motor_channels[];
+
+
+/******************************************************************************
+ * Declare Threads
+******************************************************************************/
+
+void *navigation_thread(void* arg);
+void *log_thread(void* arg);
+void *safety_thread(void* arg);
+void *userInterface(void* arg);
 
 
 /******************************************************************************
