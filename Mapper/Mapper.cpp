@@ -120,6 +120,9 @@ int main()
 
 	// Set up RasPi GPIO pins through wiringPi
 	wiringPiSetupGpio();
+  
+  // Set laser pin to output
+  pinMode(3, OUTPUT);
 
 	// Check if AUV is initialized correctly
 	if( initialize_sensors() < 0 )
