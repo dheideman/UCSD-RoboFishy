@@ -131,7 +131,7 @@ int main()
   	substate.laserarmed = ARMED;
 
   	// Initialize Thread locks
-  	initializeSubImagesLock();
+  	initializeSubImagesLock(&subimages);
   	//initializeOdomDataLock();
 
 	printf("Starting Threads\n");

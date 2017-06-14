@@ -16,7 +16,7 @@
 #include "../Modules/RangeFinder/RangeFinder.h"
 #include "../Modules/Odometry/Odometry.h"
 
-//#define DEBUG
+#define DEBUG
 #define RASPBERRY_PI
 
 #define PCA9685_ADDR 0x40
