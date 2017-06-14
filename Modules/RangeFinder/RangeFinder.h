@@ -51,6 +51,9 @@
 #define RANGE_K1          0.09943
 #define RANGE_K2          -330.0
 
+// Range Finder Rate
+#define RANGE_RATE        1   // Hz
+
 
 //////////////////////
 // Type Definitions //

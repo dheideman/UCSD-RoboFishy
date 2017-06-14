@@ -42,9 +42,16 @@ void *takePictures(void*)
   {
     cerr << "Error opening the camera (OpenCV)" << endl; 
   }
+  
+  // Lock the images until we can collect them
+  pthread_mutex_lock(&subimages.brightframelock);
+  pthread_mutex_lock(&subimages.darkframelock);
+  
+  // Let people know we don't have any images for them
   subimages.imstate = EMPTY; 
+  
   // Set framerate (OpenCV capture property)
-  cap.set(CV_CAP_PROP_FPS,2);
+  cap.set(CV_CAP_PROP_FPS,FRAME_RATE);
     
   // Set camera exposure, white balance, and iso control to manual (driver property)
   picamctrl.set(V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_MANUAL);
@@ -62,6 +69,10 @@ void *takePictures(void*)
   // Fill images w/ initial images
   cap.read( subimages.brightframe );
   cap.read( subimages.darkframe );
+  
+  // Now that we have the images, we can unlock them
+  pthread_mutex_unlock(&subimages.brightframelock);
+  pthread_mutex_unlock(&subimages.darkframelock);
 
   // Grab all 5 images from the frame buffer in order to clear the buffer
   for(int i=0; i<5; i++)
@@ -73,6 +84,8 @@ void *takePictures(void*)
   // Loop quickly to pick up images as soon as they are taken
   while(substate.mode != STOPPED)
   {
+    /* Bright */
+    
     // 'Grab' bright frame from webcam's image buffer
     cap.grab();
     
@@ -86,9 +99,20 @@ void *takePictures(void*)
       digitalWrite(LASERPIN, HIGH);
     }
     
+    // Lock access to subimages.brightframe
+    pthread_mutex_lock(&subimages.brightframelock);
+    
     // Retrieve encodes image from grab buffer to 'brightframe' variable
     cap.retrieve( subimages.brightframe );
     subimages.imstate = BRIGHTFRAME;
+    
+    // Unlock access to subimages.brightframe
+    pthread_mutex_unlock(&subimages.brightframelock);
+    
+    // Put in some sleep time just in case
+    auv_msleep(100/FRAME_RATE);
+    
+    /* Dark */
 
     // 'Grab' dark frame from webcam's image buffer
     cap.grab();
@@ -100,12 +124,19 @@ void *takePictures(void*)
     // Set exposure now (rather than later)
     picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE );
     
+    // Lock access to subimages.darkframe
+    pthread_mutex_lock(&subimages.darkframelock);
+    
     // Retrieve encodes image from grab buffer to 'darkframe' variable
     cap.retrieve( subimages.darkframe );
     // Let the computer know which frame its at 
     subimages.imstate = DARKFRAME;
-
-    usleep(200000);
+    
+    // Unlock access to subimages.darkframe
+    pthread_mutex_unlock(&subimages.darkframelock);
+    
+    // Put in some sleep time just in case
+    auv_msleep(100/FRAME_RATE);
   }
     
   // close camera
@@ -158,11 +189,22 @@ void *writeImages(void*)
       // Create filename
       stringstream filename;
       filename << IMAGE_PREFIX;
-      if(i<10) filename << "0";   // add in a zero to 1-digit numbers
+      if(i<10)    filename << "0";   // add in a zero to 1-digit numbers
+      if(i<100)   filename << "0";   // add in a 2-digit numbers
+      if(i<1000)  filename << "0";   // add in a 3-digit numbers
+      if(i<10000) filename << "0";   // add in a 4-digit numbers
       filename << i << IMAGE_EXTENSION;
 
+      // Lock brightframe
+      pthread_mutex_lock(&subimages.brightframelock);
+      
       // Write image to file
       imwrite(filename.str(), subimages.brightframe);
+      
+      // Unlock brightframe
+      pthread_mutex_lock(&subimages.brightframelock);
+      
+      // Increment the image number
       i++;
     }
     // close csv file
