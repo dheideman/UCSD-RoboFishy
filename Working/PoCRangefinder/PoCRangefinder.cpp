@@ -134,6 +134,8 @@ int main(int argc, char** argv)
   // initialize key command
   int key = 0; 
   
+  auv_msleep(1000);
+  
   //Loop until user presses esc
   while(key != 27)
   {
