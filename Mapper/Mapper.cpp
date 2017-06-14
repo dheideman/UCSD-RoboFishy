@@ -61,7 +61,7 @@
 
 // Time Per Straight Leg of "Path"
 #define LEG_TIME    1.5   // seconds
-
+#define DELTA_SETPOINT 45 // degrees
 
 /******************************************************************************
  * Declare Threads
@@ -102,13 +102,7 @@ float starmotorspeed = 0;
 // Start time for stop timer
 struct timeval start, now;
 
-// Setpoint array
-//float setpoints[] = {0, 45, 90, 135, 180, -135, -90, -45};
-//int   nsetpoints = 8;
-//float setpoints[] = {0, 90, 180, -90};
-//int   nsetpoints = 4;
-float deltasetpoint = 45;
-int   nsetpointchanges = 16;
+
 /******************************************************************************
 * Main Function
 ******************************************************************************/
@@ -147,7 +141,7 @@ int main()
 	//pthread_t disarmlaserThread;
 	pthread_t uiThread;
 	pthread_t cameraThread;
-  	pthread_t rangeThread;
+	pthread_t rangeThread;
 
 
 	// Create threads using modified attributes
@@ -166,6 +160,9 @@ int main()
   printf("Threads started\n");
 
   auv_msleep(100);
+
+	// iterate counter
+	int interator = 0;
 
 	// Prompt for run time
 	int run_time;
@@ -194,29 +191,18 @@ int main()
       // Change the setpoint every LEG_TIME seconds
       if((now.tv_sec - start.tv_sec) > LEG_TIME*(iterator+1))
       {
-        // If this was the last segment
-        if(iterator >= (nsetpointchanges-1))
-        {
-          iterator = 0;
-          substate.mode = STOPPED;
-        }
-        else
-        {
-          // Set new setpoint
-          yaw_pid.setpoint += deltasetpoint;
-          if(yaw_pid.setpoint > 180) yaw_pid.setpoint -= 360;
+        // Set new setpoint
+        yaw_pid.setpoint += DELTA_SETPOINT;
+        if(yaw_pid.setpoint > 180) yaw_pid.setpoint -= 360;
 
-          // Increment iterator
-          iterator++;
-
-        } // end if iterator
-
+        // Increment iterator
+        iterator++;
       } // end if difftime
 
     } // end if RUNNING
 
 		// Sleep a little
-		auv_usleep(100000);
+		auv_msleep(100);
 	}
 
 	// Exit cleanly
@@ -270,7 +256,8 @@ void *log_thread(void* arg)
       output << "Depth: " << ms5837.depth << "\t";
       output << "Depth setpoint: " << depth_pid.setpoint << "\t";
       output << "Water temp: " << ms5837.water_temp << " C" << std::endl;
-      // Print Range to the Bottom
+
+			// Print Range to the Bottom
       output << "Range: " << substate.range << std::endl;
 
       // Print battery temperature
