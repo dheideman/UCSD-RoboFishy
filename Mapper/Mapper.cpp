@@ -53,15 +53,15 @@
 #define DEPTH_START 0.05 // starting depth (m)
 
 // Stop Timer
-#define STOP_TIME 20		// seconds
+#define STOP_TIME 20			// seconds
 
-// Leak Sensor Inpu and Power Pin
+// Leak Sensor Input and Power Pin
 #define LEAKPIN       27	// connected to GPIO 27
 #define LEAKPOWERPIN  17  // providing Vcc to leak board
 
 // Time Per Straight Leg of "Path"
-#define DRIVE_TIME    1   // seconds
-
+#define LEG_TIME    1.5   // seconds
+#define DELTA_SETPOINT 45 // degrees
 
 /******************************************************************************
  * Declare Threads
@@ -102,13 +102,7 @@ float starmotorspeed = 0;
 // Start time for stop timer
 struct timeval start, now;
 
-// Setpoint array
-//float setpoints[] = {0, 45, 90, 135, 180, -135, -90, -45};
-//int   nsetpoints = 8;
-//float setpoints[] = {0, 90, 180, -90};
-//int   nsetpoints = 4;
-float deltasetpoint = 45;
-int   nsetpointchanges = 16;
+
 /******************************************************************************
 * Main Function
 ******************************************************************************/
@@ -120,7 +114,7 @@ int main()
 
 	// Set up RasPi GPIO pins through wiringPi
 	wiringPiSetup();
-  
+
   // Set laser pin to output
   pinMode(3, OUTPUT);
 
@@ -147,7 +141,7 @@ int main()
 	//pthread_t disarmlaserThread;
 	pthread_t uiThread;
 	pthread_t cameraThread;
-  	pthread_t rangeThread;
+	pthread_t rangeThread;
 
 
 	// Create threads using modified attributes
@@ -157,64 +151,58 @@ int main()
 	pthread_create (&navigationThread, &tattrmed, navigation_thread, NULL);
 	pthread_create (&cameraThread, &tattrhigh, takePictures, NULL);
 	pthread_create (&rangeThread, &tattrmed, rangeFinder, NULL);
-	
+
 //	pthread_create (&uiThread, &tattrmed, userInterface, NULL);
 
   // Destroy the thread attributes
  	destroyTAttr();
 
   printf("Threads started\n");
-  
+
   auv_msleep(100);
 
-	// Start timer!
-	//gettimeofday(&start, NULL);
+	// iterate counter
+	int interator = 0;
 
-	int iterator = 0;
+	// Prompt for run time
+	int run_time;
+	std::cout << "Number of Seconds to run: ";
+	std::cin >> run_time;
+
+	// Start timer!
+	gettimeofday(&start, NULL);
+
 	yaw_pid.setpoint = substate.imu.yaw;
   if(yaw_pid.setpoint > 180) yaw_pid.setpoint -= 360;
 
-	// We're ready to run.  Kinda.  Pause first
-//	substate.mode = PAUSED;
+	// We're ready to run.
   substate.mode = RUNNING;
-	
+
   // Run main while loop, wait until it's time to stop
 	while(substate.mode != STOPPED)
 	{
 		// Check if we've passed the stop time
 		gettimeofday(&now, NULL);
-// 		if((now.tv_sec - start.tv_sec) > STOP_TIME)
-// 			substate.mode = STOPPED;
+ 		if((now.tv_sec - start.tv_sec) > run_time)
+ 			substate.mode = STOPPED;
 
     if(substate.mode == RUNNING)
     {
-      // Change the setpoint every DRIVE_TIME seconds
-      if((now.tv_sec - start.tv_sec) > DRIVE_TIME*(iterator+1))
+      // Change the setpoint every LEG_TIME seconds
+      if((now.tv_sec - start.tv_sec) > LEG_TIME*(iterator+1))
       {
-        // If this was the last segment
-//        if(iterator >= nsetpoints)
-        if(iterator >= (nsetpointchanges-1))
-        {
-          iterator = 0;
-          substate.mode = STOPPED;
-        }
-        else
-        {
-          // Set new setpoint
-          yaw_pid.setpoint += deltasetpoint;
-          if(yaw_pid.setpoint > 180) yaw_pid.setpoint -= 360;
+        // Set new setpoint
+        yaw_pid.setpoint += DELTA_SETPOINT;
+        if(yaw_pid.setpoint > 180) yaw_pid.setpoint -= 360;
 
-          // Increment iterator
-          iterator++;
-
-        } // end if iterator
-
+        // Increment iterator
+        iterator++;
       } // end if difftime
 
     } // end if RUNNING
-    
+
 		// Sleep a little
-		auv_usleep(100000);
+		auv_msleep(100);
 	}
 
 	// Exit cleanly
@@ -232,11 +220,11 @@ void *log_thread(void* arg)
 {
   // Start the Kenny Loggings Thread!
 	printf("Logging Thread Started\n");
-	
+
 	// open a log to record general data
 	std::ofstream genlog;
 	genlog.open("mapper.log");
-	
+
 	// open a log to record yaw-related information
 	std::ofstream yawlog;
 	yawlog.open("yawcontrol.log");
@@ -256,24 +244,25 @@ void *log_thread(void* arg)
     if(substate.mode == RUNNING)
     {
       /* Generate general output */
-      
+
       // Clear string stream
       output.str(std::string());
-      
+
       // Print yaw
       output << "Yaw: " << substate.imu.yaw << "\t";
       output << "Yaw setpoint: " << yaw_pid.setpoint << std::endl;
-      
+
       // Print depth
       output << "Depth: " << ms5837.depth << "\t";
       output << "Depth setpoint: " << depth_pid.setpoint << "\t";
       output << "Water temp: " << ms5837.water_temp << " C" << std::endl;
-      // Print Range to the Bottom
+
+			// Print Range to the Bottom
       output << "Range: " << substate.range << std::endl;
-      
+
       // Print battery temperature
       output << "Battery temp: " << read_temp_fifo() << " C" << std::endl;
- 
+
       // Write a newline
       output << std::endl;
 
@@ -287,38 +276,38 @@ void *log_thread(void* arg)
          substate.imu.mag,	substate.imu.x_acc,	substate.imu.y_acc,
          substate.imu.z_acc);
 */
-      
+
       // Write a newline
 //      output << std::endl;
-      
+
       // Write to general log file
       genlog << output.str();
-      
+
       // Write to output
       std::cout << output.str();
-      
-      
+
+
       /* Generate an output */
-      
+
       // Yaw controller info
       gettimeofday(&now, NULL);
-      double timestamp = (now.tv_sec - start.tv_sec)*1000 + 
+      double timestamp = (now.tv_sec - start.tv_sec)*1000 +
                          (now.tv_usec - start.tv_usec)/1000;
       double yaw = substate.imu.yaw;
       double setpoint = yaw_pid.setpoint;
-      
+
       // Write to file
       yawlog << timestamp << "," << yaw << "," << setpoint << ",";
       yawlog << portmotorspeed << "," << starmotorspeed << std::endl;
-      
+
     }
 		auv_msleep(1000/LOG_RATE);
 	}
-	
+
 	// Close log files
 	genlog.close();
 	yawlog.close();
-	
+
 	pthread_exit(NULL);
 }//*/
 
@@ -396,10 +385,10 @@ void *navigation_thread(void* arg)
 
 	//Set depth setpoint to current depth
 	depth_pid.setpoint = ms5837.depth + 0.3;
-  
+
   // Start section timer
   gettimeofday(&start, NULL);
-  
+
 	while(substate.mode!=STOPPED)
 	{
 		// read IMU values from fifo file
@@ -550,7 +539,7 @@ void *safety_thread(void* arg)
 			printf("\nCollision detected. Shutting down...");
 			continue;
 		}
-		
+
 		// Sleep a bit
 		auv_msleep(1000/SAFETY_RATE);
 	}
