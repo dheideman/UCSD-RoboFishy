@@ -49,7 +49,9 @@ bool compareDMatch(const DMatch& a, const DMatch& b)
   pthread_mutex_lock(&odomdata.oldimglock);
   
   // Save bright frame to "old image"
-  subimages.brightframe.copyTo(odomdata.oldimg);
+//   subimages.brightframe.copyTo(odomdata.oldimg);
+  Size odomframesize = Size(ODOM_FRAME_WIDTH,ODOM_FRAME_HEIGHT);
+  resize(subimages.brightframe, odomdata.oldimg, odomframesize);
   
   // Unlock access to subimages.brightframe, odomdata.oldimg
   pthread_mutex_unlock(&odomdata.oldimglock);
@@ -119,7 +121,8 @@ bool compareDMatch(const DMatch& a, const DMatch& b)
     pthread_mutex_lock(&odomdata.newimglock);
   
     // Save bright frame to "new image"
-    subimages.brightframe.copyTo(odomdata.newimg);
+//     subimages.brightframe.copyTo(odomdata.newimg);
+    resize(subimages.brightframe, odomdata.newimg, odomframesize);
     
     // Unlock access to subimages.brightframe, odomdata.newimg
     pthread_mutex_unlock(&odomdata.newimglock);

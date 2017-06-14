@@ -49,10 +49,10 @@
 #define ISO_VALUE       4
 
 // Image Size
-//#define FRAME_WIDTH     3280  // 8 megapixels
-//#define FRAME_HEIGHT    2464  // 8 megapixels
-#define FRAME_WIDTH       1280  // 720 HD
-#define FRAME_HEIGHT      720   // 720 HD
+#define FRAME_WIDTH     3280  // 8 megapixels
+#define FRAME_HEIGHT    2464  // 8 megapixels
+//#define FRAME_WIDTH       1280  // 720 HD
+//#define FRAME_HEIGHT      720   // 720 HD
 #define FRAME_RATE        2     // fps
 
 // Laser Pin

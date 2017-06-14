@@ -37,6 +37,10 @@
 #define MIN_MINDIST       10    // pixels
 #define MAX_MATCHES       500
 
+// Odometry Image Size
+#define ODOM_FRAME_WIDTH  1280  // pixels
+#define ODOM_FRAME_HEIGHT 720   // pixels
+
 // Odometry Thread Rate
 #define ODOM_RATE         1     // Hz
 
