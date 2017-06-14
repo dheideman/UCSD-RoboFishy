@@ -58,6 +58,42 @@
 // Conversion Factors
 #define UNITS_KPA 0.1		 // converts pressure from mbar to kPa
 
+// Yaw Controller
+#define KP_YAW 0.001
+#define KI_YAW 0
+#define KD_YAW 0
+
+// Depth Controller
+#define KP_DEPTH 0.1
+#define KI_DEPTH 0
+#define KD_DEPTH 0
+
+// Saturation Constants
+#define YAW_SAT 1			// upper limit of yaw controller
+#define DEPTH_SAT 1		// upper limit of depth controller
+#define INT_SAT 10		// upper limit of integral windup
+#define DINT_SAT 10		// upper limit of depth integral windup
+
+// Pitch/Roll limits
+#define ROLL_LIMIT    1000  // degrees
+#define PITCH_LIMIT   1000  // degrees
+
+// Acceleration Due to Gravity in m/s^2
+#define GRAVITY 9.81
+
+// Depth Start Value
+#define DEPTH_START 0.05 // starting depth (m)
+
+// Stop Timer
+#define STOP_TIME 20			// seconds
+
+// Leak Sensor Input and Power Pin
+#define LEAKPIN       27	// connected to GPIO 27
+#define LEAKPOWERPIN  17  // providing Vcc to leak board
+
+// Time Per Straight Leg of "Path"
+#define LEG_TIME    1.5   // seconds
+#define DELTA_SETPOINT 45 // degrees
 
 /***************************************************************************
 * Create Structs
