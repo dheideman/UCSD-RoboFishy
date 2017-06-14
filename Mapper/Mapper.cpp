@@ -119,7 +119,7 @@ int main()
 	signal(SIGINT, ctrl_c);
 
 	// Set up RasPi GPIO pins through wiringPi
-	wiringPiSetupGpio();
+	wiringPiSetup();
   
   // Set laser pin to output
   pinMode(3, OUTPUT);
