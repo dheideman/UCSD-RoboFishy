@@ -74,20 +74,48 @@ void *takePictures(void*)
   pthread_mutex_unlock(&subimages.brightframelock);
   pthread_mutex_unlock(&subimages.darkframelock);
 
+  // Declare image grabber timers
+  struct timeval capturestart, now;
+  
+  // Save start time
+  gettimeofday(&capturestart, NULL);
+  
   // Grab all 5 images from the frame buffer in order to clear the buffer
-  for(int i=0; i<5; i++)
+  int i=0;
+  int elapsedtime = 1000000/FRAME_RATE;
+  
+//   for(int i=0; i<5; i++)
+  // loop while elapsed time for taking pictures is less than 90% camera delay
+  while( (elapsedtime > 900000/FRAME_RATE) && (i < 5) )
   {
+    // Save start time
+    gettimeofday(&capturestart, NULL);
+    
+    // Grab image
     cap.grab();
+    
+    // Get current time
+    gettimeofday(&now, NULL);
+    
+    // Get time elapsed
+    elapsedtime = (now.tv_sec - capturestart.tv_sec)*1000000 +
+                  (now.tv_usec - capturestart.tv_usec);
+    
+    // increment counter
+    i++;
   }
   printf("%s\n","BUFFER CLEARED" );
   
-  // Set the laserpin
-
+  // Set the laserpin to output
   pinMode(LASERPIN, OUTPUT);
+  
   // Loop quickly to pick up images as soon as they are taken
   while(substate.mode != STOPPED)
   {
     /* Bright */
+    
+    // Save start time
+    gettimeofday(&capturestart, NULL);
 
     picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, DARK_EXPOSURE );
 
@@ -114,10 +142,20 @@ void *takePictures(void*)
     // Unlock access to subimages.brightframe
     pthread_mutex_unlock(&subimages.brightframelock);
     
-    // Put in some sleep time just in case
-    auv_msleep(100/FRAME_RATE);
+    // get current time
+    gettimeofday(&now, NULL);
+    
+    // Pause for the remainder of the time necessary to achieve desired rate
+    elapsedtime = (now.tv_sec - capturestart.tv_sec)*1000000 +
+                  (now.tv_usec - capturestart.tv_usec);
+    
+    // Put in some sleep time just in case (90% of rate)
+    auv_usleep(900000/FRAME_RATE - elapsedtime);
     
     /* Dark */
+    
+    // Save start time
+    gettimeofday(&capturestart, NULL);
 
     picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE );
     
@@ -142,8 +180,15 @@ void *takePictures(void*)
     // Unlock access to subimages.darkframe
     pthread_mutex_unlock(&subimages.darkframelock);
     
-    // Put in some sleep time just in case
-    auv_msleep(100/FRAME_RATE);
+    // get current time
+    gettimeofday(&now, NULL);
+    
+    // Pause for the remainder of the time necessary to achieve desired rate
+    elapsedtime = (now.tv_sec - capturestart.tv_sec)*1000000 +
+                  (now.tv_usec - capturestart.tv_usec);
+    
+    // Put in some sleep time just in case (90% of rate)
+    auv_msleep(900000/FRAME_RATE - elapsedtime);
   }
     
   // close camera

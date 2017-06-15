@@ -26,6 +26,9 @@
 #include <ostream>
 #include <string>
 
+// Timer
+#include <sys/time.h>
+
 // Multithreading
 #include <pthread.h>
 #include <sched.h>
