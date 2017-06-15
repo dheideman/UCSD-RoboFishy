@@ -29,4 +29,5 @@
 // Core Module
 #include "../../Modules/Core/Core.h"
 
+float set_motor(int motornum, float percent);
 #endif

@@ -85,7 +85,7 @@ int main(int argc, char** argv)
 	pthread_create (&navigationThread, &tattrmed, navigation_thread, NULL);
 	pthread_create (&cameraThread, &tattrhigh, takePictures, NULL);
 	pthread_create (&rangeThread, &tattrmed, rangeFinder, NULL);
-	pthread_create (&odometryThread, &tattrmed, visualOdometry, NULL);
+//	pthread_create (&odometryThread, &tattrmed, visualOdometry, NULL);
 //	pthread_create (&uiThread, &tattrmed, userInterface, NULL);
 
   // Destroy the thread attributes

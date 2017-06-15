@@ -150,7 +150,7 @@ void *takePictures(void*)
                   (currenttime.tv_usec - capturestart.tv_usec);
     
     // Put in some sleep time just in case (90% of rate)
-    auv_usleep(900000/FRAME_RATE - elapsedtime);
+//    auv_usleep(900000/FRAME_RATE - elapsedtime);
     
     /* Dark */
     
@@ -188,7 +188,7 @@ void *takePictures(void*)
                   (currenttime.tv_usec - capturestart.tv_usec);
     
     // Put in some sleep time just in case (90% of rate)
-    auv_msleep(900000/FRAME_RATE - elapsedtime);
+//    auv_msleep(900000/FRAME_RATE - elapsedtime);
   }
     
   // close camera
