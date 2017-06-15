@@ -100,7 +100,7 @@
 #define LEAKPOWERPIN  17  // providing Vcc to leak board
 
 // Time Per Straight Leg of "Path"
-#define LEG_TIME        1.75  // seconds
+#define LEG_TIME        1.65  // seconds
 #define DELTA_SETPOINT  45    // degrees
 
 /***************************************************************************
