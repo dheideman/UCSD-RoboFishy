@@ -232,7 +232,7 @@ bool compareDMatch(const DMatch& a, const DMatch& b)
     // Pause for the remainder of the time necessary to achieve desired rate
     int elapsedtime = (now.tv_sec - threadstart.tv_sec)*1000000 +
                       (now.tv_usec - threadstart.tv_usec);
-    auv_usleep(1000000/ODOM_RATE - elapsedtime);
+//    auv_usleep(1000000/ODOM_RATE - elapsedtime);
     
   } // end while(...)
   

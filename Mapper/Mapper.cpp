@@ -42,11 +42,19 @@ struct timeval mainstart, setptstart, now;
 
 int main(int argc, char** argv)
 {
+  // set mode to INITIALIZING
+  substate.mode = INITIALIZING;
+  
 	// capture ctrl+c and exit
 	signal(SIGINT, ctrl_c);
 
 	// Set up RasPi GPIO pins through wiringPi
 	wiringPiSetup();
+	
+	// Start camera thread early
+	initializeTAttr();
+	pthread_t cameraThread;
+	pthread_create (&cameraThread, &tattrhigh, takePictures, NULL);
 
   // Set laser pin to output
 //  pinMode(3, OUTPUT);
@@ -65,7 +73,6 @@ int main(int argc, char** argv)
 	initializeOdomDataLock(&odomdata);
 
 	printf("Starting Threads\n");
-	initializeTAttr();
 
 	// Thread handles
 	pthread_t navigationThread;
@@ -73,7 +80,6 @@ int main(int argc, char** argv)
 	pthread_t safetyThread;
 	//pthread_t disarmlaserThread;
 	pthread_t uiThread;
-	pthread_t cameraThread;
 	pthread_t rangeThread;
 	pthread_t odometryThread;
 
@@ -83,7 +89,6 @@ int main(int argc, char** argv)
 	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
 	pthread_create (&logThread, &tattrmed, log_thread, NULL);
 	pthread_create (&navigationThread, &tattrmed, navigation_thread, NULL);
-	pthread_create (&cameraThread, &tattrhigh, takePictures, NULL);
 	pthread_create (&rangeThread, &tattrmed, rangeFinder, NULL);
 //	pthread_create (&odometryThread, &tattrmed, visualOdometry, NULL);
 //	pthread_create (&uiThread, &tattrmed, userInterface, NULL);
