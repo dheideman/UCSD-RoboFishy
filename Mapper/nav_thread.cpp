@@ -40,7 +40,7 @@ void *navigation_thread(void* arg)
   //////////////////////////////////
   // Depth Control Initialization //
   //////////////////////////////////
-	depth_pid.setpoint	= 0.5	;		// Range-from-bottom setpoint (meters)
+	depth_pid.setpoint	= SET_DEPTH	;		// Range-from-bottom setpoint (meters)
 	depth_pid.old				= 0;			// Initialize old depth
 	depth_pid.dt				= DT;			// Initialize depth controller time step
 
