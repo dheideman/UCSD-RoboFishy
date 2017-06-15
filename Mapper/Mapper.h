@@ -74,6 +74,7 @@
 #define KP_DEPTH 1
 #define KI_DEPTH 0
 #define KD_DEPTH 0
+#define SET_DEPTH 0.2
 
 // Saturation Constants
 #define YAW_SAT 1			// upper limit of yaw controller
