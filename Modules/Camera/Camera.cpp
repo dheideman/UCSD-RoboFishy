@@ -75,7 +75,7 @@ void *takePictures(void*)
   pthread_mutex_unlock(&subimages.darkframelock);
 
   // Declare image grabber timers
-  struct timeval capturestart, now;
+  struct timeval capturestart, currenttime;
   
   // Save start time
   gettimeofday(&capturestart, NULL);
@@ -95,11 +95,11 @@ void *takePictures(void*)
     cap.grab();
     
     // Get current time
-    gettimeofday(&now, NULL);
+    gettimeofday(&currenttime, NULL);
     
     // Get time elapsed
-    elapsedtime = (now.tv_sec - capturestart.tv_sec)*1000000 +
-                  (now.tv_usec - capturestart.tv_usec);
+    elapsedtime = (currenttime.tv_sec - capturestart.tv_sec)*1000000 +
+                  (currenttime.tv_usec - capturestart.tv_usec);
     
     // increment counter
     i++;
@@ -143,11 +143,11 @@ void *takePictures(void*)
     pthread_mutex_unlock(&subimages.brightframelock);
     
     // get current time
-    gettimeofday(&now, NULL);
+    gettimeofday(&currenttime, NULL);
     
     // Pause for the remainder of the time necessary to achieve desired rate
-    elapsedtime = (now.tv_sec - capturestart.tv_sec)*1000000 +
-                  (now.tv_usec - capturestart.tv_usec);
+    elapsedtime = (currenttime.tv_sec - capturestart.tv_sec)*1000000 +
+                  (currenttime.tv_usec - capturestart.tv_usec);
     
     // Put in some sleep time just in case (90% of rate)
     auv_usleep(900000/FRAME_RATE - elapsedtime);
@@ -181,11 +181,11 @@ void *takePictures(void*)
     pthread_mutex_unlock(&subimages.darkframelock);
     
     // get current time
-    gettimeofday(&now, NULL);
+    gettimeofday(&currenttime, NULL);
     
     // Pause for the remainder of the time necessary to achieve desired rate
-    elapsedtime = (now.tv_sec - capturestart.tv_sec)*1000000 +
-                  (now.tv_usec - capturestart.tv_usec);
+    elapsedtime = (currenttime.tv_sec - capturestart.tv_sec)*1000000 +
+                  (currenttime.tv_usec - capturestart.tv_usec);
     
     // Put in some sleep time just in case (90% of rate)
     auv_msleep(900000/FRAME_RATE - elapsedtime);

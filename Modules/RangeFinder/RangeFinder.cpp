@@ -36,7 +36,7 @@ void *rangeFinder(void*)
   Rect roi(cropleft,croptop,cropwidth,cropheight);
   
   // Sleep to prevent race conditions with locks
-  auv_msleep(100);
+  auv_msleep(1000);
   
   // Take a bunch of pictures
   while(substate.mode != STOPPED) 
