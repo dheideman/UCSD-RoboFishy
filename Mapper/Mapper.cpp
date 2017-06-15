@@ -40,7 +40,7 @@ struct timeval start, now;
 * Main Function
 ******************************************************************************/
 
-int main()
+int main(int argc, char** argv)
 {
 	// capture ctrl+c and exit
 	signal(SIGINT, ctrl_c);
@@ -97,9 +97,14 @@ int main()
 	int iterator = 0;
 
 	// Prompt for run time
-	int run_time;
-	std::cout << "Number of Seconds to run: ";
-	std::cin >> run_time;
+	int run_time = 20;
+  if( argc >= 2 )
+  {
+    run_time = atoi( argv[1] );
+  }
+
+//	std::cout << "Number of Seconds to run: ";
+//	std::cin >> run_time;
 
 	// Start timer!
 	gettimeofday(&start, NULL);
