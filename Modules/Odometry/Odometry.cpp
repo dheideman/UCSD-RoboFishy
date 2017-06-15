@@ -44,6 +44,9 @@ bool compareDMatch(const DMatch& a, const DMatch& b)
 //   }
 //   // Or maybe just use a global struct containing new, old images and pts?
   
+  // Sleep for a little bit to let camera thread lock
+  auv_msleep(100);
+  
   // Lock access to subimages.brightframe, odomdata.oldimg
   pthread_mutex_lock(&subimages.brightframelock);
   pthread_mutex_lock(&odomdata.oldimglock);
