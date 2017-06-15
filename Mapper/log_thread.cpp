@@ -81,8 +81,8 @@ void *log_thread(void* arg)
 
       // Yaw controller info
       gettimeofday(&now, NULL);
-      double timestamp = (now.tv_sec - start.tv_sec)*1000 +
-                         (now.tv_usec - start.tv_usec)/1000;
+      double timestamp = (now.tv_sec - mainstart.tv_sec)*1000 +
+                         (now.tv_usec - mainstart.tv_usec)/1000;
       double yaw = substate.imu.yaw;
       double setpoint = yaw_pid.setpoint;
 

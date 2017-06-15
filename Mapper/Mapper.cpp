@@ -33,7 +33,7 @@ float portmotorspeed = 0;
 float starmotorspeed = 0;
 
 // Start time for stop timer
-struct timeval start, now;
+struct timeval mainstart, setptstart, now;
 
 
 /******************************************************************************
@@ -106,8 +106,9 @@ int main(int argc, char** argv)
 //	std::cout << "Number of Seconds to run: ";
 //	std::cin >> run_time;
 
-	// Start timer!
-	gettimeofday(&start, NULL);
+	// Start timers!
+	gettimeofday(&mainstart,  NULL);
+  gettimeofday(&setptstart, NULL);
 
 	yaw_pid.setpoint = substate.imu.yaw;
   if(yaw_pid.setpoint > 180) yaw_pid.setpoint -= 360;
@@ -120,17 +121,20 @@ int main(int argc, char** argv)
 	{
 		// Check if we've passed the stop time
 		gettimeofday(&now, NULL);
- 		if((now.tv_sec - start.tv_sec) > run_time)
+ 		if((now.tv_sec - mainstart.tv_sec) > run_time)
  			substate.mode = STOPPED;
 
     if(substate.mode == RUNNING)
     {
       // Change the setpoint every LEG_TIME seconds
-      if((now.tv_sec - start.tv_sec) > LEG_TIME*(iterator+1))
+      if((now.tv_sec + now.tv_usec/1000000 - (setptstart.tv_sec + setptstart.tv_usec/1000000)) > LEG_TIME)
       {
         // Set new setpoint
         yaw_pid.setpoint += DELTA_SETPOINT;
         if(yaw_pid.setpoint > 180) yaw_pid.setpoint -= 360;
+
+	      // reset timer
+	      gettimeofday(&setptstart, NULL);
 
         // Increment iterator
         iterator++;
@@ -139,7 +143,7 @@ int main(int argc, char** argv)
     } // end if RUNNING
 
 		// Sleep a little
-		auv_msleep(100);
+		auv_msleep(20);
 	}
 
 	// Exit cleanly

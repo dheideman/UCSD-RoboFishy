@@ -36,8 +36,8 @@
 #define MOTOR_0 2674    // motor output is 0
 
 // Motor Constants
-#define BASE_SPEED = 0.10;
-#define MOTOR_DEADZONE 0.03   // 3 percent
+#define BASE_SPEED     0.10   // 10 percent
+#define MOTOR_DEADZONE 0.02   // 3 percent
 #define PWM_LOW_LIMIT  1940   // PWM value
 #define PWM_HIGH_LIMIT 3354   // PWM value
 #define PWM_ZERO_VALUE 2647   // PWM value
@@ -93,8 +93,8 @@
 #define LEAKPOWERPIN  17  // providing Vcc to leak board
 
 // Time Per Straight Leg of "Path"
-#define LEG_TIME    1.5   // seconds
-#define DELTA_SETPOINT 45 // degrees
+#define LEG_TIME        1.75  // seconds
+#define DELTA_SETPOINT  45    // degrees
 
 /***************************************************************************
 * Create Structs
@@ -145,7 +145,7 @@ extern float portmotorspeed;
 extern float starmotorspeed;
 
 // Start time for stop timer
-extern struct timeval start, now;
+extern struct timeval mainstart, setptstart, now;
 
 
 /******************************************************************************

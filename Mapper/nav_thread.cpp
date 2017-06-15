@@ -74,9 +74,6 @@ void *navigation_thread(void* arg)
 	//Set depth setpoint to current depth
 	depth_pid.setpoint = ms5837.depth + 0.3;
 
-  // Start section timer
-  gettimeofday(&start, NULL);
-
 	while(substate.mode!=STOPPED)
 	{
 		// read IMU values from fifo file
