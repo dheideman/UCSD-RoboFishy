@@ -9,6 +9,8 @@
 
 #include "Camera.h"
 
+#define DEBUG
+
 using namespace cv;
 using namespace std;
 
@@ -115,7 +117,7 @@ void *takePictures(void*)
     pthread_mutex_unlock(&subimages.brightframelock);
     
     // Put in some sleep time just in case
-//    auv_msleep(100/FRAME_RATE);
+    auv_msleep(100/FRAME_RATE);
     
     /* Dark */
 
@@ -143,7 +145,7 @@ void *takePictures(void*)
     pthread_mutex_unlock(&subimages.darkframelock);
     
     // Put in some sleep time just in case
-//    auv_msleep(100/FRAME_RATE);
+    auv_msleep(100/FRAME_RATE);
   }
     
   // close camera
