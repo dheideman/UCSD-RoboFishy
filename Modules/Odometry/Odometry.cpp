@@ -7,6 +7,8 @@
 
 #include "Odometry.h"
 
+#define DEBUG
+
 using namespace cv;
 using namespace std;
 

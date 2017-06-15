@@ -9,8 +9,6 @@
 
 #include "Camera.h"
 
-#define DEBUG
-
 using namespace cv;
 using namespace std;
 
