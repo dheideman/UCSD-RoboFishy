@@ -88,17 +88,19 @@ void *takePictures(void*)
   while(substate.mode != STOPPED)
   {
     /* Bright */
-    
+
+    picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, DARK_EXPOSURE );
+
     // 'Grab' bright frame from webcam's image buffer
     cap.grab();
     
     // Set exposure now (rather than later)
-    picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, DARK_EXPOSURE );
+//    picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, DARK_EXPOSURE );
     
     // Turn laser on before grabbing the darkframe image
     if(substate.laserarmed == ARMED)
     {
-      printf("Laser %d ON!\n",LASERPIN);
+//      printf("Laser %d ON!\n",LASERPIN);
       digitalWrite(LASERPIN, HIGH);
     }
     
@@ -113,19 +115,21 @@ void *takePictures(void*)
     pthread_mutex_unlock(&subimages.brightframelock);
     
     // Put in some sleep time just in case
-    auv_msleep(100/FRAME_RATE);
+//    auv_msleep(100/FRAME_RATE);
     
     /* Dark */
 
+    picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE );
+    
     // 'Grab' dark frame from webcam's image buffer
     cap.grab();
     
     // Turn laser off                               Check the timing on this...
-    printf("Laser off...\n");
+//    printf("Laser off...\n");
     digitalWrite(LASERPIN, LOW);
     
     // Set exposure now (rather than later)
-    picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, BRIGHT_EXPOSURE );
+//    picamctrl.set(V4L2_CID_EXPOSURE_ABSOLUTE, DARK_EXPOSURE );
     
     // Lock access to subimages.darkframe
     pthread_mutex_lock(&subimages.darkframelock);
@@ -139,7 +143,7 @@ void *takePictures(void*)
     pthread_mutex_unlock(&subimages.darkframelock);
     
     // Put in some sleep time just in case
-    auv_msleep(100/FRAME_RATE);
+//    auv_msleep(100/FRAME_RATE);
   }
     
   // close camera
