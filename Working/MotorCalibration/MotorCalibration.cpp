@@ -68,6 +68,7 @@ int main()
 		//pwmWrite(motornum + PIN_BASE, motoroutput);
 		pwmWrite(PIN_BASE + 0, motoroutput);
 		pwmWrite(PIN_BASE + 1, motoroutput);
+		pwmWrite(PIN_BASE + 2, motoroutput);
 		
 		std::cout << "Set Motor " << motornum << " to " << motoroutput << std::endl << std::endl;
 	}

@@ -47,6 +47,9 @@ bool compareDMatch(const DMatch& a, const DMatch& b)
   // Sleep for a little bit to let camera thread lock
   auv_msleep(100);
   
+  // We're in!
+  cout << "Start Visual Odometry Thread" << endl;
+    
   // Lock access to subimages.brightframe, odomdata.oldimg
   pthread_mutex_lock(&subimages.brightframelock);
   pthread_mutex_lock(&odomdata.oldimglock);
@@ -59,6 +62,9 @@ bool compareDMatch(const DMatch& a, const DMatch& b)
   // Unlock access to subimages.brightframe, odomdata.oldimg
   pthread_mutex_unlock(&odomdata.oldimglock);
   pthread_mutex_unlock(&subimages.brightframelock);
+  
+  // Done copying in image
+  cout << "Done copying 'old' image" << endl;
   
   // Create detector (FAST)
   Ptr<FeatureDetector> detector = FastFeatureDetector::create();
