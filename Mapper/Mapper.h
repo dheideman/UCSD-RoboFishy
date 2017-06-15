@@ -141,8 +141,8 @@ extern int motor_channels[];
 extern float batt_temp;
 
 // setmotor intialization
-float portmotorspeed = 0;
-float starmotorspeed = 0;
+extern float portmotorspeed;
+extern float starmotorspeed;
 
 // Start time for stop timer
 extern struct timeval start, now;
