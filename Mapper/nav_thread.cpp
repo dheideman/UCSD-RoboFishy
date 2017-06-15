@@ -41,20 +41,20 @@ void *navigation_thread(void* arg)
   // Depth Control Initialization //
   //////////////////////////////////
 	depth_pid.setpoint	= 0.5	;		// Range-from-bottom setpoint (meters)
-	depth_pid.old				= 0;		// Initialize old depth
-	depth_pid.dt				= DT;		// Initialize depth controller time step
+	depth_pid.old				= 0;			// Initialize old depth
+	depth_pid.dt				= DT;			// Initialize depth controller time step
 
 	depth_pid.kp = KP_DEPTH;
-	depth_pid.kd = KD_DEPTH;		// Depth controller gain initialization
+	depth_pid.kd = KD_DEPTH;			// Depth controller gain initialization
 	depth_pid.ki = KI_DEPTH;
 
 	depth_pid.perr = 0;
-	depth_pid.ierr = 0;					// Initialize depth controller error values
+	depth_pid.ierr = 0;						// Initialize depth controller error values
 	depth_pid.derr = 0;
 
-	depth_pid.isat = INT_SAT;		// Depth controller saturation values
+	depth_pid.isat = INT_SAT;			// Depth controller saturation values
 	depth_pid.sat  = DEPTH_SAT;
-	depth_pid.period = -1; 			//not cyclical controller
+	depth_pid.period = -1; 				//not cyclical controller
 
 
 	// read IMU values from fifo file
@@ -62,14 +62,6 @@ void *navigation_thread(void* arg)
 
 	// Read pressure values
 	ms5837 = read_pressure_fifo();
-
-	// Set setpoint to current heading
-/*
-  if( substate.imu.yaw > 180 )
-    yaw_pid.setpoint = substate.imu.yaw - 360;
-  else
-    yaw_pid.setpoint = substate.imu.yaw;
-*/
 
 	//Set depth setpoint to current depth
 	depth_pid.setpoint = ms5837.depth + 0.3;
@@ -97,7 +89,7 @@ void *navigation_thread(void* arg)
       starmotorspeed = set_motor(1, BASE_SPEED + motorpercent);
 
       //set vertical thruster
-      //vertmotorspeed = set_motor(2, depthpercent);
+      vertmotorspeed = set_motor(2, depthpercent);
 		} // end if RUNNING
 		else if( substate.mode == PAUSED)
 		{
