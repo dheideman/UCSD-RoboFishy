@@ -36,6 +36,7 @@
 #define MOTOR_0 2674    // motor output is 0
 
 // Motor Constants
+#define BASE_SPEED = 0.10;
 #define MOTOR_DEADZONE 0.03   // 3 percent
 #define PWM_LOW_LIMIT  1940   // PWM value
 #define PWM_HIGH_LIMIT 3354   // PWM value

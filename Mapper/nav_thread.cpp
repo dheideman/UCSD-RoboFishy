@@ -13,7 +13,6 @@ void *navigation_thread(void* arg)
 
   float yaw = 0; 			  //Local variable for if statements
   float motorpercent;
-  float basespeed = 0.15;
   float err;
   float depthpercent;
   float vertmotorspeed;
@@ -95,10 +94,10 @@ void *navigation_thread(void* arg)
       depthpercent = marchPID(depth_pid, ms5837.depth);
 
       // Set port motor
-      portmotorspeed = set_motor(0, basespeed - motorpercent);
+      portmotorspeed = set_motor(0, BASE_SPEED - motorpercent);
 
       // Set starboard motor
-      starmotorspeed = set_motor(1, basespeed + motorpercent);
+      starmotorspeed = set_motor(1, BASE_SPEED + motorpercent);
 
       //set vertical thruster
       //vertmotorspeed = set_motor(2, depthpercent);
