@@ -87,10 +87,10 @@ int main(int argc, char** argv)
 	// Create threads using modified attributes
 //	pthread_create (&disarmlaserThread, &tattrlow, disarmLaser, NULL);
 	pthread_create (&safetyThread, &tattrlow, safety_thread, NULL);
-	pthread_create (&logThread, &tattrmed, log_thread, NULL);
+	pthread_create (&logThread, &tattrlow, log_thread, NULL);
 	pthread_create (&navigationThread, &tattrmed, navigation_thread, NULL);
 	pthread_create (&rangeThread, &tattrmed, rangeFinder, NULL);
-//	pthread_create (&odometryThread, &tattrmed, visualOdometry, NULL);
+	pthread_create (&odometryThread, &tattrmed, visualOdometry, NULL);
 //	pthread_create (&uiThread, &tattrmed, userInterface, NULL);
 
   // Destroy the thread attributes

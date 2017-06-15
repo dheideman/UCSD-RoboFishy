@@ -130,11 +130,13 @@ bool compareDMatch(const DMatch& a, const DMatch& b)
     // Lock access to subimages.brightframe, odomdata.newimg
     pthread_mutex_lock(&subimages.brightframelock);
     pthread_mutex_lock(&odomdata.newimglock);
-  
+    
+    cout << "Resizing image!" << endl;  
     // Save bright frame to "new image"
 //     subimages.brightframe.copyTo(odomdata.newimg);
     resize(subimages.brightframe, odomdata.newimg, odomframesize);
-    
+    cout << "Image resized" << endl;
+
     // Unlock access to subimages.brightframe, odomdata.newimg
     pthread_mutex_unlock(&odomdata.newimglock);
     pthread_mutex_unlock(&subimages.brightframelock);
@@ -214,10 +216,10 @@ bool compareDMatch(const DMatch& a, const DMatch& b)
     substate.pose.z += dtheta;          // theta stored as 'z'
     
     // Write tf, pose to screen
-    #ifdef DEBUG
+//    #ifdef DEBUG
     cout << "tf = "<< endl << " "  << odomdata.tf << endl << endl;
     cout << "pose = "<< endl << " " << substate.pose << endl << endl;
-    #endif
+//    #endif
     
     // Swap newframe and oldframe.
     cv::swap(odomdata.newimg,odomdata.oldimg);
