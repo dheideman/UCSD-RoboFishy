@@ -71,7 +71,7 @@
 #define KD_YAW 0
 
 // Depth Controller
-#define KP_DEPTH 0.1
+#define KP_DEPTH 1
 #define KI_DEPTH 0
 #define KD_DEPTH 0
 
