@@ -17,8 +17,14 @@
 
 // Core Module
 #include "../Modules/Core/Core.h"
+
+// Camera Module
 #include "../Modules/Camera/Camera.h"
+
+// Range Finder Module
 #include "../Modules/RangeFinder/RangeFinder.h"
+
+// Visual Odometry Module
 #include "../Modules/Odometry/Odometry.h"
 
 //#define DEBUG

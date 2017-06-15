@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 	wiringPiSetup();
 
   // Set laser pin to output
-  pinMode(3, OUTPUT);
+//  pinMode(3, OUTPUT);
 
 	// Check if AUV is initialized correctly
 	if( initialize_sensors() < 0 )
@@ -62,7 +62,7 @@ int main(int argc, char** argv)
 
 	// Initialize Thread locks
 	initializeSubImagesLock(&subimages);
-	//initializeOdomDataLock();
+	initializeOdomDataLock(&odomdata);
 
 	printf("Starting Threads\n");
 	initializeTAttr();
@@ -75,6 +75,7 @@ int main(int argc, char** argv)
 	pthread_t uiThread;
 	pthread_t cameraThread;
 	pthread_t rangeThread;
+	pthread_t odometryThread;
 
 
 	// Create threads using modified attributes
@@ -84,6 +85,7 @@ int main(int argc, char** argv)
 	pthread_create (&navigationThread, &tattrmed, navigation_thread, NULL);
 	pthread_create (&cameraThread, &tattrhigh, takePictures, NULL);
 	pthread_create (&rangeThread, &tattrmed, rangeFinder, NULL);
+	pthread_create (&odometryThread, &tattrmed, visualOdometry, NULL);
 //	pthread_create (&uiThread, &tattrmed, userInterface, NULL);
 
   // Destroy the thread attributes

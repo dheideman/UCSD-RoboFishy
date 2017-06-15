@@ -49,6 +49,9 @@ void *log_thread(void* arg)
 
 			// Print Range to the Bottom
       output << "Range: " << substate.range << std::endl;
+      
+      // Print position estimate
+      output << "Pose: " << substate.pose << std::endl;
 
       // Print battery temperature
       output << "Battery temp: " << read_temp_fifo() << " C" << std::endl;

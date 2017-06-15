@@ -44,7 +44,7 @@
 ///////////////
 
 // Exposure Values
-#define BRIGHT_EXPOSURE 100
+#define BRIGHT_EXPOSURE 200
 #define DARK_EXPOSURE   5
 #define ISO_VALUE       4
 
