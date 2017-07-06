@@ -20,9 +20,9 @@ https://www.thepolyglotdeveloper.com/2016/06/connect-raspberry-pi-zero-usb-cable
    `dtoverlay=dwc2`
 3. Add after "rootwait" in cmdline.txt:
    `modules-load=dwc2,g_ether`
-4. Create ssh file (no extension) by typing:
+4. Create ssh file (no extension) by running the command:
    `touch ssh`
-5. In /etc/dhcpcd.conf add:
+5. In the file system, in /etc/dhcpcd.conf add:
    (More information on dhcpcd.conf below)
 ```
 interface usb0
@@ -34,9 +34,9 @@ interface eth0
   static routers=192.168.7.1
   static domain_name_servers=192.168.7.1
 ```
-6. Exit, type `sync`, wait for it to finish, then take SD card out and put into pi zero
-7. Plug a USB cable into the computer and then into the USB port on the pi zero (not the power port)
-8. Open a terminal and type `sudo ip a add 192.168.7.1/24 dev usb0`
+6. Exit, type `sync`, wait for it to finish, then take SD card out and put into pi
+7. If using a Pi Zero, plug a USB cable into the computer and then into the USB port on the Pi (not the power port).  For all other Pis, use an ethernet cable instead.
+8. Open a terminal and type `sudo ip a add 192.168.7.1/24 dev usb0` for a Pi Zero or `sudo ip a add 192.168.7.1/24 dev eth0` for all other Pis.
 9. You're ready to ssh into that puppy! Type `ssh pi@192.168.7.2`, then type default pw: `raspberry`
 
 Note:
